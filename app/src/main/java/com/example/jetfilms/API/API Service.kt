@@ -27,6 +27,4 @@ interface ApiInterface {
         @Query("api_key") api_key: String = APIKEY,
 
     ):Response<DetailedMovieDataClass>
-
-
 }
