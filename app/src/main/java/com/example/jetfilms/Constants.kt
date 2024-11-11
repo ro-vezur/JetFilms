@@ -16,6 +16,6 @@ val whiteGradient = Brush.horizontalGradient(listOf(Color.White.copy(0.82f), Col
 
 const val baseAPIUrl = "https://api.themoviedb.org/3/"
 const val baseImageUrl = "https://image.tmdb.org/t/p/w500"
-const val APIKEY = "cf4e59f8ee0e526f72a7d24f0e8761b2"
+const val APIKEY = ""
 
 val minutesInHour = 60
