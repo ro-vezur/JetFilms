@@ -24,6 +24,9 @@ class MoviesViewModel @Inject constructor(
     private val _topRatedMovies = MutableStateFlow<List<SimplifiedMovieDataClass>>(listOf())
     val topRatedMovies = _topRatedMovies.asStateFlow()
 
+    private val _moreMoviesView = MutableStateFlow<List<SimplifiedMovieDataClass?>>(listOf())
+    val moreMoviesView = _moreMoviesView.asStateFlow()
+
     private val _selectedMovie = MutableStateFlow<DetailedMovieDataClass?>(null)
     val selectedMovie = _selectedMovie.asStateFlow()
 
@@ -31,6 +34,7 @@ class MoviesViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.IO){
                 moviesRepository.getTopRatedMovies().body()?.let { _topRatedMovies.emit(it.results) }
+                getPopularMovies()
             }
         }
     }
@@ -39,6 +43,22 @@ class MoviesViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.IO){
                 moviesRepository.getMovie(movieId).body()?.let { _selectedMovie.emit(it) }
+            }
+        }
+    }
+
+    fun getPopularMovies(page: Int = 1){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                moviesRepository.getPopularMovies(page).body()?.let { _popularMovies.emit(it.results) }
+            }
+        }
+    }
+
+    fun setMoreMoviesView(movies:List<SimplifiedMovieDataClass>){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _moreMoviesView.emit(movies)
             }
         }
     }
