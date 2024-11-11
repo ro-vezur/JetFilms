@@ -8,7 +8,7 @@ import javax.inject.Singleton
 
 @Singleton
 class MoviesRepository @Inject constructor(private val apiService: ApiInterface){
-    suspend fun getPopularMovies() = apiService.popularMovies()
+    suspend fun getPopularMovies(page:Int) = apiService.popularMovies(page)
 
     suspend fun getTopRatedMovies() = apiService.topRatedMovies()
 
