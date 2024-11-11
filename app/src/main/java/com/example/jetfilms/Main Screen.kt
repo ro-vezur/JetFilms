@@ -55,6 +55,8 @@ fun MainScreen(
 
     val hazeState = remember { HazeState() }
 
+    var homeDelay by remember{ mutableStateOf(0) }
+
     Scaffold(
         containerColor = Color.Black,
         bottomBar = {
@@ -87,9 +89,9 @@ fun MainScreen(
                 route = "HomeScreen",
                 enterTransition = { fadeIn(tween(delayMillis = 350)) }
             ) {
-                LaunchedEffect(Unit) {
-                    showBottomBar = true
-                }
+                homeDelay = 70
+                showBottomBar = true
+
                 HomeScreen(screensNavController,moviesViewModel)
             }
 
@@ -118,6 +120,8 @@ fun MainScreen(
             }
 
             composable<MoreMoviesScreenRoute> {
+                homeDelay = 70
+                showBottomBar = true
 
                 val category = screensNavController.currentBackStackEntry?.arguments?.getString("category")
 
@@ -125,6 +129,7 @@ fun MainScreen(
                     MoreMoviesScreen(
                         navController = screensNavController,
                         category = category.toString(),
+                        moviesViewModel = moviesViewModel,
                     )
                 }
             }
@@ -133,10 +138,8 @@ fun MainScreen(
                 route = "movie_details/{movie}",
                 arguments = listOf(navArgument("movie") { type = DetailedMovieNavType() }),
             ) {
-
-                LaunchedEffect(Unit) {
-                    showBottomBar = false
-                }
+                homeDelay = 350
+                showBottomBar = false
 
                 val movie =  it.arguments?.getParcelable<DetailedMovieDataClass>("movie")
 

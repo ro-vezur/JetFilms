@@ -48,9 +48,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.example.jetfilms.Additional_functions.NavigateToSelectedMovie
 import com.example.jetfilms.CustomComposables.GradientIcon
 import com.example.jetfilms.CustomComposables.MovieCard
 import com.example.jetfilms.CustomComposables.TextButton
@@ -88,20 +90,17 @@ fun HomeScreen(
     }
 
     val topRatedMovies = moviesViewModel.topRatedMovies.collectAsStateWithLifecycle()
-
+    val popularMovies = moviesViewModel.popularMovies.collectAsStateWithLifecycle()
 
 
     val selectedMovieIndex = rememberSaveable{ mutableStateOf(0) }
     val selectedMovie = moviesViewModel.selectedMovie.collectAsStateWithLifecycle()
 
-    LaunchedEffect(selectedMovieIndex.value,topRatedMovies.value) {
+    LaunchedEffect(selectedMovieIndex.value,topRatedMovies.value.isEmpty()) {
         if(topRatedMovies.value.isNotEmpty()) {
             moviesViewModel.selectMovie(topRatedMovies.value[selectedMovieIndex.value].id)
-            Log.d("popular movies",topRatedMovies.value.toString())
-            Log.d("selected movie",selectedMovie.value.toString())
         }
     }
-
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,18 +173,8 @@ fun HomeScreen(
                     ){
                         TextButton(
                             onClick = {
-
                                 selectedMovie.value?.let {
-                                    val jsonMovie = Json.encodeToString(
-                                        it.copy(
-                                            title = encodeStringWithSpecialCharacter(it.title),
-                                            overview = encodeStringWithSpecialCharacter(it.overview),
-                                            tagline = encodeStringWithSpecialCharacter(it.tagline),
-                                            posterUrl = encodeStringWithSpecialCharacter(it.posterUrl.toString()),
-                                        )
-                                    )
-                                    Log.d("json",jsonMovie)
-                                    navController.navigate("movie_details/$jsonMovie")
+                                    NavigateToSelectedMovie(navController,it)
                                 }
                             },
                             gradient = blueGradient,
@@ -257,10 +246,22 @@ fun HomeScreen(
 
             MoviesCategoryList(
                 category = "For You",
-                moviesList = simplifiedMoviesDataList,
+                moviesList = simplifiedMoviesDataList.take(5),
                 navController = navController,
+                onSeeAllClick = {},
+                topPadding = 38.sdp,
             )
 
+            MoviesCategoryList(
+                category = "Popular movies",
+                moviesList = popularMovies.value.take(5),
+                navController = navController,
+                onSeeAllClick = {
+                    moviesViewModel.setMoreMoviesView(popularMovies.value)
+                },
+                topPadding = 20.sdp,
+                bottomPadding = 62.sdp
+            )
         }
 }
 
@@ -279,7 +280,7 @@ private fun MoviePager(moviesList: List<SimplifiedMovieDataClass>, lazyListState
 
         items(Int.MAX_VALUE){ index ->
             if(moviesList.isNotEmpty()){
-                val movie = simplifiedMoviesDataList[index % moviesList.size]
+                val movie = moviesList[index % moviesList.size]
                 Box(
                     modifier = Modifier
                         .width(72.sdp)
@@ -320,7 +321,10 @@ private fun MoviePager(moviesList: List<SimplifiedMovieDataClass>, lazyListState
 private fun MoviesCategoryList(
     category: String,
     moviesList: List<SimplifiedMovieDataClass>,
-    navController: NavController
+    navController: NavController,
+    onSeeAllClick: () -> Unit,
+    topPadding: Dp = 0.sdp,
+    bottomPadding: Dp = 0.sdp
 ) {
     val typography = MaterialTheme.typography
     val scrollState = rememberScrollState()
@@ -328,13 +332,13 @@ private fun MoviesCategoryList(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(top = 30.sdp)
+            .padding(top = topPadding)
             .fillMaxWidth()
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,
             modifier = Modifier
-                .padding(start = 9.sdp, end = 12.sdp)
+                .padding(start = 10.sdp, end = 12.sdp)
                 .fillMaxWidth()
         ) {
             Text(
@@ -352,6 +356,7 @@ private fun MoviesCategoryList(
                     .height(22.sdp)
                     .clip(RoundedCornerShape(8.sdp))
                     .clickable {
+                        onSeeAllClick()
                         navController.navigate(MoreMoviesScreenRoute(category))
                     }
             ){
@@ -372,9 +377,9 @@ private fun MoviesCategoryList(
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(9.sdp),
             modifier = Modifier
-                .padding(start = 15.sdp,top = 12.sdp, bottom = 62.sdp)
+                .padding(start = 15.sdp,top = 14.sdp, bottom = bottomPadding)
         ) {
-            items(moviesList.take(3)) { movie ->
+            items(moviesList) { movie ->
                 MovieCard(
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.sdp))
