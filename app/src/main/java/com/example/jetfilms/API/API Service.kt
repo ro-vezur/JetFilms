@@ -12,7 +12,8 @@ import retrofit2.http.Query
 interface ApiInterface {
     @GET("movie/popular?")
     suspend fun popularMovies(
-        @Query("api_key") api_key: String = APIKEY
+        @Query("page") page: Int,
+        @Query("api_key") api_key: String = APIKEY,
     ):Response<moviesPageDataClass>
 
     @GET("movie/top_rated?")
