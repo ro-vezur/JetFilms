@@ -1,12 +1,12 @@
-package com.example.jetfilms.Additional_functions
+package com.example.jetfilms.Additional_functions.navigate
 
 import androidx.navigation.NavController
-import com.example.jetfilms.Data_Classes.DetailedMovieDataClass
+import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieDataClassResponse
 import com.example.jetfilms.encodes.encodeStringWithSpecialCharacter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-fun NavigateToSelectedMovie(navController: NavController,selectedMovie:DetailedMovieDataClass){
+fun navigateToSelectedMovie(navController: NavController, selectedMovie: DetailedMovieDataClassResponse){
 
     val jsonMovie = Json.encodeToString(
         selectedMovie.copy(
