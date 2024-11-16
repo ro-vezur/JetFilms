@@ -1,8 +1,7 @@
 package com.example.jetfilms.Screens.Home
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,11 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,14 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,27 +41,27 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.jetfilms.Additional_functions.NavigateToSelectedMovie
-import com.example.jetfilms.CustomComposables.GradientIcon
-import com.example.jetfilms.CustomComposables.MovieCard
-import com.example.jetfilms.CustomComposables.TextButton
-import com.example.jetfilms.Data_Classes.DetailedMovieDataClass
-import com.example.jetfilms.Data_Classes.SimplifiedMovieDataClass
-import com.example.jetfilms.Data_Classes.detailedMoviesDataList
-import com.example.jetfilms.Data_Classes.simplifiedMoviesDataList
+import com.example.jetfilms.Additional_functions.navigate.navigateToSelectedMovie
+import com.example.jetfilms.Additional_functions.removeNumbersAfterDecimal
+import com.example.jetfilms.CustomComposables.Gradient.GradientIcon
+import com.example.jetfilms.CustomComposables.Cards.MovieCard
+import com.example.jetfilms.CustomComposables.Text.TextButton
+import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieDataClassResponse
+import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.R
 import com.example.jetfilms.Screens.MoreMoviesScreenRoute
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.baseImageUrl
-import com.example.jetfilms.blueGradient
-import com.example.jetfilms.encodes.encodeStringWithSpecialCharacter
+import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
+import com.example.jetfilms.states.rememberForeverLazyListState
+import com.example.jetfilms.states.rememberForeverScrollState
 import com.example.jetfilms.ui.theme.buttonsColor1
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
+
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -82,25 +71,14 @@ fun HomeScreen(
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
+    val screenScrollState = rememberForeverScrollState(key = "Home screen")
 
-    val moviePostersScrollState = rememberLazyListState()
-    
-    val screenScrollState = rememberSaveable(saver = ScrollState.Saver) {
-        ScrollState(0)
-    }
+    val scope = rememberCoroutineScope()
 
     val topRatedMovies = moviesViewModel.topRatedMovies.collectAsStateWithLifecycle()
     val popularMovies = moviesViewModel.popularMovies.collectAsStateWithLifecycle()
-
-
-    val selectedMovieIndex = rememberSaveable{ mutableStateOf(0) }
     val selectedMovie = moviesViewModel.selectedMovie.collectAsStateWithLifecycle()
-
-    LaunchedEffect(selectedMovieIndex.value,topRatedMovies.value.isEmpty()) {
-        if(topRatedMovies.value.isNotEmpty()) {
-            moviesViewModel.selectMovie(topRatedMovies.value[selectedMovieIndex.value].id)
-        }
-    }
+    val selectedMovieCast = moviesViewModel.selectedMovieCast.collectAsStateWithLifecycle()
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -155,7 +133,7 @@ fun HomeScreen(
                         )
 
                         Text(
-                            text = selectedMovie.value?.rating.toString(),
+                            text = removeNumbersAfterDecimal(selectedMovie.value?.rating?:0f,2).toString(),
                             fontSize = 21f.ssp
                         )
                     }
@@ -174,10 +152,11 @@ fun HomeScreen(
                         TextButton(
                             onClick = {
                                 selectedMovie.value?.let {
-                                    NavigateToSelectedMovie(navController,it)
+                                    moviesViewModel.setSelectedMovieAdditions(it.id)
+                                    navigateToSelectedMovie(navController,it)
                                 }
                             },
-                            gradient = blueGradient,
+                            gradient = blueHorizontalGradient,
                             width = 138.sdp,
                             height = 36.sdp,
                             corners = RoundedCornerShape(18.sdp),
@@ -201,7 +180,7 @@ fun HomeScreen(
                                 GradientIcon(
                                     icon = Icons.Filled.Bookmarks,
                                     contentDescription = "favorite",
-                                    gradient = blueGradient,
+                                    gradient = blueHorizontalGradient,
                                     modifier = Modifier
                                         .size(21.sdp)
                                 )
@@ -217,26 +196,31 @@ fun HomeScreen(
                         }
                     }
                 }
-
             }
 
-            MoviePager(topRatedMovies.value.take(6), moviePostersScrollState, selectedMovieIndex)
+            MoviePager(
+                selectMovie = { movie ->
+                    scope.launch {
+                        moviesViewModel.setSelectedMovie(movie.id)
+                    }
+                },
+                moviesList = topRatedMovies.value.take(6),
+                movieToSelect = selectedMovie.value
+                )
 
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(5.sdp),
                 modifier = Modifier
                     .padding(top = 17.sdp)
             ) {
-                itemsIndexed(topRatedMovies.value.take(6)) { index, movie ->
-
-
+                items(topRatedMovies.value.take(6)) { movie ->
                     Box(
                         modifier = Modifier
                             .width(21.sdp)
                             .height(5.sdp)
                             .clip(CircleShape)
                             .background(
-                                if (index == selectedMovieIndex.value) buttonsColor1 else Color.LightGray.copy(
+                                if (movie.id == selectedMovie.value?.id) buttonsColor1 else Color.LightGray.copy(
                                     0.68f
                                 )
                             )
@@ -245,16 +229,16 @@ fun HomeScreen(
             }
 
             MoviesCategoryList(
-                category = "For You",
-                moviesList = simplifiedMoviesDataList.take(5),
-                navController = navController,
-                onSeeAllClick = {},
-                topPadding = 38.sdp,
-            )
-
-            MoviesCategoryList(
                 category = "Popular movies",
-                moviesList = popularMovies.value.take(5),
+                selectMovie = { movie ->
+                              scope.launch {
+                                  moviesViewModel.getMovie(movie.id)?.let {
+                                      moviesViewModel.setSelectedMovieAdditions(movie.id)
+                                      navigateToSelectedMovie(navController, it)
+                                  }
+                              }
+                },
+                moviesList = popularMovies.value.take(3),
                 navController = navController,
                 onSeeAllClick = {
                     moviesViewModel.setMoreMoviesView(popularMovies.value)
@@ -266,8 +250,13 @@ fun HomeScreen(
 }
 
 @Composable
-private fun MoviePager(moviesList: List<SimplifiedMovieDataClass>, lazyListState: LazyListState, selectedMovieIndex:MutableState<Int>) {
+private fun MoviePager(
+    selectMovie:(movie: SimplifiedMovieDataClass) -> Unit,
+    moviesList: List<SimplifiedMovieDataClass>,
+    movieToSelect: DetailedMovieDataClassResponse?
+) {
 
+    val lazyListState = rememberForeverLazyListState("movies pager")
     val scope = rememberCoroutineScope()
 
     LazyRow(
@@ -295,14 +284,14 @@ private fun MoviePager(moviesList: List<SimplifiedMovieDataClass>, lazyListState
                         modifier = Modifier
                             .fillMaxSize()
                             .clickable {
-                                selectedMovieIndex.value = index % moviesList.size
+                                selectMovie(moviesList[index % moviesList.size])
                                 scope.launch {
                                     lazyListState.animateScrollToItem(index)
                                 }
                             }
                     )
 
-                    if (selectedMovieIndex.value != index % moviesList.size) {
+                    if (movieToSelect?.id != moviesList[index % moviesList.size].id) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -320,6 +309,7 @@ private fun MoviePager(moviesList: List<SimplifiedMovieDataClass>, lazyListState
 @Composable
 private fun MoviesCategoryList(
     category: String,
+    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
     moviesList: List<SimplifiedMovieDataClass>,
     navController: NavController,
     onSeeAllClick: () -> Unit,
@@ -363,7 +353,7 @@ private fun MoviesCategoryList(
                 Text(
                     text = "See All",
                     style = typography.bodyMedium.copy(
-                        brush = blueGradient,
+                        brush = blueHorizontalGradient,
                         fontWeight = FontWeight.Normal
                     ),
                     fontSize = 20.5f.ssp,
@@ -379,14 +369,17 @@ private fun MoviesCategoryList(
             modifier = Modifier
                 .padding(start = 15.sdp,top = 14.sdp, bottom = bottomPadding)
         ) {
-            items(moviesList) { movie ->
-                MovieCard(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.sdp))
-                        .width(126.sdp)
-                        .height(200.sdp),
-                    movie = movie
-                )
+            items(items = moviesList) { movie ->
+
+                    MovieCard(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.sdp))
+                            .width(126.sdp)
+                            .height(200.sdp)
+                            .clickable { selectMovie(movie) },
+                        movie = movie
+                    )
+
             }
         }
     }

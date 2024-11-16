@@ -3,7 +3,6 @@ package com.example.jetfilms.Screens.Start
 import Highlight
 import HighlightedText
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,12 +41,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.jetfilms.CustomComposables.BaseTextFieldColors
-import com.example.jetfilms.CustomComposables.CustomTextField
-import com.example.jetfilms.CustomComposables.TextButton
-import com.example.jetfilms.CustomComposables.TurnBackButton
-import com.example.jetfilms.Network.ConnectionState
-import com.example.jetfilms.Network.connectivityState
+import com.example.jetfilms.CustomComposables.Text.BaseTextFieldColors
+import com.example.jetfilms.CustomComposables.Text.CustomTextField
+import com.example.jetfilms.CustomComposables.Text.TextButton
+import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
 import com.example.jetfilms.baseButtonHeight
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -71,9 +68,6 @@ fun SignUpScreen(
 
     var showPassword by remember{ mutableStateOf(false) }
 
-    val connection by connectivityState()
-
-    val isConnected = connection == ConnectionState.Available
 
     Box(
         modifier = Modifier
@@ -207,9 +201,7 @@ fun SignUpScreen(
 
             TextButton(
                 onClick = {
-                    if(isConnected){
-                        stepsNavController.navigate(SelectMediaFormatScreenRoute)
-                    }
+                    stepsNavController.navigate(SelectMediaFormatScreenRoute)
                 },
                 text = "Sign up",
                 corners = RoundedCornerShape(12.sdp),

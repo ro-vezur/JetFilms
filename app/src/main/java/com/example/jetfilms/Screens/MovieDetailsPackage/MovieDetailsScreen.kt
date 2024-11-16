@@ -1,7 +1,6 @@
-package com.example.jetfilms.Screens
+package com.example.jetfilms.Screens.MovieDetailsPackage
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.BorderStroke
@@ -18,6 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,7 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,61 +40,71 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.jetfilms.Additional_functions.fromMinutesToHours
-import com.example.jetfilms.CustomComposables.GradientIcon
-import com.example.jetfilms.CustomComposables.NeonButton
-import com.example.jetfilms.CustomComposables.NeonCard
-import com.example.jetfilms.CustomComposables.TextButton
-import com.example.jetfilms.CustomComposables.TurnBackButton
-import com.example.jetfilms.CustomComposables.animatedGradient
-import com.example.jetfilms.Data_Classes.DetailedMovieDataClass
+import com.example.jetfilms.Additional_functions.removeNumbersAfterDecimal
+import com.example.jetfilms.CustomComposables.Gradient.GradientIcon
+import com.example.jetfilms.CustomComposables.Cards.NeonCard
+import com.example.jetfilms.CustomComposables.Text.TextButton
+import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
+import com.example.jetfilms.CustomComposables.Gradient.animatedGradient
+import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieDisplay
+import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Data_Classes.ParticipantPackage.SimplifiedMovieParticipant
 import com.example.jetfilms.Date_formats.DateFormats
-import com.example.jetfilms.Modifier_extensions.drawNeonStroke
 import com.example.jetfilms.R
 import com.example.jetfilms.baseImageUrl
-import com.example.jetfilms.blueGradient
+import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
-import com.example.jetfilms.minutesInHour
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MovieDetailsScreen(
     navController: NavController,
-    movie: DetailedMovieDataClass?
+    movieDisplay: DetailedMovieDisplay,
+    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
+    selectParticipant: (participant:SimplifiedMovieParticipant) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
-    val scrollState = rememberScrollState()
+    val tabs = listOf(
+        "Trailers",
+        "More Like This",
+        "About"
+    )
 
-    var imageHeight by rememberSaveable{ mutableStateOf(290) }
+    val movieResponse = movieDisplay.response
+
+    val scrollState = rememberScrollState()
+    val tabPagerState = rememberPagerState(pageCount = {tabs.size})
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
+    var imageHeight by rememberSaveable{ mutableStateOf(290) }
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(currentBackStackEntry) {
-        Log.d("current back stack entry",currentBackStackEntry?.destination?.route.toString())
         imageHeight = if(currentBackStackEntry?.destination?.route == "movie_details/{movie}"){
             335
         } else{
@@ -101,12 +112,7 @@ fun MovieDetailsScreen(
         }
     }
 
-    val tabs = listOf("Trailers","More Like This","About")
-    var selectedTabIndex by remember{ mutableStateOf(0) }
 
-    val neonRadius = 7.sdp
-
-    movie?.let {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -124,7 +130,7 @@ fun MovieDetailsScreen(
                         .height(animateIntAsState(targetValue = imageHeight).value.sdp)
                 ) {
                     AsyncImage(
-                        model = "$baseImageUrl${decodeStringWithSpecialCharacter(movie.posterUrl.toString())}",
+                        model = "$baseImageUrl${decodeStringWithSpecialCharacter(movieResponse.posterUrl.toString())}",
                         contentDescription = "",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -164,13 +170,13 @@ fun MovieDetailsScreen(
                             )
 
                             Text(
-                                text = movie.rating.toString(),
+                                text = removeNumbersAfterDecimal(movieResponse.rating,2).toString(),
                                 fontSize = 21f.ssp
                             )
                         }
 
                         Text(
-                            text = decodeStringWithSpecialCharacter(movie.title),
+                            text = decodeStringWithSpecialCharacter(movieResponse.title),
                             style = typography.titleLarge,
                             fontSize = 26f.ssp,
                         )
@@ -181,19 +187,21 @@ fun MovieDetailsScreen(
                             modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
                         ) {
                             FilterCard(
-                                text = DateFormats().year(movie.releaseDate).toString(),
+                                text = DateFormats().year(movieResponse.releaseDate).toString(),
                                 lengthMultiplayer = 13
                             )
 
                             FilterCard(
-                                text = movie.genres.first().name,
+                                text = movieResponse.genres.first().name,
                                 lengthMultiplayer = 8
                             )
 
-                            FilterCard(
-                                text = movie.originCountries.first(),
-                                lengthMultiplayer = 21
-                            )
+                            if(movieResponse.originCountries.isNotEmpty()){
+                                FilterCard(
+                                    text = movieResponse.originCountries.first(),
+                                    lengthMultiplayer = 21
+                                )
+                            }
                         }
 
                         Row(
@@ -205,7 +213,7 @@ fun MovieDetailsScreen(
                                 onClick = {
 
                                 },
-                                gradient = blueGradient,
+                                gradient = blueHorizontalGradient,
                                 width = 138.sdp,
                                 height = 36.sdp,
                                 corners = RoundedCornerShape(18.sdp),
@@ -229,7 +237,7 @@ fun MovieDetailsScreen(
                                     GradientIcon(
                                         icon = Icons.Filled.Download,
                                         contentDescription = "download",
-                                        gradient = blueGradient,
+                                        gradient = blueHorizontalGradient,
                                         modifier = Modifier
                                             .size(20.sdp)
                                     )
@@ -258,7 +266,7 @@ fun MovieDetailsScreen(
                                     GradientIcon(
                                         icon = Icons.Filled.Bookmarks,
                                         contentDescription = "favorite",
-                                        gradient = blueGradient,
+                                        gradient = blueHorizontalGradient,
                                         modifier = Modifier
                                             .size(20.sdp)
                                     )
@@ -285,13 +293,13 @@ fun MovieDetailsScreen(
                         .padding(start = 14.sdp,end = 14.sdp,top = 16.sdp)
                 ) {
                     Text(
-                        text = fromMinutesToHours(movie.runtime),
+                        text = fromMinutesToHours(movieResponse.runtime),
                         fontSize = 15.ssp,
                         fontWeight = FontWeight.W500
                         )
 
                     Text(
-                        text = decodeStringWithSpecialCharacter(movie.overview),
+                        text = decodeStringWithSpecialCharacter(movieResponse.overview),
                         fontSize = 13.ssp,
                         color = Color.LightGray.copy(0.9f),
                         fontWeight = FontWeight.W400,
@@ -303,15 +311,14 @@ fun MovieDetailsScreen(
                 TabRow(
                     modifier = Modifier
                         .padding(top = 8.sdp, start = 6.sdp,end = 6.sdp),
-                    selectedTabIndex = selectedTabIndex, divider = {},
+                    selectedTabIndex = tabPagerState.currentPage, divider = {},
                     containerColor = Color.Transparent,
                     indicator = { tabPositions ->
-                        if (selectedTabIndex < tabPositions.size) {
+                        if (tabPagerState.currentPage < tabPositions.size) {
                             Box(
                                 contentAlignment = Alignment.BottomCenter,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                  //  .background(Color.DarkGray)
                             ){
                                 Box(
                                     modifier = Modifier
@@ -327,7 +334,7 @@ fun MovieDetailsScreen(
                                     cornersRadius = Int.MAX_VALUE.sdp,
                                     glowingRadius = 7.sdp,
                                     modifier = Modifier
-                                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                                        .tabIndicatorOffset(tabPositions[tabPagerState.currentPage])
                                         .height(2f.sdp)
                                 )
 
@@ -337,7 +344,7 @@ fun MovieDetailsScreen(
                     }
                 ) {
                     tabs.forEachIndexed { index, title ->
-                        val selected = selectedTabIndex == index
+                        val selected = tabPagerState.currentPage == index
 
                         var selectedColor1 by remember{ mutableStateOf(buttonsColor1) }
                         var selectedColor2 by remember{ mutableStateOf(buttonsColor2) }
@@ -368,11 +375,20 @@ fun MovieDetailsScreen(
                             selectedContentColor = buttonsColor1,
                             unselectedContentColor = primaryColor,
                             selected = selected,
-                            onClick = { selectedTabIndex = index },
+                            onClick = { scope.launch { tabPagerState.animateScrollToPage(index) } },
                             modifier = Modifier
                         )
                     }
                 }
+
+                TabContent(
+                    modifier = Modifier
+                        .padding(top = 18.sdp, bottom = 0.sdp),
+                    pagerState = tabPagerState,
+                    movieDisplay = movieDisplay,
+                    selectMovie = selectMovie,
+                    navigateToSelectedParticipant = selectParticipant
+                )
             }
 
             TurnBackButton(
@@ -385,7 +401,6 @@ fun MovieDetailsScreen(
                     .padding(start = 8.sdp, top = 34.sdp)
             )
         }
-    }
 }
 
 @Composable
@@ -401,16 +416,53 @@ private fun FilterCard(
             .height(25.sdp)
             .clip(RoundedCornerShape(14.sdp))
             .background(colors.primary)
-            .border(BorderStroke(1.5f.sdp, blueGradient), RoundedCornerShape(14.sdp))
+            .border(BorderStroke(1.5f.sdp, blueHorizontalGradient), RoundedCornerShape(14.sdp))
     ){
         Text(
             text = text,
             fontSize = 11.ssp,
             style = TextStyle(
-                brush = blueGradient
+                brush = blueHorizontalGradient
             ),
             modifier = Modifier
                 .align(Alignment.Center)
         )
+    }
+}
+
+@Composable
+private fun TabContent(
+    modifier: Modifier = Modifier,
+    pagerState: PagerState,
+    movieDisplay: DetailedMovieDisplay,
+    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
+    navigateToSelectedParticipant: (participant: SimplifiedMovieParticipant) -> Unit
+) {
+    val movieResponse = movieDisplay.response
+
+    HorizontalPager(
+        state = pagerState,
+        modifier = modifier,
+        userScrollEnabled = false
+    ) { index ->
+        when (index) {
+            0 -> {
+                MovieTrailersScreen(movie = movieResponse)
+            }
+
+            1 -> {
+                MovieMoreLikeThisScreen(
+                    similarMovies = movieDisplay.similarMovies,
+                    selectMovie = selectMovie
+                )
+            }
+
+            2 -> {
+               MovieAboutScreen(
+                   movieDisplay = movieDisplay,
+                   navigateToSelectedParticipant = navigateToSelectedParticipant
+               )
+            }
+        }
     }
 }
