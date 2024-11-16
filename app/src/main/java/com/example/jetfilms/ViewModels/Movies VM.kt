@@ -2,9 +2,11 @@ package com.example.jetfilms.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.API.ApiInterface
-import com.example.jetfilms.Data_Classes.DetailedMovieDataClass
-import com.example.jetfilms.Data_Classes.SimplifiedMovieDataClass
+import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieDataClassResponse
+import com.example.jetfilms.Data_Classes.ParticipantPackage.MovieCreditsDataClass
+import com.example.jetfilms.Data_Classes.MoviePackage.MoviesResponse
+import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Data_Classes.MoviePackage.imagesFromTheMovieResponse
 import com.example.jetfilms.Repositories.MoviesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,39 +20,60 @@ import javax.inject.Inject
 class MoviesViewModel @Inject constructor(
     private val moviesRepository: MoviesRepository
 ): ViewModel() {
-    private val _popularMovies = MutableStateFlow<List<SimplifiedMovieDataClass>>(listOf())
+    private val _popularMovies: MutableStateFlow<List<SimplifiedMovieDataClass>> = MutableStateFlow(emptyList())
     val popularMovies = _popularMovies.asStateFlow()
 
     private val _topRatedMovies = MutableStateFlow<List<SimplifiedMovieDataClass>>(listOf())
     val topRatedMovies = _topRatedMovies.asStateFlow()
 
-    private val _moreMoviesView = MutableStateFlow<List<SimplifiedMovieDataClass?>>(listOf())
+    private val _similarMovies = MutableStateFlow<MoviesResponse?>(null)
+    val similarMovies = _similarMovies.asStateFlow()
+
+    private val _moreMoviesView:MutableStateFlow<List<SimplifiedMovieDataClass>> = MutableStateFlow(emptyList())
     val moreMoviesView = _moreMoviesView.asStateFlow()
 
-    private val _selectedMovie = MutableStateFlow<DetailedMovieDataClass?>(null)
+    private val _selectedMovie = MutableStateFlow<DetailedMovieDataClassResponse?>(null)
     val selectedMovie = _selectedMovie.asStateFlow()
 
+    private val _selectedMovieCast = MutableStateFlow<MovieCreditsDataClass?>(null)
+    val selectedMovieCast = _selectedMovieCast.asStateFlow()
+
+    private val _selectedMovieImages = MutableStateFlow(imagesFromTheMovieResponse())
+    val selectedMovieImages = _selectedMovieImages.asStateFlow()
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO){
-                moviesRepository.getTopRatedMovies().body()?.let { _topRatedMovies.emit(it.results) }
-                getPopularMovies()
+                    _topRatedMovies.emit(moviesRepository.getTopRatedMovies().results)
+                    if (_topRatedMovies.value.isNotEmpty()) {
+                        setSelectedMovie(_topRatedMovies.value[0].id)
+                    }
+                    getPopularMovies()
             }
         }
     }
 
-    fun selectMovie(movieId:Int){
+    fun setSelectedMovie(movieId:Int){
         viewModelScope.launch {
             withContext(Dispatchers.IO){
-                moviesRepository.getMovie(movieId).body()?.let { _selectedMovie.emit(it) }
+                _selectedMovie.emit(moviesRepository.getMovie(movieId).body())
             }
         }
     }
 
-    fun getPopularMovies(page: Int = 1){
+    fun setSelectedMovieAdditions(movieId: Int){
         viewModelScope.launch {
             withContext(Dispatchers.IO){
-                moviesRepository.getPopularMovies(page).body()?.let { _popularMovies.emit(it.results) }
+                _selectedMovieCast.emit(moviesRepository.getMovieCredits(movieId))
+                _selectedMovieImages.emit(moviesRepository.getMovieImages(movieId))
+                _similarMovies.emit(moviesRepository.getSimilarMovies(movieId))
+            }
+        }
+    }
+
+    fun getPopularMovies(){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _popularMovies.emit(moviesRepository.getPopularMovies().results)
             }
         }
     }
@@ -62,4 +85,15 @@ class MoviesViewModel @Inject constructor(
             }
         }
     }
+
+    fun setImagesFromMovie(movieId: Int){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _selectedMovieImages.emit(moviesRepository.getMovieImages(movieId))
+            }
+        }
+    }
+
+    suspend fun getMovie(movieId: Int): DetailedMovieDataClassResponse? = moviesRepository.getMovie(movieId).body()
+    suspend fun getParticipant(participantId: Int) = moviesRepository.getParticipant(participantId)
 }
