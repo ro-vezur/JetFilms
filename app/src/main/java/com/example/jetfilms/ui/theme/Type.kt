@@ -24,7 +24,6 @@ fun typography():Typography {
         ),
 
         bodyMedium = TextStyle(
-            color = Color.White,
             fontSize = (19.1f).ssp,
             fontWeight = FontWeight.SemiBold
         ),
@@ -35,14 +34,12 @@ fun typography():Typography {
         ),
 
         titleLarge = TextStyle(
-            color = Color.White,
             fontSize = (22).ssp,
             fontWeight = FontWeight.W500,
             lineHeight = 32.ssp
         ),
 
         headlineLarge = TextStyle(
-            color = Color.White,
             fontSize = (20).ssp,
             fontWeight = FontWeight.Normal,
         )
