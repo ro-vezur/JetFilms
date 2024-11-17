@@ -121,4 +121,10 @@ dependencies {
 
     //Gson converter
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    //paging
+    val paging_version = "3.1.1"
+
+    implementation("androidx.paging:paging-runtime:$paging_version")
+    implementation("androidx.paging:paging-compose:1.0.0-alpha17")
 }
