@@ -59,10 +59,10 @@ import com.example.jetfilms.Additional_functions.fromMinutesToHours
 import com.example.jetfilms.Additional_functions.removeNumbersAfterDecimal
 import com.example.jetfilms.CustomComposables.Gradient.GradientIcon
 import com.example.jetfilms.CustomComposables.Cards.NeonCard
-import com.example.jetfilms.CustomComposables.Text.TextButton
+import com.example.jetfilms.CustomComposables.Buttons.TextButton
 import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
 import com.example.jetfilms.CustomComposables.Gradient.animatedGradient
-import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieDisplay
+import com.example.jetfilms.Data_Classes.MoviePackage.MovieDisplay
 import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.Data_Classes.ParticipantPackage.SimplifiedMovieParticipant
 import com.example.jetfilms.Date_formats.DateFormats
@@ -81,7 +81,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MovieDetailsScreen(
     navController: NavController,
-    movieDisplay: DetailedMovieDisplay,
+    movieDisplay: MovieDisplay,
     selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
     selectParticipant: (participant:SimplifiedMovieParticipant) -> Unit
 ) {
@@ -434,7 +434,7 @@ private fun FilterCard(
 private fun TabContent(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    movieDisplay: DetailedMovieDisplay,
+    movieDisplay: MovieDisplay,
     selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
     navigateToSelectedParticipant: (participant: SimplifiedMovieParticipant) -> Unit
 ) {

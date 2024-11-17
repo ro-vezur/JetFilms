@@ -45,8 +45,8 @@ import com.example.jetfilms.Additional_functions.navigate.navigateToSelectedMovi
 import com.example.jetfilms.Additional_functions.removeNumbersAfterDecimal
 import com.example.jetfilms.CustomComposables.Gradient.GradientIcon
 import com.example.jetfilms.CustomComposables.Cards.MovieCard
-import com.example.jetfilms.CustomComposables.Text.TextButton
-import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieDataClassResponse
+import com.example.jetfilms.CustomComposables.Buttons.TextButton
+import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.R
 import com.example.jetfilms.Screens.MoreMoviesScreenRoute
@@ -253,7 +253,7 @@ fun HomeScreen(
 private fun MoviePager(
     selectMovie:(movie: SimplifiedMovieDataClass) -> Unit,
     moviesList: List<SimplifiedMovieDataClass>,
-    movieToSelect: DetailedMovieDataClassResponse?
+    movieToSelect: DetailedMovieResponse?
 ) {
 
     val lazyListState = rememberForeverLazyListState("movies pager")

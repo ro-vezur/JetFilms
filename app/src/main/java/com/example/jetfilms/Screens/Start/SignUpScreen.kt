@@ -1,7 +1,7 @@
 package com.example.jetfilms.Screens.Start
 
-import Highlight
-import HighlightedText
+import com.example.jetfilms.CustomComposables.Text.Highlight
+import com.example.jetfilms.CustomComposables.Text.HighlightedText
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -43,7 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.jetfilms.CustomComposables.Text.BaseTextFieldColors
 import com.example.jetfilms.CustomComposables.Text.CustomTextField
-import com.example.jetfilms.CustomComposables.Text.TextButton
+import com.example.jetfilms.CustomComposables.Buttons.TextButton
 import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
 import com.example.jetfilms.baseButtonHeight
 import com.example.jetfilms.extensions.sdp

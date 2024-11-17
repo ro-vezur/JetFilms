@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,19 +36,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
 import com.example.jetfilms.CustomComposables.Cards.NeonCard
 import com.example.jetfilms.CustomComposables.Gradient.animatedGradient
-import com.example.jetfilms.CustomComposables.Text.ExpandableText
-import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieDisplay
 import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.Data_Classes.ParticipantPackage.DetailedParticipantDisplay
 import com.example.jetfilms.baseImageUrl
-import com.example.jetfilms.blueVerticalGradient
 import com.example.jetfilms.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp

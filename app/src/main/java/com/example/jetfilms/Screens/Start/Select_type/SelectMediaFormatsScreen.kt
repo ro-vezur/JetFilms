@@ -38,7 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.jetfilms.CustomComposables.Text.TextButton
+import com.example.jetfilms.CustomComposables.Buttons.TextButton
 import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
 import com.example.jetfilms.Screens.Start.SelectMediaGenresScreenRoute
 import com.example.jetfilms.Screens.Start.SignUpScreenRoute

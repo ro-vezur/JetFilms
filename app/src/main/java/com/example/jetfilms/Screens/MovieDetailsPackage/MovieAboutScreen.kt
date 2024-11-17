@@ -20,10 +20,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
-import com.example.jetfilms.Additional_functions.navigate.navigateToSelectedParticipant
 import com.example.jetfilms.CustomComposables.Cards.MovieParticipantCard
-import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieDisplay
-import com.example.jetfilms.Data_Classes.ParticipantPackage.DetailedMovieParticipantResponse
+import com.example.jetfilms.Data_Classes.MoviePackage.MovieDisplay
 import com.example.jetfilms.Data_Classes.ParticipantPackage.SimplifiedMovieParticipant
 import com.example.jetfilms.Date_formats.DateFormats
 import com.example.jetfilms.baseImageUrl
@@ -32,7 +30,7 @@ import java.util.Locale
 
 @Composable
 fun MovieAboutScreen(
-    movieDisplay: DetailedMovieDisplay,
+    movieDisplay: MovieDisplay,
     navigateToSelectedParticipant: (participant: SimplifiedMovieParticipant) -> Unit
 ) {
     val typography = MaterialTheme.typography
