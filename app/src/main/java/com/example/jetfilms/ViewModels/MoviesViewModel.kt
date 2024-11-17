@@ -7,6 +7,7 @@ import com.example.jetfilms.Data_Classes.ParticipantPackage.MovieCreditsResponse
 import com.example.jetfilms.Data_Classes.MoviePackage.MoviesResponse
 import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.Data_Classes.MoviePackage.ImagesFromTheMovieResponse
+import com.example.jetfilms.Data_Classes.ParticipantPackage.ParticipantFilmography
 import com.example.jetfilms.Repositories.MoviesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -40,6 +41,9 @@ class MoviesViewModel @Inject constructor(
 
     private val _selectedMovieImages = MutableStateFlow(ImagesFromTheMovieResponse())
     val selectedMovieImages = _selectedMovieImages.asStateFlow()
+
+    private val _selectedParticipantFilmography = MutableStateFlow<ParticipantFilmography?>(null)
+    val selectedParticipantFilmography = _selectedParticipantFilmography.asStateFlow()
     init {
         viewModelScope.launch {
             withContext(Dispatchers.IO){
@@ -86,13 +90,15 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
-    fun setImagesFromMovie(movieId: Int){
+    fun setParticipantFilmography(participantId: Int){
         viewModelScope.launch {
             withContext(Dispatchers.IO){
-                _selectedMovieImages.emit(moviesRepository.getMovieImages(movieId))
+                _selectedParticipantFilmography.emit(moviesRepository.getParticipantFilmography(participantId))
             }
         }
     }
+
+
 
     suspend fun getMovie(movieId: Int): DetailedMovieResponse? = moviesRepository.getMovie(movieId).body()
     suspend fun getParticipant(participantId: Int) = moviesRepository.getParticipant(participantId)
