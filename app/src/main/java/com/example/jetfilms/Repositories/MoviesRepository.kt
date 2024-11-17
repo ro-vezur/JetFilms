@@ -31,4 +31,6 @@ class MoviesRepository @Inject constructor(private val apiService: ApiInterface)
     suspend fun getSimilarMovies(movieId: Int) = apiService.similarMovies(movieId)
 
     suspend fun getParticipant(participantId: Int) = apiService.participant(participantId)
+
+    suspend fun getParticipantFilmography(participantId: Int) = apiService.participantFilmography(participantId)
 }
