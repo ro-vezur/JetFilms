@@ -149,7 +149,6 @@ fun MoreMoviesScreen(
                                 .clickable {
                                     scope.launch {
                                         moviesViewModel.getMovie(movie.id)?.let {
-                                            moviesViewModel.setSelectedMovieAdditions(movie.id)
                                             navigateToSelectedMovie(navController, it)
                                         }
                                     }

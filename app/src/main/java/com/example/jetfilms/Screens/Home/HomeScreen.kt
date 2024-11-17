@@ -152,7 +152,7 @@ fun HomeScreen(
                         TextButton(
                             onClick = {
                                 selectedMovie.value?.let {
-                                    moviesViewModel.setSelectedMovieAdditions(it.id)
+                                //    moviesViewModel.setSelectedMovieAdditions(it.id)
                                     navigateToSelectedMovie(navController,it)
                                 }
                             },
@@ -233,7 +233,7 @@ fun HomeScreen(
                 selectMovie = { movie ->
                               scope.launch {
                                   moviesViewModel.getMovie(movie.id)?.let {
-                                      moviesViewModel.setSelectedMovieAdditions(movie.id)
+                                    //  moviesViewModel.setSelectedMovieAdditions(movie.id)
                                       navigateToSelectedMovie(navController, it)
                                   }
                               }

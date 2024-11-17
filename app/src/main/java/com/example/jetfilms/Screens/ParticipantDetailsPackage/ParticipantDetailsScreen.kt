@@ -75,16 +75,7 @@ fun ParticipantDetailsScreen(
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
-    var imageHeight by rememberSaveable{ mutableStateOf(290) }
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(currentBackStackEntry) {
-        imageHeight = if(currentBackStackEntry?.destination?.route == "movie_details/{movie}"){
-            335
-        } else{
-            290
-        }
-    }
 
 
     Box(
@@ -96,12 +87,12 @@ fun ParticipantDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(colors.primary)
-                .verticalScroll(scrollState)
+               // .verticalScroll(scrollState)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(animateIntAsState(targetValue = 342).value.sdp)
+                    .height(315.sdp)
             ) {
                 AsyncImage(
                     model = "$baseImageUrl${decodeStringWithSpecialCharacter(participantResponse.image.toString())}",
@@ -249,7 +240,7 @@ private fun TabContent(
     ) { index ->
         when (index) {
             0 -> {
-
+                FilmographyScreen(filmography = participantDisplay.filmography)
             }
 
             1 -> {

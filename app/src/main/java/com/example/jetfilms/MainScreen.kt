@@ -74,6 +74,8 @@ fun MainScreen(
         val movieImages = moviesViewModel.selectedMovieImages.collectAsStateWithLifecycle()
         val similarMovies = moviesViewModel.similarMovies.collectAsStateWithLifecycle()
 
+        val participantFilmography = moviesViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
+
         Scaffold(
             containerColor = Color.Black,
             bottomBar = {
@@ -160,33 +162,37 @@ fun MainScreen(
                     showBottomBar = false
 
                     val movieResponse = it.arguments?.getParcelable<DetailedMovieResponse>("movie")
-                    if(movieResponse != null && cast.value != null && similarMovies.value != null) {
+                    movieResponse?.let {
                         LaunchedEffect(null) {
                             moviesViewModel.setSelectedMovieAdditions(movieResponse.id)
                         }
 
-                        MovieDetailsScreen(
-                            navController = screensNavController,
-                            movieDisplay = MovieDisplay(
-                                response = movieResponse,
-                                movieCast = cast.value!!,
-                                movieImages = movieImages.value,
-                                similarMovies = similarMovies.value!!
-                            ),
-                            selectMovie = {movie ->
-                                scope.launch {
-                                    moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
-                                        navigateToSelectedMovie(screensNavController, detailedMovie)
+                        if(cast.value != null && similarMovies.value != null) {
+
+                            MovieDetailsScreen(
+                                navController = screensNavController,
+                                movieDisplay = MovieDisplay(
+                                    response = movieResponse,
+                                    movieCast = cast.value!!,
+                                    movieImages = movieImages.value,
+                                    similarMovies = similarMovies.value!!
+                                ),
+                                selectMovie = {movie ->
+                                    scope.launch {
+                                        moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
+                                            navigateToSelectedMovie(screensNavController, detailedMovie)
+                                        }
+                                    }
+                                },
+                                selectParticipant = { participant ->
+                                    scope.launch {
+                                        navigateToSelectedParticipant(navController = screensNavController,moviesViewModel.getParticipant(participant.id))
                                     }
                                 }
-                            },
-                            selectParticipant = { participant ->
-                                scope.launch {
-                                    navigateToSelectedParticipant(navController = screensNavController,moviesViewModel.getParticipant(participant.id))
-                                }
-                            }
-                        )
+                            )
+                        }
                     }
+
                 }
 
                 composable(
@@ -197,24 +203,27 @@ fun MainScreen(
                     showBottomBar = false
 
                     val participantResponse = it.arguments?.getParcelable<DetailedParticipantResponse>("participant")
-                    if(participantResponse != null && cast.value != null && similarMovies.value != null) {
+                    participantResponse?.let {
                         LaunchedEffect(null) {
-                            //moviesViewModel.setSelectedMovieAdditions(participantResponse.id)
+                            moviesViewModel.setParticipantFilmography(participantResponse.id)
                         }
+                        if(participantFilmography.value != null) {
 
-                        ParticipantDetailsScreen(
-                            navController = screensNavController,
-                            participantDisplay = DetailedParticipantDisplay(
-                                participantResponse = participantResponse
-                            ),
-                            selectMovie = {movie ->
-                                scope.launch {
-                                    moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
-                                  //      NavigateToSelectedMovie(screensNavController, detailedMovie)
+                            ParticipantDetailsScreen(
+                                navController = screensNavController,
+                                participantDisplay = DetailedParticipantDisplay(
+                                    participantResponse = participantResponse,
+                                    filmography = participantFilmography.value!!
+                                ),
+                                selectMovie = {movie ->
+                                    scope.launch {
+                                        moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
+                                            //      NavigateToSelectedMovie(screensNavController, detailedMovie)
+                                        }
                                     }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
