@@ -6,6 +6,7 @@ import com.example.jetfilms.Data_Classes.ParticipantPackage.MovieCreditsResponse
 import com.example.jetfilms.Data_Classes.MoviePackage.ImagesFromTheMovieResponse
 import com.example.jetfilms.Data_Classes.MoviePackage.MoviesResponse
 import com.example.jetfilms.Data_Classes.ParticipantPackage.DetailedParticipantResponse
+import com.example.jetfilms.Data_Classes.ParticipantPackage.ParticipantFilmography
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -58,5 +59,5 @@ interface ApiInterface {
     suspend fun participantFilmography(
         @Path("person_id") personId: Int,
         @Query("api_key") apiKey: String = APIKEY
-    )
+    ): ParticipantFilmography
 }
