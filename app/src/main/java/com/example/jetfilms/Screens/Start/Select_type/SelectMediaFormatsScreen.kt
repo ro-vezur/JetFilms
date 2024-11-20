@@ -38,11 +38,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.jetfilms.CustomComposables.Buttons.TextButton
-import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
+import com.example.jetfilms.Components.Buttons.TextButton
+import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.Screens.Start.SelectMediaGenresScreenRoute
 import com.example.jetfilms.Screens.Start.SignUpScreenRoute
-import com.example.jetfilms.baseButtonHeight
+import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
@@ -65,7 +65,7 @@ fun SelectMediaFormatScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height((baseButtonHeight + 28).sdp)
+                    .height((BASE_BUTTON_HEIGHT + 28).sdp)
             ){
                 TextButton(
                     onClick = {

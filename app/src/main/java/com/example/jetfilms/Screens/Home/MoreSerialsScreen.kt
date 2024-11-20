@@ -33,9 +33,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
-import com.example.jetfilms.Components.Cards.MovieCard
 import com.example.jetfilms.Components.Buttons.TurnBackButton
+import com.example.jetfilms.Components.Cards.SerialCard
+import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.extensions.sdp
@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun MoreMoviesScreen(
+fun MoreSerialsScreen(
     navController: NavController,
     category: String,
     moviesViewModel: MoviesViewModel
@@ -64,7 +64,7 @@ fun MoreMoviesScreen(
 
     val scope = rememberCoroutineScope()
 
-    val moreMoviesView = moviesViewModel.moreMoviesView.collectAsStateWithLifecycle()
+    val moreSerialsView = moviesViewModel.moreSerialsView.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = colors.primary,
@@ -121,44 +121,44 @@ fun MoreMoviesScreen(
                     blurRadius = 28.sdp,
                 )
         ){
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .padding(
-                        top = (
-                                if (showBlur)
-                                    innerPadding.calculateTopPadding() - scrollOffset.sdp / 10
-                                else (0).sdp
-                                )
-                    )
-                    .fillMaxSize(),
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(9.sdp),
-                verticalArrangement = Arrangement.spacedBy(9.sdp),
-                contentPadding = PaddingValues(8.sdp),
-                state = gridState,
+            moreSerialsView.value?.let{
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .padding(
+                            top = (
+                                    if (showBlur)
+                                        innerPadding.calculateTopPadding() - scrollOffset.sdp / 10
+                                    else (0).sdp
+                                    )
+                        )
+                        .fillMaxSize(),
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(9.sdp),
+                    verticalArrangement = Arrangement.spacedBy(9.sdp),
+                    contentPadding = PaddingValues(8.sdp),
+                    state = gridState,
 
-            ) {
+                    ) {
 
-                items(moreMoviesView.value){ movie ->
-                    movie.let{
-                        MovieCard(
-                            movie = movie,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.sdp))
-                                .height(205.sdp)
-                                .clickable {
-                                    scope.launch {
-                                        moviesViewModel.getMovie(movie.id)?.let {
-                                            navigateToSelectedMovie(navController, it)
+                    items(it.results) { serial ->
+                        serial.let {
+                            SerialCard(
+                                serial = serial,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.sdp))
+                                    .height(205.sdp)
+                                    .clickable {
+                                        scope.launch {
+                                            navigateToSelectedSerial(navController,moviesViewModel.getSerial(serial.id))
                                         }
                                     }
-                                }
-                        )
+                            )
+                        }
                     }
-                }
-                
-                item { 
-                    Spacer(modifier = Modifier.size((BOTTOM_NAVIGATION_BAR_HEIGHT-6).sdp))
+
+                    item {
+                        Spacer(modifier = Modifier.size((BOTTOM_NAVIGATION_BAR_HEIGHT - 6).sdp))
+                    }
                 }
             }
         }

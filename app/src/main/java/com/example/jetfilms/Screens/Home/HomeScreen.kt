@@ -28,6 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,23 +38,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.jetfilms.Additional_functions.navigate.navigateToSelectedMovie
-import com.example.jetfilms.Additional_functions.removeNumbersAfterDecimal
-import com.example.jetfilms.CustomComposables.Gradient.GradientIcon
-import com.example.jetfilms.CustomComposables.Cards.MovieCard
-import com.example.jetfilms.CustomComposables.Buttons.TextButton
-import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieResponse
-import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
+import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
+import com.example.jetfilms.Components.Gradient.GradientIcon
+import com.example.jetfilms.Components.Cards.MovieCard
+import com.example.jetfilms.Components.Buttons.TextButton
+import com.example.jetfilms.Components.Cards.SerialCard
+import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
+import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.R
 import com.example.jetfilms.Screens.MoreMoviesScreenRoute
+import com.example.jetfilms.Screens.MoreSerialsScreenRoute
 import com.example.jetfilms.ViewModels.MoviesViewModel
-import com.example.jetfilms.baseImageUrl
+import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
@@ -80,6 +89,8 @@ fun HomeScreen(
     val selectedMovie = moviesViewModel.selectedMovie.collectAsStateWithLifecycle()
     val selectedMovieCast = moviesViewModel.selectedMovieCast.collectAsStateWithLifecycle()
 
+    val popularSerials = moviesViewModel.popularSerials.collectAsStateWithLifecycle()
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -93,7 +104,7 @@ fun HomeScreen(
                     .height(290.sdp)
             ) {
                 AsyncImage(
-                    model = "$baseImageUrl${selectedMovie.value?.posterUrl}",
+                    model = "$BASE_IMAGE_API_URL${selectedMovie.value?.posterUrl}",
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -152,7 +163,6 @@ fun HomeScreen(
                         TextButton(
                             onClick = {
                                 selectedMovie.value?.let {
-                                //    moviesViewModel.setSelectedMovieAdditions(it.id)
                                     navigateToSelectedMovie(navController,it)
                                 }
                             },
@@ -220,9 +230,8 @@ fun HomeScreen(
                             .height(5.sdp)
                             .clip(CircleShape)
                             .background(
-                                if (movie.id == selectedMovie.value?.id) buttonsColor1 else Color.LightGray.copy(
-                                    0.68f
-                                )
+                                if (movie.id == selectedMovie.value?.id) buttonsColor1
+                                else Color.LightGray.copy(0.68f)
                             )
                     )
                 }
@@ -238,10 +247,30 @@ fun HomeScreen(
                                   }
                               }
                 },
-                moviesList = popularMovies.value.take(3),
+                moviesList = popularMovies.value.take(6),
                 navController = navController,
                 onSeeAllClick = {
                     moviesViewModel.setMoreMoviesView(popularMovies.value)
+                },
+                topPadding = 20.sdp,
+            )
+
+            SerialsCategoryList(
+                category = "Popular serials",
+                selectSerial = { serial ->
+                    scope.launch {
+                        moviesViewModel.getSerial(serial.id)?.let {
+                            navigateToSelectedSerial(navController,it)
+                        }
+                    }
+                },
+                serialsResponse = popularSerials.value,
+                navController = navController,
+                onSeeAllClick = {
+                    popularSerials.value?.let {
+                        moviesViewModel.setMoreSerialsView(it)
+                    }
+                 //   moviesViewModel.setMoreMoviesView(popularMovies.value)
                 },
                 topPadding = 20.sdp,
                 bottomPadding = 62.sdp
@@ -256,49 +285,66 @@ private fun MoviePager(
     movieToSelect: DetailedMovieResponse?
 ) {
 
-    val lazyListState = rememberForeverLazyListState("movies pager")
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberForeverLazyListState("movies pager")
+    val firstVisibleItemIndex by remember { derivedStateOf { lazyListState.firstVisibleItemIndex } }
+
+    val screenWidth = LocalConfiguration.current.screenWidthDp.sdp
+    val screenHeight = LocalConfiguration.current.screenHeightDp.sdp
+    val isVerticalOrientation = screenHeight > screenWidth
+
+    val horizontalPadding = 8.sdp
+    val lazyRowWidth = 474.sdp
+    val itemsSpacing = 7.sdp
+    val itemWidth = (lazyRowWidth + horizontalPadding - itemsSpacing * moviesList.size) / moviesList.size
 
     LazyRow(
         state = lazyListState,
         userScrollEnabled = false,
-        horizontalArrangement = Arrangement.spacedBy(7.sdp),
+        horizontalArrangement = Arrangement.spacedBy(itemsSpacing),
         modifier = Modifier
-            .padding(start = 10.sdp,top = 20.sdp)
+            .padding(
+                top = 20.sdp,
+                start = if (isVerticalOrientation) horizontalPadding else 0.sdp,
+            )
+            .width(if (isVerticalOrientation) screenWidth else lazyRowWidth)
     ) {
 
         items(Int.MAX_VALUE){ index ->
             if(moviesList.isNotEmpty()){
-                val movie = moviesList[index % moviesList.size]
-                Box(
-                    modifier = Modifier
-                        .width(72.sdp)
-                        .height(46.sdp)
-                        .clip(RoundedCornerShape(7.sdp))
-                ) {
 
-                    AsyncImage(
-                        model = "$baseImageUrl${movie.posterUrl}",
-                        contentDescription = "movie poster",
-                        contentScale = ContentScale.Crop,
+                if(firstVisibleItemIndex + 5 >= index) {
+                    val movie = moviesList[index % moviesList.size]
+                    Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .clickable {
-                                selectMovie(moviesList[index % moviesList.size])
-                                scope.launch {
-                                    lazyListState.animateScrollToItem(index)
-                                }
-                            }
-                    )
+                            .width(itemWidth)
+                            .height(46.sdp)
+                            .clip(RoundedCornerShape(7.sdp))
+                    ) {
 
-                    if (movieToSelect?.id != moviesList[index % moviesList.size].id) {
-                        Box(
+                        AsyncImage(
+                            model = "$BASE_IMAGE_API_URL${movie.posterUrl}",
+                            contentDescription = "movie poster",
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(
-                                    Color.Black.copy(0.55f)
-                                )
+                                .clickable {
+                                    selectMovie(moviesList[index % moviesList.size])
+                                    scope.launch {
+                                        lazyListState.animateScrollToItem(index)
+                                    }
+                                }
                         )
+
+                        if (movieToSelect?.id != moviesList[index % moviesList.size].id) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        Color.Black.copy(0.55f)
+                                    )
+                            )
+                        }
                     }
                 }
             }
@@ -380,6 +426,87 @@ private fun MoviesCategoryList(
                         movie = movie
                     )
 
+            }
+        }
+    }
+}
+
+@Composable
+private fun SerialsCategoryList(
+    category: String,
+    selectSerial: (movie: SimplifiedSerialObject) -> Unit,
+    serialsResponse: SimplifiedSerialsResponse?,
+    navController: NavController,
+    onSeeAllClick: () -> Unit,
+    topPadding: Dp = 0.sdp,
+    bottomPadding: Dp = 0.sdp
+) {
+    val typography = MaterialTheme.typography
+    val scrollState = rememberScrollState()
+
+    serialsResponse?.let{
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(top = topPadding)
+                .fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                modifier = Modifier
+                    .padding(start = 10.sdp, end = 12.sdp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = category,
+                    style = typography.titleLarge,
+                    fontSize = 25f.ssp,
+                    modifier = Modifier
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Box(
+                    modifier = Modifier
+                        .width(58.sdp)
+                        .height(22.sdp)
+                        .clip(RoundedCornerShape(8.sdp))
+                        .clickable {
+                            onSeeAllClick()
+                            navController.navigate(MoreSerialsScreenRoute(category))
+                        }
+                ) {
+                    Text(
+                        text = "See All",
+                        style = typography.bodyMedium.copy(
+                            brush = blueHorizontalGradient,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        fontSize = 20.5f.ssp,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+
+                    )
+                }
+            }
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(9.sdp),
+                modifier = Modifier
+                    .padding(start = 15.sdp, top = 14.sdp, bottom = bottomPadding)
+            ) {
+                items(items = serialsResponse.results.take(6)) { serial ->
+
+                    SerialCard(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.sdp))
+                            .width(126.sdp)
+                            .height(200.sdp)
+                            .clickable { selectSerial(serial) },
+                        serial = serial
+                    )
+
+                }
             }
         }
     }

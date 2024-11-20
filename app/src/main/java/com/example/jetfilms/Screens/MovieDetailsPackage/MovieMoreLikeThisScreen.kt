@@ -11,9 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import com.example.jetfilms.CustomComposables.Cards.MovieCard
-import com.example.jetfilms.Data_Classes.MoviePackage.MoviesResponse
-import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Components.Cards.MovieCard
+import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
+import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.extensions.sdp
 
 @Composable

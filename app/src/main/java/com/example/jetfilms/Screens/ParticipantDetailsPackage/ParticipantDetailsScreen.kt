@@ -2,7 +2,6 @@ package com.example.jetfilms.Screens.ParticipantDetailsPackage
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,12 +21,10 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,13 +36,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
-import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
-import com.example.jetfilms.CustomComposables.Cards.NeonCard
-import com.example.jetfilms.CustomComposables.Gradient.animatedGradient
-import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.Data_Classes.ParticipantPackage.DetailedParticipantDisplay
-import com.example.jetfilms.baseImageUrl
-import com.example.jetfilms.encodes.decodeStringWithSpecialCharacter
+import com.example.jetfilms.Components.Buttons.TurnBackButton
+import com.example.jetfilms.Components.Cards.NeonCard
+import com.example.jetfilms.Components.Gradient.animatedGradient
+import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantDisplay
+import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -77,7 +74,6 @@ fun ParticipantDetailsScreen(
 
     val scope = rememberCoroutineScope()
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -87,7 +83,7 @@ fun ParticipantDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(colors.primary)
-               // .verticalScroll(scrollState)
+                .verticalScroll(scrollState)
         ) {
             Box(
                 modifier = Modifier
@@ -95,7 +91,7 @@ fun ParticipantDetailsScreen(
                     .height(315.sdp)
             ) {
                 AsyncImage(
-                    model = "$baseImageUrl${decodeStringWithSpecialCharacter(participantResponse.image.toString())}",
+                    model = "$BASE_IMAGE_API_URL${decodeStringWithSpecialCharacter(participantResponse.image.toString())}",
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -205,7 +201,9 @@ fun ParticipantDetailsScreen(
 
             TabContent(
                 modifier = Modifier
-                    .padding(top = 18.sdp, bottom = 0.sdp),
+                    .fillMaxWidth()
+                    .weight(1f)
+                ,
                 pagerState = tabPagerState,
                 participantDisplay = participantDisplay,
                 selectMovie = selectMovie
@@ -240,7 +238,10 @@ private fun TabContent(
     ) { index ->
         when (index) {
             0 -> {
-                FilmographyScreen(filmography = participantDisplay.filmography)
+                FilmographyScreen(
+                    participantDisplay = participantDisplay,
+                    selectMovie = selectMovie
+                )
             }
 
             1 -> {

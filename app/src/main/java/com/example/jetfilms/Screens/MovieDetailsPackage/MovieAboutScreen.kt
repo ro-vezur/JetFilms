@@ -20,11 +20,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
-import com.example.jetfilms.CustomComposables.Cards.MovieParticipantCard
-import com.example.jetfilms.Data_Classes.MoviePackage.MovieDisplay
-import com.example.jetfilms.Data_Classes.ParticipantPackage.SimplifiedMovieParticipant
-import com.example.jetfilms.Date_formats.DateFormats
-import com.example.jetfilms.baseImageUrl
+import com.example.jetfilms.Components.Cards.MovieParticipantCard
+import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
+import com.example.jetfilms.DTOs.ParticipantPackage.SimplifiedMovieParticipant
+import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.extensions.sdp
 import java.util.Locale
 
@@ -43,54 +43,24 @@ fun MovieAboutScreen(
             .fillMaxWidth()
     ) {
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(5.sdp),
-            modifier = Modifier
-                .padding(horizontal = 9.sdp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = "Audio Track" + if(movieResponse.languages.size > 1) "'s" else "",
-                style = typography.bodyMedium
-            )
-
-            Text(
-                text = movieResponse.languages.mapIndexed { index, language ->
-                    if(movieResponse.languages.lastIndexOf(language) == index){
-                        language.english_name
-                    }  else{
-                        language.english_name +","
-                    }
-                }.toString().removePrefix("[").removeSuffix("]"),
-                fontSize = typography.bodyMedium.fontSize / 1.1f,
-                color = Color.LightGray.copy(0.84f),
-                modifier = Modifier
-                    .padding(start = 2.sdp)
-            )
-        }
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .padding(horizontal = 9.sdp)
-                .fillMaxWidth()
-        ){
+        if(movieResponse.languages.isNotEmpty()){
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.sdp),
                 modifier = Modifier
-                    .padding(start = 1.sdp)
+                    .padding(horizontal = 9.sdp)
+                    .fillMaxWidth()
             ) {
                 Text(
-                    text = "Country",
+                    text = "Audio Track" + if (movieResponse.languages.size > 1) "'s" else "",
                     style = typography.bodyMedium
                 )
 
                 Text(
-                    text = movieResponse.originCountries.mapIndexed { index, country ->
-                        if (movieResponse.originCountries.lastIndexOf(country) == index) {
-                            Locale("", country).displayCountry
+                    text = movieResponse.languages.mapIndexed { index, language ->
+                        if (movieResponse.languages.lastIndexOf(language) == index) {
+                            language.english_name
                         } else {
-                            Locale("", country).displayCountry + ","
+                            language.english_name + ","
                         }
                     }.toString().removePrefix("[").removeSuffix("]"),
                     fontSize = typography.bodyMedium.fontSize / 1.1f,
@@ -99,25 +69,62 @@ fun MovieAboutScreen(
                         .padding(start = 2.sdp)
                 )
             }
+        }
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(5.sdp),
-                modifier = Modifier
-                    .padding(end = 65.sdp)
-
-            ) {
-                Text(
-                    text = "Year",
-                    style = typography.bodyMedium
-                )
-
-                Text(
-                    text = DateFormats().year(movieResponse.releaseDate).toString(),
-                    fontSize = typography.bodyMedium.fontSize / 1.1f,
-                    color = Color.LightGray.copy(0.84f),
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .padding(horizontal = 9.sdp)
+                .fillMaxWidth()
+        ){
+            if(movieResponse.originCountries.isNotEmpty()){
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(5.sdp),
                     modifier = Modifier
-                        .padding(start = 2.sdp)
-                )
+                        .padding(start = 1.sdp)
+                ) {
+                    Text(
+                        text = "Country",
+                        style = typography.bodyMedium
+                    )
+
+                    Text(
+                        text = movieResponse.originCountries.mapIndexed { index, country ->
+                            if (movieResponse.originCountries.lastIndexOf(country) == index) {
+                                Locale("", country).displayCountry
+                            } else {
+                                Locale("", country).displayCountry + ","
+                            }
+                        }.toString().removePrefix("[").removeSuffix("]"),
+                        fontSize = typography.bodyMedium.fontSize / 1.1f,
+                        color = Color.LightGray.copy(0.84f),
+                        modifier = Modifier
+                            .padding(start = 2.sdp)
+                            .width(185.sdp)
+                    )
+                }
+            }
+
+            if(movieResponse.releaseDate.isNotBlank()){
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(5.sdp),
+                    modifier = Modifier
+                        .padding(end = 60.sdp)
+
+                ) {
+                    Text(
+                        text = "Year",
+                        style = typography.bodyMedium
+                    )
+
+                    Text(
+                        text = DateFormats().year(movieResponse.releaseDate).toString(),
+                        fontSize = typography.bodyMedium.fontSize / 1.1f,
+                        color = Color.LightGray.copy(0.84f),
+                        modifier = Modifier
+                            .padding(start = 2.sdp)
+                    )
+                }
             }
         }
 
@@ -140,7 +147,7 @@ fun MovieAboutScreen(
             ) {
                 item {}
 
-                items(movieDisplay.movieCast.cast.take(12)) { participant ->
+                items(movieDisplay.movieCast.cast.take(14)) { participant ->
                     MovieParticipantCard(
                         movieParticipant = participant,
                         modifier = Modifier
@@ -157,38 +164,40 @@ fun MovieAboutScreen(
             }
         }
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(9.sdp),
-            modifier = Modifier
-                .padding(start = 1.sdp)
-        ) {
-            Text(
-                text = "Photos",
-                style = typography.bodyMedium,
+        if(movieDisplay.movieImages.backdrops.isNotEmpty()){
+            Column(
+                verticalArrangement = Arrangement.spacedBy(9.sdp),
                 modifier = Modifier
-                    .padding(start = 12.sdp)
-            )
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(10.sdp),
-                modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(start = 1.sdp)
             ) {
-                item {}
+                Text(
+                    text = "Photos",
+                    style = typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(start = 12.sdp)
+                )
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(10.sdp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    item {}
 
-                items(movieDisplay.movieImages.backdrops.filter { it.iso_639_1 == null }
-                    .take(3)) { image ->
-                    AsyncImage(
-                        model = baseImageUrl + image.file_path,
-                        contentDescription = "movie image",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .width(206.sdp)
-                            .height(122.sdp)
-                            .clip(RoundedCornerShape(8.sdp))
-                    )
+                    items(movieDisplay.movieImages.backdrops.filter { it.iso_639_1 == null }
+                        .take(3)) { image ->
+                        AsyncImage(
+                            model = BASE_IMAGE_API_URL + image.file_path,
+                            contentDescription = "movie image",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .width(206.sdp)
+                                .height(122.sdp)
+                                .clip(RoundedCornerShape(8.sdp))
+                        )
+                    }
+
+                    item {}
                 }
-
-                item {}
             }
         }
         

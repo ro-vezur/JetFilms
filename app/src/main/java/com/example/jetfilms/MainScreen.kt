@@ -2,6 +2,7 @@ package com.example.jetfilms
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -23,21 +24,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.jetfilms.Additional_functions.navigate.navigateToSelectedMovie
-import com.example.jetfilms.Additional_functions.navigate.navigateToSelectedParticipant
-import com.example.jetfilms.Bottom_Navigation_Bar.BottomNavBar
-import com.example.jetfilms.Custom_NavType.DetailedMovieNavType
-import com.example.jetfilms.Custom_NavType.ParticipantNavType
-import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieResponse
-import com.example.jetfilms.Data_Classes.MoviePackage.MovieDisplay
-import com.example.jetfilms.Data_Classes.ParticipantPackage.DetailedParticipantResponse
-import com.example.jetfilms.Data_Classes.ParticipantPackage.DetailedParticipantDisplay
+import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
+import com.example.jetfilms.Helpers.navigate.navigateToSelectedParticipant
+import com.example.jetfilms.Components.Bottom_Navigation_Bar.BottomNavBar
+import com.example.jetfilms.CustomNavType.DetailedMovieNavType
+import com.example.jetfilms.CustomNavType.DetailedSerialNavType
+import com.example.jetfilms.CustomNavType.ParticipantNavType
+import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
+import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
+import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantResponse
+import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantDisplay
+import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.Network.ConnectionState
 import com.example.jetfilms.Network.connectivityState
 import com.example.jetfilms.Screens.Home.HomeScreen
 import com.example.jetfilms.Screens.Home.MoreMoviesScreen
+import com.example.jetfilms.Screens.Home.MoreSerialsScreen
 import com.example.jetfilms.Screens.MoreMoviesScreenRoute
+import com.example.jetfilms.Screens.MoreSerialsScreenRoute
 import com.example.jetfilms.Screens.MovieDetailsPackage.MovieDetailsScreen
+import com.example.jetfilms.Screens.MovieDetailsPackage.SerialDetailsScreen
 import com.example.jetfilms.Screens.ParticipantDetailsPackage.ParticipantDetailsScreen
 import com.example.jetfilms.Screens.Start.StartScreen
 import com.example.jetfilms.Screens.StartScreen
@@ -75,6 +81,7 @@ fun MainScreen(
         val similarMovies = moviesViewModel.similarMovies.collectAsStateWithLifecycle()
 
         val participantFilmography = moviesViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
+        val participantImages = moviesViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
 
         Scaffold(
             containerColor = Color.Black,
@@ -154,6 +161,38 @@ fun MainScreen(
                     }
                 }
 
+                composable<MoreMoviesScreenRoute> {
+                    homeDelay = 70
+                    showBottomBar = true
+
+                    val category =
+                        screensNavController.currentBackStackEntry?.arguments?.getString("category")
+
+                    category?.let {
+                        MoreMoviesScreen(
+                            navController = screensNavController,
+                            category = category.toString(),
+                            moviesViewModel = moviesViewModel,
+                        )
+                    }
+                }
+
+                composable<MoreSerialsScreenRoute> {
+                    homeDelay = 70
+                    showBottomBar = true
+
+                    val category =
+                        screensNavController.currentBackStackEntry?.arguments?.getString("category")
+
+                    category?.let {
+                        MoreSerialsScreen(
+                            navController = screensNavController,
+                            category = category.toString(),
+                            moviesViewModel = moviesViewModel,
+                        )
+                    }
+                }
+
                 composable(
                     route = "movie_details/{movie}",
                     arguments = listOf(navArgument("movie") { type = DetailedMovieNavType() }),
@@ -196,6 +235,35 @@ fun MainScreen(
                 }
 
                 composable(
+                    route = "serial_details/{serial}",
+                    arguments = listOf(navArgument("serial") { type = DetailedSerialNavType() }),
+                ) {
+                    homeDelay = 350
+                    showBottomBar = false
+
+                    val serialResponse = it.arguments?.getParcelable<DetailedSerialResponse>("serial")
+                    serialResponse?.let {
+
+                        SerialDetailsScreen(
+                            navController = screensNavController,
+                            serialResponse = serialResponse,
+                            selectSeason = { serialId, seasonNumber ->
+                                try {
+                                    moviesViewModel.getSerialSeason(serialId, seasonNumber)
+                                }
+                                catch (e:Exception){
+                                    Log.e("error",e.message.toString())
+                                    Log.d("n",(seasonNumber+1).toString())
+                                    moviesViewModel.getSerialSeason(serialId, seasonNumber + 1)
+                                }
+
+                            }
+                        )
+                    }
+
+                }
+
+                composable(
                     route = "participant_details/{participant}",
                     arguments = listOf(navArgument("participant") { type = ParticipantNavType() }),
                 ) {
@@ -206,19 +274,21 @@ fun MainScreen(
                     participantResponse?.let {
                         LaunchedEffect(null) {
                             moviesViewModel.setParticipantFilmography(participantResponse.id)
+                            moviesViewModel.setParticipantImages(participantResponse.id)
                         }
-                        if(participantFilmography.value != null) {
 
+                        if(participantFilmography.value != null && participantImages.value != null) {
                             ParticipantDetailsScreen(
                                 navController = screensNavController,
                                 participantDisplay = DetailedParticipantDisplay(
                                     participantResponse = participantResponse,
-                                    filmography = participantFilmography.value!!
+                                    filmography = participantFilmography.value!!,
+                                    images = participantImages.value!!,
                                 ),
                                 selectMovie = {movie ->
                                     scope.launch {
                                         moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
-                                            //      NavigateToSelectedMovie(screensNavController, detailedMovie)
+                                            navigateToSelectedMovie(screensNavController, detailedMovie)
                                         }
                                     }
                                 }

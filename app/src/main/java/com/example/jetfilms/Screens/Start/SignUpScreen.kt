@@ -1,7 +1,7 @@
 package com.example.jetfilms.Screens.Start
 
-import com.example.jetfilms.CustomComposables.Text.Highlight
-import com.example.jetfilms.CustomComposables.Text.HighlightedText
+import com.example.jetfilms.Components.Text.Highlight
+import com.example.jetfilms.Components.Text.HighlightedText
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -41,11 +41,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.jetfilms.CustomComposables.Text.BaseTextFieldColors
-import com.example.jetfilms.CustomComposables.Text.CustomTextField
-import com.example.jetfilms.CustomComposables.Buttons.TextButton
-import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
-import com.example.jetfilms.baseButtonHeight
+import com.example.jetfilms.Components.Text.BaseTextFieldColors
+import com.example.jetfilms.Components.Text.CustomTextField
+import com.example.jetfilms.Components.Buttons.TextButton
+import com.example.jetfilms.Components.Buttons.TurnBackButton
+import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
@@ -110,7 +110,7 @@ fun SignUpScreen(
                 CustomTextField(
                     colors = BaseTextFieldColors(),
                     text = firstName,
-                    height = (baseButtonHeight + 1).sdp,
+                    height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         firstName = value
                     },
@@ -122,7 +122,7 @@ fun SignUpScreen(
                 CustomTextField(
                     colors = BaseTextFieldColors(),
                     text = lastName,
-                    height = (baseButtonHeight + 1).sdp,
+                    height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         lastName = value
                     },
@@ -134,7 +134,7 @@ fun SignUpScreen(
                 CustomTextField(
                     colors = BaseTextFieldColors(),
                     text = emailText,
-                    height = (baseButtonHeight + 1).sdp,
+                    height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         emailText = value
                     },
@@ -147,7 +147,7 @@ fun SignUpScreen(
                 CustomTextField(
                     colors = BaseTextFieldColors(),
                     text = passwordText,
-                    height = (baseButtonHeight + 1).sdp,
+                    height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         passwordText = value
                     },
@@ -174,7 +174,7 @@ fun SignUpScreen(
                 CustomTextField(
                     colors = BaseTextFieldColors(),
                     text = passwordConfirmText,
-                    height = (baseButtonHeight + 1).sdp,
+                    height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         passwordConfirmText = value
                     },

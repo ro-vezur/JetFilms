@@ -55,21 +55,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
-import com.example.jetfilms.Additional_functions.fromMinutesToHours
-import com.example.jetfilms.Additional_functions.removeNumbersAfterDecimal
-import com.example.jetfilms.CustomComposables.Gradient.GradientIcon
-import com.example.jetfilms.CustomComposables.Cards.NeonCard
-import com.example.jetfilms.CustomComposables.Buttons.TextButton
-import com.example.jetfilms.CustomComposables.Buttons.TurnBackButton
-import com.example.jetfilms.CustomComposables.Gradient.animatedGradient
-import com.example.jetfilms.Data_Classes.MoviePackage.MovieDisplay
-import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.Data_Classes.ParticipantPackage.SimplifiedMovieParticipant
-import com.example.jetfilms.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.fromMinutesToHours
+import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
+import com.example.jetfilms.Components.Gradient.GradientIcon
+import com.example.jetfilms.Components.Cards.NeonCard
+import com.example.jetfilms.Components.Buttons.TextButton
+import com.example.jetfilms.Components.Buttons.TurnBackButton
+import com.example.jetfilms.Components.Gradient.animatedGradient
+import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
+import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.DTOs.ParticipantPackage.SimplifiedMovieParticipant
+import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.R
-import com.example.jetfilms.baseImageUrl
+import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.blueHorizontalGradient
-import com.example.jetfilms.encodes.decodeStringWithSpecialCharacter
+import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -130,7 +130,7 @@ fun MovieDetailsScreen(
                         .height(animateIntAsState(targetValue = imageHeight).value.sdp)
                 ) {
                     AsyncImage(
-                        model = "$baseImageUrl${decodeStringWithSpecialCharacter(movieResponse.posterUrl.toString())}",
+                        model = "$BASE_IMAGE_API_URL${decodeStringWithSpecialCharacter(movieResponse.posterUrl.toString())}",
                         contentDescription = "",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -191,10 +191,12 @@ fun MovieDetailsScreen(
                                 lengthMultiplayer = 13
                             )
 
-                            FilterCard(
-                                text = movieResponse.genres.first().name,
-                                lengthMultiplayer = 8
-                            )
+                            if(movieResponse.genres.isNotEmpty()){
+                                FilterCard(
+                                    text = movieResponse.genres.first().name,
+                                    lengthMultiplayer = 8
+                                )
+                            }
 
                             if(movieResponse.originCountries.isNotEmpty()){
                                 FilterCard(
@@ -281,8 +283,6 @@ fun MovieDetailsScreen(
                                 }
                             }
                         }
-
-
                     }
                 }
 
@@ -296,7 +296,7 @@ fun MovieDetailsScreen(
                         text = fromMinutesToHours(movieResponse.runtime),
                         fontSize = 15.ssp,
                         fontWeight = FontWeight.W500
-                        )
+                    )
 
                     Text(
                         text = decodeStringWithSpecialCharacter(movieResponse.overview),
@@ -337,8 +337,6 @@ fun MovieDetailsScreen(
                                         .tabIndicatorOffset(tabPositions[tabPagerState.currentPage])
                                         .height(2f.sdp)
                                 )
-
-
                             }
                         }
                     }

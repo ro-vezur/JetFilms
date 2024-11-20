@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import com.example.jetfilms.CustomComposables.Buttons.TextButton
+import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.R
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
