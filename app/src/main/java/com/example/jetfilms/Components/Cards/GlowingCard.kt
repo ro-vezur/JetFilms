@@ -1,4 +1,4 @@
-package com.example.jetfilms.CustomComposables.Cards
+package com.example.jetfilms.Components.Cards
 
 import android.graphics.Paint
 import androidx.compose.foundation.clickable

@@ -1,4 +1,4 @@
-package com.example.jetfilms.CustomComposables.Cards
+package com.example.jetfilms.Components.Cards
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,8 +14,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.SubcomposeAsyncImage
-import com.example.jetfilms.Data_Classes.ParticipantPackage.SimplifiedMovieParticipant
-import com.example.jetfilms.baseImageUrl
+import com.example.jetfilms.DTOs.ParticipantPackage.SimplifiedMovieParticipant
+import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
@@ -29,7 +29,7 @@ fun MovieParticipantCard(
         modifier = modifier
     ){
         SubcomposeAsyncImage(
-            model = "$baseImageUrl${movieParticipant.image}",
+            model = "$BASE_IMAGE_API_URL${movieParticipant.image}",
             contentDescription = "movie poster",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -49,6 +49,7 @@ fun MovieParticipantCard(
         Text(
             text = movieParticipant.activity,
             color = Color.LightGray.copy(0.84f),
+            fontSize = 15f.ssp,
             modifier = Modifier
                 .padding(top = 2.sdp, start = 1.sdp)
         )
