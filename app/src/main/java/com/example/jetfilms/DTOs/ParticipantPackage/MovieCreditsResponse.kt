@@ -1,4 +1,4 @@
-package com.example.jetfilms.Data_Classes.ParticipantPackage
+package com.example.jetfilms.DTOs.ParticipantPackage
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName

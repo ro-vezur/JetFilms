@@ -1,6 +1,6 @@
-package com.example.jetfilms.Data_Classes.MoviePackage
+package com.example.jetfilms.DTOs.MoviePackage
 
-import com.example.jetfilms.Data_Classes.ParticipantPackage.MovieCreditsResponse
+import com.example.jetfilms.DTOs.ParticipantPackage.MovieCreditsResponse
 
 data class MovieDisplay(
     val response: DetailedMovieResponse,

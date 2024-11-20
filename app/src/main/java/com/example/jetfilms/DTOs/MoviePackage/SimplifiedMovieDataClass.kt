@@ -1,4 +1,4 @@
-package com.example.jetfilms.Data_Classes.MoviePackage
+package com.example.jetfilms.DTOs.MoviePackage
 
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
