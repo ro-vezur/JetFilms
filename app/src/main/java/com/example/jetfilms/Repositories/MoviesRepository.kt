@@ -3,8 +3,8 @@ package com.example.jetfilms.Repositories
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.jetfilms.API.ApiInterface
-import com.example.jetfilms.PAGESIZE
-import com.example.jetfilms.Pagination.MoviesPagingSource
+import com.example.jetfilms.PAGE_SIZE
+import com.example.jetfilms.Helpers.Pagination.MoviesPagingSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,9 +14,9 @@ class MoviesRepository @Inject constructor(private val apiService: ApiInterface)
     fun getPaginatedPopularMovies(pagesLimit: Int = Int.MAX_VALUE) =
         Pager(
             config = PagingConfig(
-                pageSize = PAGESIZE,
+                pageSize = PAGE_SIZE,
             ),
-            pagingSourceFactory = { MoviesPagingSource(apiService,"popular",pagesLimit) }
+            pagingSourceFactory = { MoviesPagingSource(getResponse = {page -> apiService.popularMovies(page) },pagesLimit) }
         ).flow
 
 
@@ -30,7 +30,15 @@ class MoviesRepository @Inject constructor(private val apiService: ApiInterface)
 
     suspend fun getSimilarMovies(movieId: Int) = apiService.similarMovies(movieId)
 
+    suspend fun getPopularSerials() = apiService.popularSerials(1)
+
+    suspend fun getSerial(serialId: Int) = apiService.serial(serialId)
+
+    suspend fun getSerialSeason(serialId: Int,seasonNumber: Int) = apiService.serialSeason(serialId,seasonNumber)
+
     suspend fun getParticipant(participantId: Int) = apiService.participant(participantId)
 
     suspend fun getParticipantFilmography(participantId: Int) = apiService.participantFilmography(participantId)
+
+    suspend fun getParticipantImages(participantId: Int) = apiService.participantImages(participantId)
 }
