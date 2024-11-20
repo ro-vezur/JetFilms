@@ -1,4 +1,4 @@
-package com.example.jetfilms.CustomComposables.Gradient
+package com.example.jetfilms.Components.Gradient
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
