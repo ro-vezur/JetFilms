@@ -1,4 +1,4 @@
-package com.example.jetfilms.CustomComposables.Text
+package com.example.jetfilms.Components.Text
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -40,8 +40,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.example.jetfilms.baseButtonHeight
-import com.example.jetfilms.baseButtonWidth
+import com.example.jetfilms.BASE_BUTTON_HEIGHT
+import com.example.jetfilms.BASE_BUTTON_WIDTH
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -51,8 +51,8 @@ import com.example.jetfilms.ui.theme.secondaryColor
 
 @Composable
 fun CustomTextField(
-    width:Dp = baseButtonWidth.sdp,
-    height:Dp = (baseButtonHeight).sdp,
+    width:Dp = BASE_BUTTON_WIDTH.sdp,
+    height:Dp = (BASE_BUTTON_HEIGHT).sdp,
     shape: RoundedCornerShape = RoundedCornerShape(20.sdp),
     colors: TextFieldColors = TextFieldDefaults.colors(),
     singleLine:Boolean = true,
