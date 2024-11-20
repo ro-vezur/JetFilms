@@ -1,12 +1,16 @@
 package com.example.jetfilms.API
 
 import com.example.jetfilms.APIKEY
-import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieResponse
-import com.example.jetfilms.Data_Classes.ParticipantPackage.MovieCreditsResponse
-import com.example.jetfilms.Data_Classes.MoviePackage.ImagesFromTheMovieResponse
-import com.example.jetfilms.Data_Classes.MoviePackage.MoviesResponse
-import com.example.jetfilms.Data_Classes.ParticipantPackage.DetailedParticipantResponse
-import com.example.jetfilms.Data_Classes.ParticipantPackage.ParticipantFilmography
+import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
+import com.example.jetfilms.DTOs.ParticipantPackage.MovieCreditsResponse
+import com.example.jetfilms.DTOs.MoviePackage.ImagesFromTheMovieResponse
+import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
+import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantResponse
+import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantFilmography
+import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantImagesResponse
+import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.DTOs.SeriesPackage.SerialSeasonResponse
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -49,6 +53,25 @@ interface ApiInterface {
         @Query("api_key") apiKey: String = APIKEY
     ): MoviesResponse
 
+    @GET("tv/top_rated?")
+    suspend fun popularSerials(
+        @Query("page") page: Int,
+        @Query("api_key") apiKey: String = APIKEY
+    ): SimplifiedSerialsResponse
+
+    @GET("tv/{serial_id}")
+    suspend fun serial(
+        @Path("serial_id") id: Int,
+        @Query("api_key") apiKey: String = APIKEY
+    ): DetailedSerialResponse
+
+    @GET("tv/{serial_id}/season/{season_number}")
+    suspend fun serialSeason(
+        @Path("serial_id") id: Int,
+        @Path("season_number") seasonNumber: Int,
+        @Query("api_key") apiKey: String = APIKEY
+    ): SerialSeasonResponse
+
     @GET("person/{person_id}")
     suspend fun participant(
         @Path("person_id") personId: Int,
@@ -60,4 +83,10 @@ interface ApiInterface {
         @Path("person_id") personId: Int,
         @Query("api_key") apiKey: String = APIKEY
     ): ParticipantFilmography
+
+    @GET("person/{person_id}/images")
+    suspend fun participantImages(
+        @Path("person_id") personId: Int,
+        @Query("api_key") apiKey: String = APIKEY
+    ): ParticipantImagesResponse
 }
