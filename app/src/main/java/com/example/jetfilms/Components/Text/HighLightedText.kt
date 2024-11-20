@@ -1,4 +1,4 @@
-package com.example.jetfilms.CustomComposables.Text
+package com.example.jetfilms.Components.Text
 
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.runtime.Composable
