@@ -127,4 +127,7 @@ dependencies {
 
     implementation("androidx.paging:paging-runtime:$paging_version")
     implementation("androidx.paging:paging-compose:1.0.0-alpha17")
+
+    //flow row
+    implementation("com.google.accompanist:accompanist-flowlayout:0.20.0")
 }
