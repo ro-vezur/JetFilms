@@ -1,4 +1,4 @@
-package com.example.jetfilms.Bottom_Navigation_Bar
+package com.example.jetfilms.Components.Bottom_Navigation_Bar
 
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -35,9 +35,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.jetfilms.CustomComposables.Gradient.GradientIcon
-import com.example.jetfilms.bottomNavBarHeight
-import com.example.jetfilms.bottomNavItemSize
+import com.example.jetfilms.Components.Gradient.GradientIcon
+import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
+import com.example.jetfilms.BOTTOM_NAVIGATION_ITEM_SIZE
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -58,7 +58,7 @@ fun BottomNavBar(
             verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(bottomNavBarHeight.sdp)
+                .height(BOTTOM_NAVIGATION_BAR_HEIGHT.sdp)
                 .hazeChild(state = hazeState)
         ) {
             BottomNavItems.entries.forEach { item ->
@@ -69,7 +69,7 @@ fun BottomNavBar(
 }
 
 @Composable
-private fun BottomNavItem(item:BottomNavItems,navController: NavController) {
+private fun BottomNavItem(item: BottomNavItems, navController: NavController) {
 
     var selected by rememberSaveable{ mutableStateOf(false) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -116,7 +116,7 @@ private fun BottomNavItem(item:BottomNavItems,navController: NavController) {
                 imageVector = item.icon,
                 contentDescription = "nav icon",
                 modifier = Modifier
-                    .size(bottomNavItemSize.sdp)
+                    .size(BOTTOM_NAVIGATION_ITEM_SIZE.sdp)
                     .graphicsLayer(alpha = 0.99f)
                     .drawWithCache {
                         onDrawWithContent {
@@ -145,7 +145,7 @@ private fun BottomNavItem(item:BottomNavItems,navController: NavController) {
                     )
                 ),
                 modifier = Modifier
-                    .size(bottomNavItemSize.sdp)
+                    .size(BOTTOM_NAVIGATION_ITEM_SIZE.sdp)
             )
         }
 

@@ -1,4 +1,4 @@
-package com.example.jetfilms.Bottom_Navigation_Bar
+package com.example.jetfilms.Components.Bottom_Navigation_Bar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
