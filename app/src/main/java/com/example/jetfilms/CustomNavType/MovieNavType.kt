@@ -1,12 +1,11 @@
-package com.example.jetfilms.Custom_NavType
+package com.example.jetfilms.CustomNavType
 
 import android.os.Bundle
 import androidx.navigation.NavType
-import com.example.jetfilms.Data_Classes.MoviePackage.DetailedMovieResponse
+import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
 import kotlinx.serialization.json.Json
 
 class DetailedMovieNavType : NavType<DetailedMovieResponse>(isNullableAllowed = false) {
-
     override fun get(bundle: Bundle, key: String): DetailedMovieResponse? {
         return bundle.getParcelable(key)
     }
@@ -18,6 +17,4 @@ class DetailedMovieNavType : NavType<DetailedMovieResponse>(isNullableAllowed = 
     override fun put(bundle: Bundle, key: String, value: DetailedMovieResponse) {
         bundle.putParcelable(key, value)
     }
-
-
 }
