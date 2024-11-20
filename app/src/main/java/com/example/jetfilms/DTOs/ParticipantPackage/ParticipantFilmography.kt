@@ -1,6 +1,6 @@
-package com.example.jetfilms.Data_Classes.ParticipantPackage
+package com.example.jetfilms.DTOs.ParticipantPackage
 
-import com.example.jetfilms.Data_Classes.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import kotlinx.serialization.Serializable
 
 @Serializable
