@@ -28,3 +28,9 @@ data class MoreMoviesScreenRoute(
     val category: String
 ): Parcelable
 
+@Parcelize
+@Serializable
+data class MoreSerialsScreenRoute(
+    val category: String
+): Parcelable
+
