@@ -1,4 +1,4 @@
-package com.example.jetfilms.CustomComposables.Buttons
+package com.example.jetfilms.Components.Buttons
 
 import android.os.Build
 import androidx.annotation.RequiresApi
