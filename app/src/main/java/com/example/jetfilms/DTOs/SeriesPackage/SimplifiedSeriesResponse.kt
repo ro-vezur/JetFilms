@@ -7,7 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SimplifiedSerialsResponse(
     val page: Int,
-    val results: List<SimplifiedSerialObject>
+    val results: List<SimplifiedSerialObject>,
+    @SerializedName("total_pages") val totalPages: Int,
+    @SerializedName("total_results") val totalResults: Int
 )
 
 @Serializable
