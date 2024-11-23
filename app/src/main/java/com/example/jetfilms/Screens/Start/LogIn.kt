@@ -36,8 +36,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
-import com.example.jetfilms.Components.Text.BaseTextFieldColors
-import com.example.jetfilms.Components.Text.CustomTextField
+import com.example.jetfilms.Components.InputFields.BaseTextFieldColors
+import com.example.jetfilms.Components.InputFields.CustomTextField
 import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.BASE_BUTTON_HEIGHT

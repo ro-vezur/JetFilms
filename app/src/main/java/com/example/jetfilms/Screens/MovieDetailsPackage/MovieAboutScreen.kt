@@ -151,12 +151,13 @@ fun MovieAboutScreen(
                     MovieParticipantCard(
                         movieParticipant = participant,
                         modifier = Modifier
-                            .height(205.sdp)
+                            .height(225.sdp)
                             .width(112.sdp)
                             .clip(RoundedCornerShape(8.sdp))
                             .clickable {
                                 navigateToSelectedParticipant(participant)
-                            }
+                            },
+                        imageHeight = 160.sdp
                     )
                 }
 

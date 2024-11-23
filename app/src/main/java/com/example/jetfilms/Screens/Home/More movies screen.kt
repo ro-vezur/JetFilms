@@ -1,6 +1,7 @@
 package com.example.jetfilms.Screens.Home
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,9 +16,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,15 +34,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
 import com.example.jetfilms.Components.Cards.MovieCard
 import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
+import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.states.rememberForeverLazyGridState
+import com.example.jetfilms.ui.theme.hazeStateBlurBackground
+import com.example.jetfilms.ui.theme.hazeStateBlurTint
+import com.example.jetfilms.ui.theme.primaryColor
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
@@ -50,28 +60,25 @@ import kotlinx.coroutines.launch
 fun MoreMoviesScreen(
     navController: NavController,
     category: String,
-    moviesViewModel: MoviesViewModel
+    moviesViewModel: MoviesViewModel,
 ) {
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colorScheme
 
+    val moreMoviesView = moviesViewModel.moreMoviesView.collectAsLazyPagingItems()
     val gridState = rememberForeverLazyGridState(category)
-
-    val scrollOffset by remember { derivedStateOf { gridState.firstVisibleItemScrollOffset } }
-    val firstVisibleItemIndex by remember{ derivedStateOf { gridState.firstVisibleItemIndex }}
-
     val hazeState = remember{HazeState()}
-
     val scope = rememberCoroutineScope()
 
-    val moreMoviesView = moviesViewModel.moreMoviesView.collectAsStateWithLifecycle()
+    val topBarHeight = 46.sdp
 
     Scaffold(
-        containerColor = colors.primary,
+        containerColor = primaryColor,
         topBar = {
             Box(
                 modifier = Modifier
-                    .height(46.sdp)
+                    .height(topBarHeight)
+                    .fillMaxWidth()
                     .hazeChild(state = hazeState)
             ){
                 Row(
@@ -106,59 +113,66 @@ fun MoreMoviesScreen(
         modifier = Modifier
     ) { innerPadding ->
 
-        val scrollEffect = scrollOffset.sdp / 10
-        val showBlur = innerPadding.calculateTopPadding() - scrollEffect >= (0).dp && firstVisibleItemIndex == 0
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier =
-            Modifier
+            modifier = Modifier
+                .padding(innerPadding)
                 .fillMaxSize()
                 .haze(
                     hazeState,
-                    backgroundColor = Color.DarkGray,
-                    tint = Color.Black.copy(0.25f),
-                    blurRadius = 28.sdp,
+                    backgroundColor = hazeStateBlurBackground,
+                    tint = hazeStateBlurTint,
+                    blurRadius = HAZE_STATE_BLUR.sdp,
+                    noiseFactor = 0f
                 )
         ){
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .padding(
-                        top = (
-                                if (showBlur)
-                                    innerPadding.calculateTopPadding() - scrollOffset.sdp / 10
-                                else (0).sdp
-                                )
-                    )
-                    .fillMaxSize(),
-                columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(9.sdp),
-                verticalArrangement = Arrangement.spacedBy(9.sdp),
-                contentPadding = PaddingValues(8.sdp),
-                state = gridState,
+           when {
+               moreMoviesView.loadState.refresh is LoadState.Loading -> {
+                   CircularProgressIndicator()
+               }
+              else ->  LazyVerticalGrid(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    columns = GridCells.Fixed(2),
+                    horizontalArrangement = Arrangement.spacedBy(9.sdp),
+                    verticalArrangement = Arrangement.spacedBy(9.sdp),
+                    contentPadding = PaddingValues(8.sdp),
+                    state = gridState,
 
-            ) {
-
-                items(moreMoviesView.value){ movie ->
-                    movie.let{
-                        MovieCard(
-                            movie = movie,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.sdp))
-                                .height(205.sdp)
-                                .clickable {
-                                    scope.launch {
-                                        moviesViewModel.getMovie(movie.id)?.let {
-                                            navigateToSelectedMovie(navController, it)
-                                        }
-                                    }
-                                }
+                    ) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Spacer(
+                            modifier = Modifier.height(
+                                topBarHeight
+                            )
                         )
                     }
-                }
-                
-                item { 
-                    Spacer(modifier = Modifier.size((BOTTOM_NAVIGATION_BAR_HEIGHT-6).sdp))
+
+                    items(moreMoviesView.itemCount) { index ->
+                        val movie = moreMoviesView[index]
+                        movie?.let {
+                            MovieCard(
+                                movie = movie,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.sdp))
+                                    .height(205.sdp)
+                                    .clickable {
+                                        scope.launch {
+                                            moviesViewModel
+                                                .getMovie(movie.id)
+                                                ?.let {
+                                                    navigateToSelectedMovie(navController, it)
+                                                }
+                                        }
+                                    }
+                            )
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.size((BOTTOM_NAVIGATION_BAR_HEIGHT - 6).sdp))
+                    }
                 }
             }
         }

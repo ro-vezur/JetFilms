@@ -45,10 +45,13 @@ import com.example.jetfilms.Screens.MoreSerialsScreenRoute
 import com.example.jetfilms.Screens.MovieDetailsPackage.MovieDetailsScreen
 import com.example.jetfilms.Screens.MovieDetailsPackage.SerialDetailsScreen
 import com.example.jetfilms.Screens.ParticipantDetailsPackage.ParticipantDetailsScreen
+import com.example.jetfilms.Screens.SearchScreen.SearchScreen
 import com.example.jetfilms.Screens.Start.StartScreen
 import com.example.jetfilms.Screens.StartScreen
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.extensions.sdp
+import com.example.jetfilms.ui.theme.hazeStateBlurBackground
+import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -101,9 +104,9 @@ fun MainScreen(
                     .fillMaxSize()
                     .haze(
                         hazeState,
-                        backgroundColor = Color.DarkGray,
-                        tint = Color.Black.copy(alpha = .25f),
-                        blurRadius = 28.sdp,
+                        backgroundColor = hazeStateBlurBackground,
+                        tint = hazeStateBlurTint,
+                        blurRadius = HAZE_STATE_BLUR.sdp,
                     )
             ) {
                 composable<StartScreen> {
@@ -124,13 +127,12 @@ fun MainScreen(
                 composable(
                     route = "ExploreScreen"
                 ) {
+                    showBottomBar = true
 
-                }
-
-                composable(
-                    route = "TVScreen"
-                ) {
-
+                    SearchScreen(
+                        navController = screensNavController,
+                        moviesViewModel = moviesViewModel
+                    )
                 }
 
                 composable(
@@ -143,22 +145,6 @@ fun MainScreen(
                     route = "AccountScreen"
                 ) {
 
-                }
-
-                composable<MoreMoviesScreenRoute> {
-                    homeDelay = 70
-                    showBottomBar = true
-
-                    val category =
-                        screensNavController.currentBackStackEntry?.arguments?.getString("category")
-
-                    category?.let {
-                        MoreMoviesScreen(
-                            navController = screensNavController,
-                            category = category.toString(),
-                            moviesViewModel = moviesViewModel,
-                        )
-                    }
                 }
 
                 composable<MoreMoviesScreenRoute> {

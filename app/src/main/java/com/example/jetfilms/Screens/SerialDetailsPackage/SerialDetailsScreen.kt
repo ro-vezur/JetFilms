@@ -194,10 +194,12 @@ fun SerialDetailsScreen(
                         horizontalArrangement = Arrangement.spacedBy(14.sdp),
                         modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
                     ) {
-                        FilterCard(
-                            text = DateFormats().year(serialResponse.releaseDate).toString(),
-                            lengthMultiplayer = 13
-                        )
+                        if(serialResponse.releaseDate.isNotBlank()){
+                            FilterCard(
+                                text = DateFormats().year(serialResponse.releaseDate).toString(),
+                                lengthMultiplayer = 13
+                            )
+                        }
 
                         if(serialResponse.genres.isNotEmpty()){
                             FilterCard(
