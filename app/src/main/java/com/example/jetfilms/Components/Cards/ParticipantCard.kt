@@ -3,6 +3,7 @@ package com.example.jetfilms.Components.Cards
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import coil.compose.SubcomposeAsyncImage
 import com.example.jetfilms.DTOs.ParticipantPackage.SimplifiedMovieParticipant
 import com.example.jetfilms.BASE_IMAGE_API_URL
@@ -23,6 +25,7 @@ import com.example.jetfilms.extensions.ssp
 fun MovieParticipantCard(
     modifier: Modifier = Modifier,
     movieParticipant: SimplifiedMovieParticipant,
+    imageHeight: Dp
 ) {
     Column(
         horizontalAlignment = Alignment.Start,
@@ -34,7 +37,8 @@ fun MovieParticipantCard(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.78f)
+                .fillMaxHeight(0.72f)
+            //    .height(imageHeight)
                 .clip(RoundedCornerShape(8.sdp)),
             loading = { CircularProgressIndicator() }
         )
