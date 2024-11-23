@@ -14,3 +14,6 @@ val primaryColor = Color(0xFF090E17)
 val secondaryColor = Color(0xFF303D4F)
 val buttonsColor1 = Color(0xFF4AB9FF)
 val buttonsColor2 = Color(0xFF0084F3)
+
+val hazeStateBlurBackground = primaryColor
+val hazeStateBlurTint = primaryColor.copy(0.25f)
