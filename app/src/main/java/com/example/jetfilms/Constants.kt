@@ -15,6 +15,8 @@ val blueVerticalGradient = Brush.horizontalGradient(listOf(buttonsColor1, button
 
 const val PAGE_SIZE = 20
 
+const val HAZE_STATE_BLUR = 28
+
 const val BASE_API_URL = "https://api.themoviedb.org/3/"
 const val BASE_IMAGE_API_URL = "https://image.tmdb.org/t/p/w500"
 const val APIKEY = ""
