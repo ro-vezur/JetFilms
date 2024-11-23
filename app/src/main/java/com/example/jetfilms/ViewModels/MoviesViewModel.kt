@@ -13,7 +13,6 @@ import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.DTOs.MoviePackage.ImagesFromTheMovieResponse
 import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantFilmography
 import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantImagesResponse
-import com.example.jetfilms.DTOs.SearchObject
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
@@ -24,8 +23,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -68,9 +65,6 @@ class MoviesViewModel @Inject constructor(
 
     private val _selectedParticipantImages = MutableStateFlow<ParticipantImagesResponse?>(null)
     val selectedParticipantImages = _selectedParticipantImages.asStateFlow()
-
-    private val _searchedData = MutableStateFlow<List<SearchObject>>(listOf())
-    val searchedData = _searchedData.asStateFlow()
 
     private val _searchedMovies = MutableStateFlow<MoviesResponse?>(null)
     val searchedMovies = _searchedMovies.asStateFlow()
