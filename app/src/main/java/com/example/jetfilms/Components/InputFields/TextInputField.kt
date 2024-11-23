@@ -1,4 +1,4 @@
-package com.example.jetfilms.Components.Text
+package com.example.jetfilms.Components.InputFields
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -66,7 +66,6 @@ fun CustomTextField(
     ),
     leadingIcon: ImageVector? = null,
     placeHolder: String = "",
-  //  leadingIcon:@Composable (() -> Unit)? = null,
     trailingIcon: @Composable ((modifier:Modifier) -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
@@ -152,62 +151,6 @@ fun CustomTextField(
                 }
             }
         )
-
-        /*OutlinedTextField(
-            textStyle = TextStyle(
-                fontSize = if(visualTransformation == PasswordVisualTransformation()) 14.ssp else 13.ssp,
-                letterSpacing = if(visualTransformation == PasswordVisualTransformation()) 1f.ssp else 0.ssp
-            ),
-            singleLine = singleLine,
-            shape = shape,
-            colors = colors,
-            value = text,
-            onValueChange = onTextChange,
-            interactionSource = interactionSource,
-            placeholder = if(placeHolder.isBlank()) null
-            else{
-                {
-                    Text(
-                        text = placeHolder,
-                        style = typography.bodySmall.copy(
-                            fontWeight = FontWeight.Normal,
-                            fontSize = typography.bodySmall.fontSize
-                        )
-                    )
-                }
-                },
-            leadingIcon = if(leadingIcon == null) null
-             else {{
-                Icon(
-                imageVector = leadingIcon,
-                contentDescription = "email",
-                tint = Color.LightGray.copy(0.9f),
-                modifier = Modifier
-                    .padding(start = 8.sdp)
-                    .size(20.sdp)
-            )
-            }}
-                  ,
-            trailingIcon = trailingIcon,
-            visualTransformation = visualTransformation,
-            keyboardOptions = keyboardOptions,
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            ),
-            modifier = modifier
-                .width(width)
-                .height(height)
-                .background(
-                    if (isFocused) Brush.horizontalGradient(
-                        listOf(secondaryColor.copy(0.58f), secondaryColor.copy(0.38f))
-                    ) else Brush.horizontalGradient(
-                        listOf(primaryColor, primaryColor)
-                    )
-                )
-                .focusRequester(focusRequester)
-        )*/
     }
 }
 
