@@ -6,19 +6,21 @@ import androidx.paging.PagingState
 import com.example.jetfilms.API.ApiInterface
 import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
 import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
 
-class MoviesPagingSource(
-    val getResponse: suspend (page: Int) -> MoviesResponse,
+class SerialsPagingSource(
+    val getResponse: suspend (page: Int) -> SimplifiedSerialsResponse,
     val pageLimit: Int = Int.MAX_VALUE
-) : PagingSource<Int, SimplifiedMovieDataClass>() {
-    override fun getRefreshKey(state: PagingState<Int, SimplifiedMovieDataClass>): Int? {
+) : PagingSource<Int, SimplifiedSerialObject>() {
+    override fun getRefreshKey(state: PagingState<Int, SimplifiedSerialObject>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SimplifiedMovieDataClass> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SimplifiedSerialObject> {
 
         return try {
             val page = params.key ?: 1
