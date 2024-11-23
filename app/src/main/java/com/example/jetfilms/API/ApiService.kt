@@ -89,4 +89,18 @@ interface ApiInterface {
         @Path("person_id") personId: Int,
         @Query("api_key") apiKey: String = APIKEY
     ): ParticipantImagesResponse
+
+    @GET("search/movie?adult=false")
+    suspend fun searchMovies(
+        @Query("query") query: String,
+        @Query("page") page: Int,
+        @Query("api_key") apiKey: String = APIKEY,
+    ): MoviesResponse
+
+    @GET("search/tv?")
+    suspend fun searchSerials(
+        @Query("query") query: String,
+        @Query("page") page: Int,
+        @Query("api_key") apiKey: String = APIKEY
+    ): SimplifiedSerialsResponse
 }
