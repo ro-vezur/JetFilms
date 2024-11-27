@@ -17,23 +17,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
-import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.DTOs.UnifiedMedia
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
-import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
 @Composable
-fun MovieCard(
+fun UnifiedCard(
     modifier: Modifier = Modifier,
-    movie: SimplifiedMovieDataClass,
+    unifiedMedia: UnifiedMedia,
 ) {
     Box(
         modifier = modifier
     ){
         AsyncImage(
-            model = "$BASE_IMAGE_API_URL${movie.poster}",
+            model = "$BASE_IMAGE_API_URL${unifiedMedia.poster}",
             contentDescription = "movie poster",
             contentScale = ContentScale.Crop,
             modifier = modifier
@@ -57,7 +57,7 @@ fun MovieCard(
             )
 
             Text(
-                text = removeNumbersAfterDecimal(movie.rating,2).toString(),
+                text = removeNumbersAfterDecimal(unifiedMedia.rating,2).toString(),
                 fontSize = 16f.ssp,
                 color = Color.White,
                 modifier = Modifier
