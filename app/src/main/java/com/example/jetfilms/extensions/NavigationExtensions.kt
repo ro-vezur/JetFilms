@@ -2,6 +2,7 @@ package com.example.jetfilms.extensions
 
 import android.os.Bundle
 import android.os.Parcelable
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 
@@ -24,4 +25,10 @@ fun NavController.navigate(route: Any, params: Bundle?, builder: NavOptionsBuild
     this.currentBackStackEntry?.arguments?.putAll(params)
 
     navigate(route, builder)
+}
+
+fun NavController.popBackStackOrIgnore() {
+    if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+        popBackStack()
+    }
 }
