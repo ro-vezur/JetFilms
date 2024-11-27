@@ -56,9 +56,7 @@ fun TextButton(
         TextButtonsContent(
             image = image,
             text = text,
-            textStyle = textStyle.copy(
-           //     fontSize = fontSize
-            ),
+            textStyle = textStyle,
             modifier = Modifier.align(textAlign)
         )
     }
@@ -93,9 +91,7 @@ fun TextButton(
         TextButtonsContent(
             image = image,
             text = text,
-            textStyle = textStyle.copy(
-            //    fontSize = fontSize
-            ),
+            textStyle = textStyle,
             Modifier.align(textAlign)
         )
     }
@@ -118,6 +114,7 @@ private fun TextButtonsContent(
         Text(
             text = text,
             style = textStyle,
+            color = Color.White,
             modifier = Modifier.align(Alignment.Center)
         )
     }

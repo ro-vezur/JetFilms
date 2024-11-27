@@ -23,7 +23,8 @@ import com.example.jetfilms.extensions.sdp
 @Composable
 fun TurnBackButton(
     onClick:() -> Unit,
-    size: Dp = 30.sdp,
+    size: Dp = 31.sdp,
+    iconSize: Dp = size / 1.4f,
     shape: RoundedCornerShape = RoundedCornerShape(100),
     background: Color = Color.Transparent,
     iconColor: Color = Color.Black,
@@ -46,7 +47,7 @@ fun TurnBackButton(
             tint = iconColor,
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(size / 1.5f)
+                .size(iconSize)
         )
 
 
