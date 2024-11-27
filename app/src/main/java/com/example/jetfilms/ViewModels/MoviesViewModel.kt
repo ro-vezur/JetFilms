@@ -1,11 +1,10 @@
 package com.example.jetfilms.ViewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.paging.map
+import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.DTOs.ParticipantPackage.MovieCreditsResponse
 import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
@@ -16,16 +15,20 @@ import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantImagesResponse
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.DTOs.Filters.SortTypes
+import com.example.jetfilms.DTOs.UnifiedMedia
+import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Repositories.MoviesRepository
+import com.example.jetfilms.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
 
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
@@ -78,7 +81,27 @@ class MoviesViewModel @Inject constructor(
     private val _requestSent = MutableStateFlow(false)
     val requestSent = _requestSent.asStateFlow()
 
+    private val _categories = MutableStateFlow(MediaFormats.entries.toList())
+    val categories = _categories.asStateFlow()
+
+    private val _genresFilter = MutableStateFlow(BASE_MEDIA_GENRES)
+    val genresFilter = _genresFilter.asStateFlow()
+
+    private val _filteredCountries = MutableStateFlow(getCountryList())
+    val filteredCountries = _filteredCountries.asStateFlow()
+
+    private val _selectedSort = MutableStateFlow<SortTypes?>(null)
+    val selectedSort = _selectedSort.asStateFlow()
+
+    private val _showFilteredResults = MutableStateFlow(false)
+    val showFilteredResults = _showFilteredResults.asStateFlow()
+
+    private val _filteredUnifiedData: MutableStateFlow<PagingData<UnifiedMedia>> = MutableStateFlow(PagingData.empty())
+    val filteredUnifiedData = _filteredUnifiedData.asStateFlow()
+
+
     init {
+
         viewModelScope.launch {
             withContext(Dispatchers.IO){
                 _topRatedMovies.emit(moviesRepository.getTopRatedMovies().results)
@@ -210,6 +233,70 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
+    fun showFilteredData(boolean: Boolean) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _showFilteredResults.emit(boolean)
+            }
+        }
+    }
+    fun setSelectedSort(sortType: SortTypes?){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _selectedSort.emit(sortType)
+            }
+        }
+    }
+
+    fun setFilteredUnifiedData(
+        getMoviesResponse: suspend (page: Int) -> MoviesResponse,
+        getSerialsResponse: suspend (page: Int) -> SimplifiedSerialsResponse,
+        sortType: SortTypes?,
+        categories: List<MediaFormats>,
+    ){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+
+                val paginatedUnifiedData = moviesRepository.getPaginatedUnifiedData(
+                    getMoviesResponse = getMoviesResponse,
+                    getSerialsResponse = getSerialsResponse,
+                    sortType = sortType,
+                    categories = categories,
+                )
+
+                paginatedUnifiedData
+                    .cachedIn(viewModelScope)
+                    .collect{
+                        _filteredUnifiedData.emit(it)
+                    }
+            }
+        }
+    }
+
+    fun setFilteredGenres(genres:List<MediaGenres>){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _genresFilter.emit(genres)
+            }
+        }
+    }
+
+    fun setFilteredCategories(categories:List<MediaFormats>){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _categories.emit(categories)
+            }
+        }
+    }
+
+    fun setFilteredCountries(countries:List<String>){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _filteredCountries.emit(countries)
+            }
+        }
+    }
+
     suspend fun getMovie(movieId: Int): DetailedMovieResponse? = moviesRepository.getMovie(movieId).body()
 
     suspend fun getSerial(serialId: Int): DetailedSerialResponse = moviesRepository.getSerial(serialId)
@@ -222,7 +309,23 @@ class MoviesViewModel @Inject constructor(
 
     suspend fun searchSerials(query: String,page: Int) = moviesRepository.searchSerials(query,page)
 
+    suspend fun discoverMovies(page: Int,sortBy: String,genres: List<Int>,countries:List<String>) = moviesRepository.discoverMovies(
+        page = page,
+        sortBy = sortBy,
+        genres = genres,
+        countries = countries,
+    )
+
+    suspend fun discoverSerials(page: Int,sortBy: String,genres: List<Int>,countries:List<String>) = moviesRepository.discoverSerials(
+        page = page,
+        sortBy = sortBy,
+        genres = genres,
+        countries = countries,
+    )
+
     suspend fun getPopularMovies(page: Int) = moviesRepository.getPopularMovies(page)
 
     suspend fun getPopularSerials(page: Int) = moviesRepository.getPopularSerials(page)
+
+
 }
