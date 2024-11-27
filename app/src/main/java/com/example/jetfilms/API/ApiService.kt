@@ -90,7 +90,7 @@ interface ApiInterface {
         @Query("api_key") apiKey: String = APIKEY
     ): ParticipantImagesResponse
 
-    @GET("search/movie?adult=false")
+    @GET("search/movie?")
     suspend fun searchMovies(
         @Query("query") query: String,
         @Query("page") page: Int,
@@ -103,4 +103,38 @@ interface ApiInterface {
         @Query("page") page: Int,
         @Query("api_key") apiKey: String = APIKEY
     ): SimplifiedSerialsResponse
+
+    @GET("discover/movie?vote_count.gte=150")
+    suspend fun filteredGenresDiscoverMovies(
+        @Query("page") page: Int,
+        @Query("sort_by") sortBy: String,
+        @Query("with_genres") genres: String,
+        @Query("with_original_language") countries: String,
+        @Query("api_key") apiKey: String = APIKEY
+    ): MoviesResponse
+
+    @GET("discover/tv?vote_count.gte=150")
+    suspend fun filteredGenresDiscoverSerials(
+        @Query("page") page: Int,
+        @Query("sort_by") sortBy: String,
+        @Query("with_genres") genres: String,
+        @Query("with_original_language") countries: String,
+        @Query("api_key") apiKey: String = APIKEY
+    ): SimplifiedSerialsResponse
+
+    @GET("discover/tv?vote_count.gte=150")
+    suspend fun discoverSerials(
+        @Query("page") page: Int,
+        @Query("sort_by") sortBy: String,
+        @Query("with_original_language") countries: String,
+        @Query("api_key") apiKey: String = APIKEY
+    ): SimplifiedSerialsResponse
+
+    @GET("discover/movie?vote_count.gte=150")
+    suspend fun discoverMovies(
+        @Query("page") page: Int,
+        @Query("sort_by") sortBy: String,
+        @Query("with_original_language") countries: String,
+        @Query("api_key") apiKey: String = APIKEY
+    ): MoviesResponse
 }
