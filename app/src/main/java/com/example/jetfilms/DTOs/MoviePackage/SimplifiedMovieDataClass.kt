@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class SimplifiedMovieDataClass(
     val id: Int,
     val title: String,
+    val popularity: Float,
+    @SerializedName("release_date") val releaseDate: String,
     @SerializedName("vote_average") val rating: Float,
-    @SerializedName("poster_path") val posterUrl: String?,
+    @SerializedName("poster_path") val poster: String?,
 )

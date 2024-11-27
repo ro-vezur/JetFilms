@@ -1,6 +1,7 @@
 package com.example.jetfilms.DTOs.MoviePackage
 
 import android.os.Parcelable
+import com.example.jetfilms.DTOs.Filters.Genre
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -21,13 +22,6 @@ data class DetailedMovieResponse(
     @SerializedName("vote_average") val rating: Float = 0f,
     @SerializedName("poster_path") val posterUrl: String? = null,
     @SerializedName("spoken_languages") val languages: List<Language> = listOf(),
-): Parcelable
-
-@Parcelize
-@Serializable
-data class Genre(
-    val id: Int,
-    val name: String,
 ): Parcelable
 
 @Parcelize
