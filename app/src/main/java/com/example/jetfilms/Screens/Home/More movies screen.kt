@@ -44,6 +44,7 @@ import com.example.jetfilms.Components.Cards.MovieCard
 import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
+import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.states.rememberForeverLazyGridState
@@ -58,7 +59,8 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MoreMoviesScreen(
-    navController: NavController,
+    turnBack: () -> Unit,
+    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
     category: String,
     moviesViewModel: MoviesViewModel,
 ) {
@@ -70,7 +72,7 @@ fun MoreMoviesScreen(
     val hazeState = remember{HazeState()}
     val scope = rememberCoroutineScope()
 
-    val topBarHeight = 46.sdp
+    val topBarHeight = 52.sdp
 
     Scaffold(
         containerColor = primaryColor,
@@ -91,9 +93,7 @@ fun MoreMoviesScreen(
 
                 ) {
                     TurnBackButton(
-                        onClick = {
-                            navController.navigateUp()
-                        },
+                        onClick = { turnBack() },
                         iconColor = Color.White,
                         size = 29.sdp,
                         modifier = Modifier
@@ -113,11 +113,10 @@ fun MoreMoviesScreen(
         modifier = Modifier
     ) { innerPadding ->
 
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(innerPadding)
+              //  .padding(innerPadding)
                 .fillMaxSize()
                 .haze(
                     hazeState,
@@ -158,13 +157,7 @@ fun MoreMoviesScreen(
                                     .clip(RoundedCornerShape(8.sdp))
                                     .height(205.sdp)
                                     .clickable {
-                                        scope.launch {
-                                            moviesViewModel
-                                                .getMovie(movie.id)
-                                                ?.let {
-                                                    navigateToSelectedMovie(navController, it)
-                                                }
-                                        }
+                                        selectMovie(movie)
                                     }
                             )
                         }

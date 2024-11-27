@@ -128,40 +128,42 @@ fun MovieAboutScreen(
             }
         }
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(9.sdp),
-            modifier = Modifier
-                .padding(start = 1.sdp)
-        ) {
-            Text(
-                text = "Actors",
-                style = typography.bodyMedium,
+        if(movieDisplay.movieCast.cast.isNotEmpty()){
+            Column(
+                verticalArrangement = Arrangement.spacedBy(9.sdp),
                 modifier = Modifier
-                    .padding(start = 12.sdp)
-            )
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(9.sdp),
-                modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(start = 1.sdp)
             ) {
-                item {}
+                Text(
+                    text = "Participants",
+                    style = typography.bodyMedium,
+                    modifier = Modifier
+                        .padding(start = 12.sdp)
+                )
 
-                items(movieDisplay.movieCast.cast.take(14)) { participant ->
-                    MovieParticipantCard(
-                        movieParticipant = participant,
-                        modifier = Modifier
-                            .height(225.sdp)
-                            .width(112.sdp)
-                            .clip(RoundedCornerShape(8.sdp))
-                            .clickable {
-                                navigateToSelectedParticipant(participant)
-                            },
-                        imageHeight = 160.sdp
-                    )
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(9.sdp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    item {}
+
+                    items(movieDisplay.movieCast.cast.take(14)) { participant ->
+                        MovieParticipantCard(
+                            movieParticipant = participant,
+                            modifier = Modifier
+                                .height(225.sdp)
+                                .width(112.sdp)
+                                .clip(RoundedCornerShape(8.sdp))
+                                .clickable {
+                                    navigateToSelectedParticipant(participant)
+                                },
+                            imageHeight = 160.sdp
+                        )
+                    }
+
+                    item {}
                 }
-
-                item {}
             }
         }
 

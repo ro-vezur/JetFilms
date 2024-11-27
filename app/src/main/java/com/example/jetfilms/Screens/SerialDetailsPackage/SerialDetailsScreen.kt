@@ -4,10 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,9 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -50,27 +45,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
-import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.Components.Gradient.GradientIcon
 import com.example.jetfilms.Components.Cards.NeonCard
 import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.Components.Cards.EpisodeCard
 import com.example.jetfilms.Components.Gradient.animatedGradient
-import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
-import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.DTOs.ParticipantPackage.SimplifiedMovieParticipant
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SerialSeasonResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
-import com.example.jetfilms.R
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.Components.Cards.PropertyCard
+import com.example.jetfilms.Components.DetailedMediaComponents.DisplayRating
+import com.example.jetfilms.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
@@ -164,24 +156,7 @@ fun SerialDetailsScreen(
                         .align(Alignment.BottomStart)
                         .padding(start = 15.sdp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.sdp),
-                        modifier = Modifier.padding(bottom = 5.sdp)
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.imdb_logo_2016_svg),
-                            contentDescription = "IMDb",
-                            modifier = Modifier
-                                .width(30.sdp)
-                                .clip(RoundedCornerShape(3.sdp))
-                        )
-
-                        Text(
-                            text = removeNumbersAfterDecimal(serialResponse.rating,2).toString(),
-                            fontSize = 21f.ssp
-                        )
-                    }
+                    DisplayRating(serialResponse.rating)
 
                     Text(
                         text = decodeStringWithSpecialCharacter(serialResponse.name),
@@ -195,21 +170,21 @@ fun SerialDetailsScreen(
                         modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
                     ) {
                         if(serialResponse.releaseDate.isNotBlank()){
-                            FilterCard(
+                            PropertyCard(
                                 text = DateFormats().year(serialResponse.releaseDate).toString(),
                                 lengthMultiplayer = 13
                             )
                         }
 
                         if(serialResponse.genres.isNotEmpty()){
-                            FilterCard(
+                            PropertyCard(
                                 text = serialResponse.genres.first().name,
                                 lengthMultiplayer = 8
                             )
                         }
 
                         if(serialResponse.countries.isNotEmpty()){
-                            FilterCard(
+                            PropertyCard(
                                 text = serialResponse.countries.first(),
                                 lengthMultiplayer = 21
                             )
@@ -378,7 +353,7 @@ fun SerialDetailsScreen(
                                     style = TextStyle(
                                         brush = animatedGradient(
                                             colors = listOf(selectedColor1, selectedColor2),
-                                            type = "vertical"
+                                            type = animatedGradientTypes.VERTICAL
                                         ),
                                         fontSize = 14f.ssp
                                     )
@@ -431,69 +406,5 @@ fun SerialDetailsScreen(
             modifier = Modifier
                 .padding(start = 8.sdp, top = 34.sdp)
         )
-    }
-}
-
-@Composable
-private fun FilterCard(
-    text:String,
-    lengthMultiplayer: Int
-) {
-    val colors = MaterialTheme.colorScheme
-
-    Box(
-        modifier = Modifier
-            .width((text.length.sdp * lengthMultiplayer))
-            .height(25.sdp)
-            .clip(RoundedCornerShape(14.sdp))
-            .background(colors.primary)
-            .border(BorderStroke(1.5f.sdp, blueHorizontalGradient), RoundedCornerShape(14.sdp))
-    ){
-        Text(
-            text = text,
-            fontSize = 11.ssp,
-            style = TextStyle(
-                brush = blueHorizontalGradient
-            ),
-            modifier = Modifier
-                .align(Alignment.Center)
-        )
-    }
-}
-
-@Composable
-private fun TabContent(
-    modifier: Modifier = Modifier,
-    pagerState: PagerState,
-    movieDisplay: MovieDisplay,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
-    navigateToSelectedParticipant: (participant: SimplifiedMovieParticipant) -> Unit
-) {
-    val movieResponse = movieDisplay.response
-
-    HorizontalPager(
-        state = pagerState,
-        modifier = modifier,
-        userScrollEnabled = false
-    ) { index ->
-        when (index) {
-            0 -> {
-                MovieTrailersScreen(movie = movieResponse)
-            }
-
-            1 -> {
-                MovieMoreLikeThisScreen(
-                    similarMovies = movieDisplay.similarMovies,
-                    selectMovie = selectMovie
-                )
-            }
-
-            2 -> {
-                MovieAboutScreen(
-                    movieDisplay = movieDisplay,
-                    navigateToSelectedParticipant = navigateToSelectedParticipant
-                )
-            }
-        }
     }
 }

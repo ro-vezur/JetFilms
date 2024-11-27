@@ -43,6 +43,7 @@ import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.Screens.Start.SelectMediaGenresScreenRoute
 import com.example.jetfilms.Screens.Start.SignUpScreenRoute
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
+import com.example.jetfilms.Components.Cards.MediaFormatCard
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
@@ -133,85 +134,5 @@ fun SelectMediaFormatScreen(
                 }
             }
         }
-    }
-}
-
-
-@OptIn(ExperimentalToolkitApi::class)
-@Composable
-private fun MediaFormatCard(mediaFormat: MediaFormats,selectedFormats:MutableList<MediaFormats>) {
-    val typography = MaterialTheme.typography
-    val request = ImageRequest.Builder(LocalContext.current).data(mediaFormat.imageUrl).allowHardware(false).build()
-
-    Box(
-        modifier = Modifier
-            .width((267).sdp)
-            .height(104.sdp)
-            .border(
-                if (selectedFormats.contains(mediaFormat)) BorderStroke(
-                    2f.sdp,
-                    Brush.horizontalGradient(listOf(buttonsColor1, buttonsColor2))
-                )
-                else BorderStroke(1.sdp, Color.Transparent),
-                RoundedCornerShape(8.sdp)
-            )
-            .clickable {
-                if (selectedFormats.contains(mediaFormat)) {
-                    selectedFormats.remove(mediaFormat)
-                } else {
-                    selectedFormats.add(mediaFormat)
-                }
-            }
-    ){
-        AsyncImage(
-            model = request,
-            contentDescription = "image poster",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(8.sdp))
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width((mediaFormat.format.length * 11).sdp)
-                .height(24.sdp)
-                .clip(RoundedCornerShape(9.sdp))
-                .legacyBackgroundBlur(
-                    radius = 1f,
-                    downsample = 0.15f
-                )
-                .background(Color.White.copy(0.4f))
-                .noise(0.12f)
-        ){
-           Text(
-               text = mediaFormat.format,
-               style = typography.bodyMedium.copy(fontWeight = FontWeight.Normal, fontSize = typography.bodySmall.fontSize*1.3f),
-               modifier = Modifier
-                   .align(Alignment.Center)
-           )
-        }
-
-        if(selectedFormats.contains(mediaFormat)){
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 7.sdp, end = 7.sdp)
-                    .size(19.sdp)
-                    .clip(CircleShape)
-                    .background(Brush.horizontalGradient(listOf(buttonsColor1, buttonsColor2)))
-
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = "check",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(16.sdp)
-                )
-            }
-        }
-
     }
 }

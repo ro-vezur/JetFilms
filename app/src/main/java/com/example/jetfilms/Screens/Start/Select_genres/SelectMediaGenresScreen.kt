@@ -48,9 +48,12 @@ import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.Screens.Start.SelectMediaFormatScreenRoute
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
+import com.example.jetfilms.BASE_MEDIA_GENRES
+import com.example.jetfilms.Components.Cards.MediaGenreCard
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
+import dev.chrisbanes.haze.HazeState
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -60,8 +63,8 @@ fun SelectMediaGenresScreen(
     val typography = MaterialTheme.typography
 
     val selectedGenres = remember{ mutableStateListOf<MediaGenres>() }
-
     val grindState = rememberLazyGridState()
+    val hazeState = remember { HazeState() }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -122,86 +125,21 @@ fun SelectMediaGenresScreen(
                 ) {
 
                     items(MediaGenres.entries){genre ->
-                        MediaGenreCard(mediaGenre = genre,selectedGenres)
+                        MediaGenreCard(
+                            mediaGenre = genre,
+                            selected = selectedGenres.contains(genre) && selectedGenres != MediaGenres.entries.drop(1),
+                            onClick = {
+                                if (selectedGenres == BASE_MEDIA_GENRES) {
+                                    selectedGenres.clear()
+                                } else {
+                                    selectedGenres.addAll(BASE_MEDIA_GENRES)
+                                }
+                            }
+                        )
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun MediaGenreCard(mediaGenre: MediaGenres, selectedGenres:MutableList<MediaGenres>) {
-    val typography = MaterialTheme.typography
-    val request = ImageRequest.Builder(LocalContext.current).data(mediaGenre.imageUrl).allowHardware(false).build()
-
-    Box(
-        modifier = Modifier
-
-            .height(114.sdp)
-            .border(
-                if (selectedGenres.contains(mediaGenre)) BorderStroke(
-                    2f.sdp,
-                    Brush.horizontalGradient(listOf(buttonsColor1, buttonsColor2))
-                )
-                else BorderStroke(1.sdp, Color.Transparent),
-                RoundedCornerShape(8.sdp)
-            )
-            .clickable {
-                if (selectedGenres.contains(mediaGenre)) {
-                    selectedGenres.remove(mediaGenre)
-                } else {
-                    selectedGenres.add(mediaGenre)
-                }
-            }
-    ){
-        AsyncImage(
-            model = request,
-            contentDescription = "genre image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(8.sdp))
-        )
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width((mediaGenre.genre.length * 8).sdp)
-                .height(23.sdp)
-                .clip(RoundedCornerShape(9.sdp))
-
-                .background(Color.Gray.copy(0.4f))
-             //   .noise(0.12f)
-        ){
-            Text(
-                text = mediaGenre.genre,
-                style = typography.bodyMedium.copy(fontWeight = FontWeight.Normal, fontSize = typography.bodySmall.fontSize*1f),
-                modifier = Modifier
-                    .align(Alignment.Center)
-            )
-        }
-
-        if(selectedGenres.contains(mediaGenre)){
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 7.sdp, end = 7.sdp)
-                    .size(19.sdp)
-                    .clip(CircleShape)
-                    .background(Brush.horizontalGradient(listOf(buttonsColor1, buttonsColor2)))
-
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Check,
-                    contentDescription = "check",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(16.sdp)
-                )
-            }
-        }
-
     }
 }
 

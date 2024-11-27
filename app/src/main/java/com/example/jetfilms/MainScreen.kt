@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,9 +34,12 @@ import com.example.jetfilms.CustomNavType.DetailedSerialNavType
 import com.example.jetfilms.CustomNavType.ParticipantNavType
 import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
+import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantResponse
 import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantDisplay
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.Network.ConnectionState
 import com.example.jetfilms.Network.connectivityState
 import com.example.jetfilms.Screens.Home.HomeScreen
@@ -45,10 +50,12 @@ import com.example.jetfilms.Screens.MoreSerialsScreenRoute
 import com.example.jetfilms.Screens.MovieDetailsPackage.MovieDetailsScreen
 import com.example.jetfilms.Screens.MovieDetailsPackage.SerialDetailsScreen
 import com.example.jetfilms.Screens.ParticipantDetailsPackage.ParticipantDetailsScreen
+import com.example.jetfilms.Screens.SearchScreen.FilterUI.FiltersMainScreen
 import com.example.jetfilms.Screens.SearchScreen.SearchScreen
 import com.example.jetfilms.Screens.Start.StartScreen
 import com.example.jetfilms.Screens.StartScreen
 import com.example.jetfilms.ViewModels.MoviesViewModel
+import com.example.jetfilms.extensions.popBackStackOrIgnore
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
@@ -66,15 +73,16 @@ fun MainScreen(
 ) {
     val screensNavController = rememberNavController()
     var showBottomBar by remember{ mutableStateOf(false) }
-
     val hazeState = remember { HazeState() }
-
     var homeDelay by remember{ mutableStateOf(0) }
 
     val connection by connectivityState()
     val isConnected = connection == ConnectionState.Available
 
     val scope = rememberCoroutineScope()
+
+    val turnBack = { screensNavController.popBackStackOrIgnore() }
+
 
     if(isConnected){
         val moviesViewModel: MoviesViewModel = hiltViewModel()
@@ -85,6 +93,22 @@ fun MainScreen(
 
         val participantFilmography = moviesViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
         val participantImages = moviesViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
+
+
+        val selectMovie: (movie:SimplifiedMovieDataClass) -> Unit = { movie ->
+            scope.launch {
+                moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
+                    navigateToSelectedMovie(screensNavController, detailedMovie)
+                }
+            }
+        }
+
+        val selectSeries: (series: SimplifiedSerialObject) -> Unit = { serial ->
+            scope.launch {
+                navigateToSelectedSerial(screensNavController, moviesViewModel.getSerial(serial.id))
+            }
+        }
+
 
         Scaffold(
             containerColor = Color.Black,
@@ -100,7 +124,6 @@ fun MainScreen(
                 navController = screensNavController,
                 startDestination = "HomeScreen",
                 modifier = Modifier
-                    //    .padding(paddingValues)
                     .fillMaxSize()
                     .haze(
                         hazeState,
@@ -121,7 +144,12 @@ fun MainScreen(
                     homeDelay = 70
                     showBottomBar = true
 
-                    HomeScreen(screensNavController, moviesViewModel)
+                    HomeScreen(
+                        selectMovie = selectMovie,
+                        selectSeries = selectSeries,
+                        screensNavController,
+                        moviesViewModel
+                    )
                 }
 
                 composable(
@@ -130,6 +158,8 @@ fun MainScreen(
                     showBottomBar = true
 
                     SearchScreen(
+                        selectMovie = selectMovie,
+                        selectSeries = selectSeries,
                         navController = screensNavController,
                         moviesViewModel = moviesViewModel
                     )
@@ -151,12 +181,12 @@ fun MainScreen(
                     homeDelay = 70
                     showBottomBar = true
 
-                    val category =
-                        screensNavController.currentBackStackEntry?.arguments?.getString("category")
+                    val category = screensNavController.currentBackStackEntry?.arguments?.getString("category")
 
                     category?.let {
                         MoreMoviesScreen(
-                            navController = screensNavController,
+                            turnBack = turnBack,
+                            selectMovie = selectMovie,
                             category = category.toString(),
                             moviesViewModel = moviesViewModel,
                         )
@@ -172,6 +202,7 @@ fun MainScreen(
 
                     category?.let {
                         MoreSerialsScreen(
+                            selectSeries = selectSeries,
                             navController = screensNavController,
                             category = category.toString(),
                             moviesViewModel = moviesViewModel,
@@ -202,13 +233,7 @@ fun MainScreen(
                                     movieImages = movieImages.value,
                                     similarMovies = similarMovies.value!!
                                 ),
-                                selectMovie = {movie ->
-                                    scope.launch {
-                                        moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
-                                            navigateToSelectedMovie(screensNavController, detailedMovie)
-                                        }
-                                    }
-                                },
+                                selectMovie = selectMovie,
                                 selectParticipant = { participant ->
                                     scope.launch {
                                         navigateToSelectedParticipant(navController = screensNavController,moviesViewModel.getParticipant(participant.id))
@@ -217,7 +242,6 @@ fun MainScreen(
                             )
                         }
                     }
-
                 }
 
                 composable(
@@ -246,7 +270,6 @@ fun MainScreen(
                             }
                         )
                     }
-
                 }
 
                 composable(
@@ -271,16 +294,18 @@ fun MainScreen(
                                     filmography = participantFilmography.value!!,
                                     images = participantImages.value!!,
                                 ),
-                                selectMovie = {movie ->
-                                    scope.launch {
-                                        moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
-                                            navigateToSelectedMovie(screensNavController, detailedMovie)
-                                        }
-                                    }
-                                }
+                                selectMovie = selectMovie
                             )
                         }
                     }
+                }
+
+                composable("FilterScreen") {
+                    showBottomBar = true
+                    FiltersMainScreen(
+                        turnOffFilter = turnBack,
+                        moviesViewModel = moviesViewModel,
+                    )
                 }
             }
         }

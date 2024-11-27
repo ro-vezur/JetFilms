@@ -1,7 +1,6 @@
 package com.example.jetfilms.Screens.Home
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,22 +36,20 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
-import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.Components.Gradient.GradientIcon
 import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
-import com.example.jetfilms.R
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.Components.DetailedMediaComponents.DisplayRating
 import com.example.jetfilms.Components.Lists.MoviesCategoryList
 import com.example.jetfilms.Components.Lists.SerialsCategoryList
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
@@ -65,6 +62,8 @@ import kotlinx.coroutines.launch
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun HomeScreen(
+    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
+    selectSeries: (serial: SimplifiedSerialObject) -> Unit,
     navController: NavController,
     moviesViewModel: MoviesViewModel
 ) {
@@ -122,24 +121,8 @@ fun HomeScreen(
                         .align(Alignment.BottomStart)
                         .padding(start = 15.sdp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.sdp),
-                        modifier = Modifier.padding(bottom = 6.sdp)
-                    ){
-                        Image(
-                            painter = painterResource(id = R.drawable.imdb_logo_2016_svg),
-                            contentDescription = "IMDb",
-                            modifier = Modifier
-                                .width(30.sdp)
-                                .clip(RoundedCornerShape(3.sdp))
-                        )
 
-                        Text(
-                            text = removeNumbersAfterDecimal(selectedMovie.value?.rating?:0f,2).toString(),
-                            fontSize = 21f.ssp
-                        )
-                    }
+                    DisplayRating(selectedMovie.value?.rating?:0f)
 
                     Text(
                         text = selectedMovie.value?.title.toString(),
@@ -231,13 +214,7 @@ fun HomeScreen(
 
             MoviesCategoryList(
                 category = "Popular movies",
-                selectMovie = { movie ->
-                              scope.launch {
-                                  moviesViewModel.getMovie(movie.id)?.let {
-                                          navigateToSelectedMovie(navController, it)
-                                      }
-                              }
-                },
+                selectMovie = selectMovie,
                 moviesList = popularMovies.value.take(6),
                 navController = navController,
                 onSeeAllClick = {
@@ -254,11 +231,7 @@ fun HomeScreen(
 
             SerialsCategoryList(
                 category = "Popular serials",
-                selectSerial = { serial ->
-                    scope.launch {
-                        navigateToSelectedSerial(navController, moviesViewModel.getSerial(serial.id))
-                    }
-                },
+                selectSerial = selectSeries,
                 serialsList = popularSerials.value.take(6),
                 navController = navController,
                 onSeeAllClick = {
@@ -324,7 +297,7 @@ private fun MoviePager(
                     ) {
 
                         AsyncImage(
-                            model = "$BASE_IMAGE_API_URL${movie.posterUrl}",
+                            model = "$BASE_IMAGE_API_URL${movie.poster}",
                             contentDescription = "movie poster",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier

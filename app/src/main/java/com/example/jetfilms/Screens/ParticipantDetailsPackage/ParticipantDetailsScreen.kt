@@ -42,6 +42,7 @@ import com.example.jetfilms.Components.Gradient.animatedGradient
 import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantDisplay
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.DTOs.animatedGradientTypes
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
@@ -184,7 +185,7 @@ fun ParticipantDetailsScreen(
                                 style = TextStyle(
                                     brush = animatedGradient(
                                         colors = listOf(selectedColor1,selectedColor2),
-                                        type = "vertical"
+                                        type = animatedGradientTypes.VERTICAL
                                     ),
                                     fontSize = 14.5f.ssp
                                 )

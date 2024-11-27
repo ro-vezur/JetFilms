@@ -42,6 +42,7 @@ import com.example.jetfilms.Components.Cards.SerialCard
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.states.rememberForeverLazyGridState
@@ -56,6 +57,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MoreSerialsScreen(
+    selectSeries: (series: SimplifiedSerialObject) -> Unit,
     navController: NavController,
     category: String,
     moviesViewModel: MoviesViewModel
@@ -150,14 +152,7 @@ fun MoreSerialsScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.sdp))
                                     .height(205.sdp)
-                                    .clickable {
-                                        scope.launch {
-                                            navigateToSelectedSerial(
-                                                navController,
-                                                moviesViewModel.getSerial(serial.id)
-                                            )
-                                        }
-                                    }
+                                    .clickable { selectSeries(serial) }
                             )
                         }
                     }
