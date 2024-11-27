@@ -1,7 +1,7 @@
 package com.example.jetfilms.DTOs.SeriesPackage
 
 import android.os.Parcelable
-import com.example.jetfilms.DTOs.MoviePackage.Genre
+import com.example.jetfilms.DTOs.Filters.Genre
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable

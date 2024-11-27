@@ -1,6 +1,5 @@
 package com.example.jetfilms.DTOs.SeriesPackage
 
-import com.example.jetfilms.DTOs.MoviePackage.Genre
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
@@ -14,7 +13,7 @@ data class SimplifiedSerialsResponse(
 
 @Serializable
 data class SimplifiedSerialObject(
-    @SerializedName("poster_path") val poster: String,
+    @SerializedName("poster_path") val poster: String?,
     @SerializedName("genre_ids") val genreIds: List<Int>,
     val id: Int,
     val popularity: Float,
