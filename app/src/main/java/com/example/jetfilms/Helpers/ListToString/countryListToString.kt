@@ -6,9 +6,9 @@ import java.util.Locale
 fun CountryListToString(list: List<String>): String{
     return list.mapIndexed { index, item ->
         if (list.lastIndexOf(item) == index) {
-            getLanguageCodeByCountry(item)
+            item
         } else {
-            "${getLanguageCodeByCountry(item)}|"
+            "${item}|"
         }
     }.toString().removePrefix("[").removeSuffix("]").replace(" ","").replace(",","|")
 }
