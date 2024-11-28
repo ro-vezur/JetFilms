@@ -5,7 +5,7 @@ import androidx.paging.PagingState
 import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
 import com.example.jetfilms.DTOs.Filters.SortTypes
-import com.example.jetfilms.DTOs.UnifiedMedia
+import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 
 class UnifiedPagingSource(
