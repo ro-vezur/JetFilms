@@ -1,6 +1,5 @@
 package com.example.jetfilms.Screens.SearchScreen.FilterUI
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,32 +31,35 @@ import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.Components.Cards.SortSelectedCard
 import com.example.jetfilms.DTOs.Filters.Filter
 import com.example.jetfilms.DTOs.Filters.SortTypes
+import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
-import com.example.jetfilms.Helpers.ListToString.CountryListToString
 import com.example.jetfilms.Helpers.ListToString.StringListToString
 import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
-import com.example.jetfilms.ViewModels.MoviesViewModel
+import com.example.jetfilms.ViewModels.UnifiedMediaViewModel
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.states.rememberForeverScrollState
 import com.example.jetfilms.ui.theme.typography
+import com.example.jetfilms.ui.theme.whiteColor
 import java.util.Locale
 
 @Composable
 fun AcceptFiltersScreen(
     turnBack: () -> Unit,
     navController: NavController,
-    moviesViewModel: MoviesViewModel,
+    unifiedMediaViewModel: UnifiedMediaViewModel,
     genresToSelect: List<MediaGenres>,
     categoriesToSelect: List<MediaFormats>,
     countriesToSelect: List<String>,
-) {
+    acceptNewFilters: (sortToSelect: SortTypes?) -> Unit,
+    ) {
     val typography = typography()
 
-    val selectedSort = moviesViewModel.selectedSort.collectAsStateWithLifecycle()
+    val selectedSort = unifiedMediaViewModel.selectedSort.collectAsStateWithLifecycle()
 
     var sortToSelect by remember { mutableStateOf(selectedSort.value) }
 
@@ -166,40 +168,21 @@ fun AcceptFiltersScreen(
             onClick = {
                 val sortBy = sortToSelect?.requestQuery.toString()
 
-                moviesViewModel.showFilteredData(true)
-                moviesViewModel.setSelectedSort(sortToSelect)
-                moviesViewModel.setFilteredGenres(genresToSelect)
-                moviesViewModel.setFilteredCategories(categoriesToSelect)
-                moviesViewModel.setFilteredCountries(countriesToSelect)
+                unifiedMediaViewModel.showFilteredData(true)
+                unifiedMediaViewModel.setSelectedSort(sortToSelect)
+                unifiedMediaViewModel.setFilteredGenres(genresToSelect)
+                unifiedMediaViewModel.setFilteredCategories(categoriesToSelect)
+                unifiedMediaViewModel.setFilteredCountries(countriesToSelect)
 
-                Log.d("languages",CountryListToString(countriesToSelect))
+                acceptNewFilters(sortToSelect)
 
-                    moviesViewModel.setFilteredUnifiedData(
-                        getMoviesResponse = { page ->
-                            moviesViewModel.discoverMovies(
-                                page = page,
-                                sortBy =  sortBy,
-                                genres =  genresToSelect.map { it.genreId },
-                                countries = countriesToSelect,
-                            )
-                                            },
-                        getSerialsResponse = { page ->
-                            moviesViewModel.discoverSerials(
-                                page = page,
-                                sortBy =  sortBy,
-                                genres =  genresToSelect.map { it.genreId },
-                                countries = countriesToSelect,
-                            )
-                                             },
-                        sortType = sortToSelect,
-                        categories = categoriesToSelect
-                    )
                 turnBack() 
                       },
+            textStyle = typography.bodyMedium.copy(color = whiteColor),
             gradient = blueHorizontalGradient,
             text = "Accept Filters",
             modifier = Modifier
-                .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 15).sdp)
+                .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 9).sdp)
         )
     }
 }

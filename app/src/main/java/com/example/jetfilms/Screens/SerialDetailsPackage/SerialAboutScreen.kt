@@ -1,4 +1,4 @@
-package com.example.jetfilms.Screens.MovieDetailsPackage
+package com.example.jetfilms.Screens.SerialDetailsPackage
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,22 +20,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
+import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Components.Cards.MovieParticipantCard
-import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
+import com.example.jetfilms.DTOs.SeriesPackage.SerialDisplay
 import com.example.jetfilms.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
-import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.extensions.sdp
 import java.util.Locale
 
 @Composable
-fun MovieAboutScreen(
-    movieDisplay: MovieDisplay,
+fun SerialAboutScreen(
+    seriesDisplay: SerialDisplay,
     navigateToSelectedParticipant: (participant: SimplifiedParticipantResponse) -> Unit
 ) {
     val typography = MaterialTheme.typography
 
-    val movieResponse = movieDisplay.response
+    val movieResponse = seriesDisplay.response
 
     Column(
         verticalArrangement = Arrangement.spacedBy(20.sdp),
@@ -58,9 +58,9 @@ fun MovieAboutScreen(
                 Text(
                     text = movieResponse.languages.mapIndexed { index, language ->
                         if (movieResponse.languages.lastIndexOf(language) == index) {
-                            language.english_name
+                            Locale(language,"").displayLanguage
                         } else {
-                            language.english_name + ","
+                            Locale(language,"").displayLanguage + ","
                         }
                     }.toString().removePrefix("[").removeSuffix("]"),
                     fontSize = typography.bodyMedium.fontSize / 1.1f,
@@ -128,7 +128,7 @@ fun MovieAboutScreen(
             }
         }
 
-        if(movieDisplay.movieCast.cast.isNotEmpty()){
+        if(seriesDisplay.serialCast.cast.isNotEmpty()){
             Column(
                 verticalArrangement = Arrangement.spacedBy(9.sdp),
                 modifier = Modifier
@@ -148,7 +148,7 @@ fun MovieAboutScreen(
                 ) {
                     item {}
 
-                    items(movieDisplay.movieCast.cast.take(14)) { participant ->
+                    items(seriesDisplay.serialCast.cast.take(14)) { participant ->
                         MovieParticipantCard(
                             movieParticipant = participant,
                             modifier = Modifier
@@ -167,7 +167,7 @@ fun MovieAboutScreen(
             }
         }
 
-        if(movieDisplay.movieImages.backdrops.isNotEmpty()){
+        if(seriesDisplay.serialImages.backdrops.isNotEmpty()){
             Column(
                 verticalArrangement = Arrangement.spacedBy(9.sdp),
                 modifier = Modifier
@@ -186,7 +186,7 @@ fun MovieAboutScreen(
                 ) {
                     item {}
 
-                    items(movieDisplay.movieImages.backdrops.filter { it.iso_639_1 == null }
+                    items(seriesDisplay.serialImages.backdrops.filter { it.iso_639_1 == null }
                         .take(3)) { image ->
                         AsyncImage(
                             model = BASE_IMAGE_API_URL + image.file_path,
@@ -203,7 +203,7 @@ fun MovieAboutScreen(
                 }
             }
         }
-        
+
         Spacer(modifier = Modifier)
     }
 }

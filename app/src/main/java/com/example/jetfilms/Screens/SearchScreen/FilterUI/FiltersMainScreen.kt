@@ -3,56 +3,44 @@ package com.example.jetfilms.Screens.SearchScreen.FilterUI
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.jetfilms.BASE_MEDIA_GENRES
-import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.Components.TopBars.FiltersTopBar
+import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
 import com.example.jetfilms.HAZE_STATE_BLUR
-import com.example.jetfilms.Screens.Start.Select_genres.MediaGenres
+import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 import com.example.jetfilms.ViewModels.MoviesViewModel
+import com.example.jetfilms.ViewModels.SeriesViewModel
+import com.example.jetfilms.ViewModels.UnifiedMediaViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.typography
-import com.example.jetfilms.ui.theme.whiteColor
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FiltersMainScreen(
-     turnOffFilter: () -> Unit,
-     moviesViewModel: MoviesViewModel,
+    turnOffFilter: () -> Unit,
+    moviesViewModel: MoviesViewModel,
+    seriesViewModel: SeriesViewModel,
+    unifiedMediaViewModel: UnifiedMediaViewModel,
 ) {
     val typography = typography()
 
@@ -60,9 +48,9 @@ fun FiltersMainScreen(
     val hazeState = remember { HazeState() }
 
     val currentRoute by navController.currentBackStackEntryAsState()
-    val usedGenres = moviesViewModel.genresFilter.collectAsStateWithLifecycle()
-    val usedCategories = moviesViewModel.categories.collectAsStateWithLifecycle()
-    val usedCountries = moviesViewModel.filteredCountries.collectAsStateWithLifecycle()
+    val usedGenres = unifiedMediaViewModel.genresFilter.collectAsStateWithLifecycle()
+    val usedCategories = unifiedMediaViewModel.categories.collectAsStateWithLifecycle()
+    val usedCountries = unifiedMediaViewModel.filteredCountries.collectAsStateWithLifecycle()
 
     var genresToSelect by remember{ mutableStateOf(usedGenres.value) }
     var categoriesToSelect by remember{ mutableStateOf(usedCategories.value) }
@@ -83,10 +71,11 @@ fun FiltersMainScreen(
                 reset = {
                     turnOffFilter()
 
-                    moviesViewModel.showFilteredData(false)
-                    moviesViewModel.setSelectedSort(null)
-                    moviesViewModel.setFilteredGenres(BASE_MEDIA_GENRES)
-                    moviesViewModel.setFilteredCategories(MediaFormats.entries.toList())
+                    unifiedMediaViewModel.showFilteredData(false)
+                    unifiedMediaViewModel.setSelectedSort(null)
+                    unifiedMediaViewModel.setFilteredGenres(BASE_MEDIA_GENRES)
+                    unifiedMediaViewModel.setFilteredCategories(MediaFormats.entries.toList())
+                    unifiedMediaViewModel.setFilteredCountries(getCountryList())
                         },
                 text = currentRoute?.destination?.route.toString(),
                 hazeState = hazeState
@@ -108,10 +97,32 @@ fun FiltersMainScreen(
                 AcceptFiltersScreen(
                     turnBack = turnOffFilter,
                     navController = navController,
-                    moviesViewModel = moviesViewModel,
+                    unifiedMediaViewModel = unifiedMediaViewModel,
                     genresToSelect = genresToSelect,
                     categoriesToSelect = categoriesToSelect,
-                    countriesToSelect = countriesToSelect
+                    countriesToSelect = countriesToSelect,
+                    acceptNewFilters = { sortBy ->
+                        unifiedMediaViewModel.setFilteredUnifiedData(
+                            getMoviesResponse = { page ->
+                                moviesViewModel.discoverMovies(
+                                    page = page,
+                                    sortBy =  sortBy?.requestQuery.toString(),
+                                    genres =  genresToSelect.map { it.genreId },
+                                    countries = countriesToSelect,
+                                )
+                            },
+                            getSerialsResponse = { page ->
+                                seriesViewModel.discoverSerials(
+                                    page = page,
+                                    sortBy =  sortBy?.requestQuery.toString(),
+                                    genres =  genresToSelect.map { it.genreId },
+                                    countries = countriesToSelect,
+                                )
+                            },
+                            sortType = sortBy,
+                            categories = categoriesToSelect
+                        )
+                    },
                 )
             }
 

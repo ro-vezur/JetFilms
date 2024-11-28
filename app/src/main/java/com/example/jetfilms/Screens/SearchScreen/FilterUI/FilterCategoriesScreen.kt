@@ -8,33 +8,19 @@ import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.jetfilms.BASE_BUTTON_HEIGHT
-import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
-import com.example.jetfilms.Components.Buttons.TextButton
-import com.example.jetfilms.Components.Cards.MediaGenreCard
-import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
-import com.example.jetfilms.Screens.Start.Select_genres.MediaGenres
-import com.example.jetfilms.blueHorizontalGradient
+import com.example.jetfilms.Components.Buttons.AcceptFiltersButton
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.states.rememberForeverLazyGridState
-import dev.chrisbanes.haze.HazeState
 
 @Composable
 fun FilterCategoriesScreen(
@@ -45,12 +31,11 @@ fun FilterCategoriesScreen(
 
     val itemsSpacing = 15
 
-    val selectedFormats = remember{ mutableStateListOf<MediaFormats>() }
+    val selectedCategories = remember{ mutableStateListOf<MediaFormats>() }
 
     LaunchedEffect(null) {
-        selectedFormats.clear()
-        selectedFormats.addAll(usedCategories)
-        Log.d("used categories",usedCategories.toString())
+        selectedCategories.clear()
+        selectedCategories.addAll(usedCategories)
     }
 
     Box(
@@ -69,24 +54,23 @@ fun FilterCategoriesScreen(
             items(MediaFormats.entries) { format ->
                 MediaFormatCard(
                     mediaFormat = format,
-                    selectedFormats = selectedFormats
+                    selectedFormats = selectedCategories
                 )
 
                 Spacer(modifier = Modifier.height((itemsSpacing).sdp))
             }
         }
 
-        TextButton(
+        AcceptFiltersButton(
+            isEmpty = selectedCategories.isEmpty(),
+            isDataSameAsBefore = selectedCategories.toList().sorted() == usedCategories,
             onClick = {
                 turnBack()
-                acceptNewCategories(selectedFormats)
+                acceptNewCategories(selectedCategories)
             },
-            gradient = blueHorizontalGradient,
-            text = "Accept Filters",
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 9).sdp)
         )
-
     }
 }

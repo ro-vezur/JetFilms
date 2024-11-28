@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -58,16 +56,19 @@ import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.Components.Gradient.animatedGradient
 import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
 import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.DTOs.ParticipantPackage.SimplifiedMovieParticipant
+import com.example.jetfilms.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Components.Cards.PropertyCard
 import com.example.jetfilms.Components.DetailedMediaComponents.DisplayRating
+import com.example.jetfilms.Components.MediaInfoTabRow
+import com.example.jetfilms.Components.TabsContent.MovieAboutTab
 import com.example.jetfilms.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
+import com.example.jetfilms.infoTabs
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
@@ -79,21 +80,15 @@ fun MovieDetailsScreen(
     navController: NavController,
     movieDisplay: MovieDisplay,
     selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
-    selectParticipant: (participant:SimplifiedMovieParticipant) -> Unit
+    selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
-    val tabs = listOf(
-        "Trailers",
-        "More Like This",
-        "About"
-    )
-
     val movieResponse = movieDisplay.response
 
     val scrollState = rememberScrollState()
-    val tabPagerState = rememberPagerState(pageCount = {tabs.size})
+    val tabPagerState = rememberPagerState(pageCount = { infoTabs.size})
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -291,84 +286,20 @@ fun MovieDetailsScreen(
                     )
                 }
 
-                TabRow(
+                MediaInfoTabRow(
+                    tabs = infoTabs,
+                    pagerState = tabPagerState,
                     modifier = Modifier
-                        .padding(top = 8.sdp, start = 6.sdp,end = 6.sdp),
-                    selectedTabIndex = tabPagerState.currentPage, divider = {},
-                    containerColor = Color.Transparent,
-                    indicator = { tabPositions ->
-                        if (tabPagerState.currentPage < tabPositions.size) {
-                            Box(
-                                contentAlignment = Alignment.BottomCenter,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ){
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(2f.sdp)
-                                        .clip(CircleShape)
-                                        .background(Color.LightGray.copy(0.42f))
-                                )
+                        .padding(top = 12.sdp, start = 6.sdp,end = 6.sdp)
+                )
 
-                                NeonCard(
-                                    glowingColor = buttonsColor1,
-                                    containerColor = buttonsColor2,
-                                    cornersRadius = Int.MAX_VALUE.sdp,
-                                    glowingRadius = 7.sdp,
-                                    modifier = Modifier
-                                        .tabIndicatorOffset(tabPositions[tabPagerState.currentPage])
-                                        .height(2f.sdp)
-                                )
-                            }
-                        }
-                    }
-                ) {
-                    tabs.forEachIndexed { index, title ->
-                        val selected = tabPagerState.currentPage == index
-
-                        var selectedColor1 by remember{ mutableStateOf(buttonsColor1) }
-                        var selectedColor2 by remember{ mutableStateOf(buttonsColor2) }
-
-                        var unselectedColor by remember{ mutableStateOf(Color.DarkGray) }
-
-                        if(selected){
-                            selectedColor1 = buttonsColor1
-                            selectedColor2 = buttonsColor2
-                        } else{
-                            selectedColor1 = Color.LightGray.copy(0.42f)
-                            selectedColor2 = Color.LightGray.copy(0.42f)
-                        }
-
-                        Tab(
-                            text = {
-                                Text(
-                                    title,
-                                    style = TextStyle(
-                                        brush = animatedGradient(
-                                            colors = listOf(selectedColor1,selectedColor2),
-                                            type = animatedGradientTypes.VERTICAL
-                                        ),
-                                        fontSize = 14.5f.ssp
-                                    )
-                                    )
-                                   },
-                            selectedContentColor = buttonsColor1,
-                            unselectedContentColor = primaryColor,
-                            selected = selected,
-                            onClick = { scope.launch { tabPagerState.animateScrollToPage(index) } },
-                            modifier = Modifier
-                        )
-                    }
-                }
-
-                TabContent(
-                    modifier = Modifier
-                        .padding(top = 18.sdp, bottom = 0.sdp),
+                MovieAboutTab(
                     pagerState = tabPagerState,
                     movieDisplay = movieDisplay,
                     selectMovie = selectMovie,
-                    navigateToSelectedParticipant = selectParticipant
+                    navigateToSelectedParticipant = selectParticipant,
+                    modifier = Modifier
+                        .padding(top = 18.sdp, bottom = 0.sdp),
                 )
             }
 
@@ -382,41 +313,4 @@ fun MovieDetailsScreen(
                     .padding(start = 8.sdp, top = 34.sdp)
             )
         }
-}
-
-@Composable
-private fun TabContent(
-    modifier: Modifier = Modifier,
-    pagerState: PagerState,
-    movieDisplay: MovieDisplay,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
-    navigateToSelectedParticipant: (participant: SimplifiedMovieParticipant) -> Unit
-) {
-    val movieResponse = movieDisplay.response
-
-    HorizontalPager(
-        state = pagerState,
-        modifier = modifier,
-        userScrollEnabled = false
-    ) { index ->
-        when (index) {
-            0 -> {
-                MovieTrailersScreen(movie = movieResponse)
-            }
-
-            1 -> {
-                MovieMoreLikeThisScreen(
-                    similarMovies = movieDisplay.similarMovies,
-                    selectMovie = selectMovie
-                )
-            }
-
-            2 -> {
-               MovieAboutScreen(
-                   movieDisplay = movieDisplay,
-                   navigateToSelectedParticipant = navigateToSelectedParticipant
-               )
-            }
-        }
-    }
 }

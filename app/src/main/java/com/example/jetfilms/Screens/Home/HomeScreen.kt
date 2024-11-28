@@ -50,6 +50,7 @@ import com.example.jetfilms.Components.DetailedMediaComponents.DisplayRating
 import com.example.jetfilms.Components.Lists.MoviesCategoryList
 import com.example.jetfilms.Components.Lists.SerialsCategoryList
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.ViewModels.SeriesViewModel
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
@@ -65,7 +66,8 @@ fun HomeScreen(
     selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
     selectSeries: (serial: SimplifiedSerialObject) -> Unit,
     navController: NavController,
-    moviesViewModel: MoviesViewModel
+    moviesViewModel: MoviesViewModel,
+    seriesViewModel: SeriesViewModel
 ) {
 
     val colors = MaterialTheme.colorScheme
@@ -78,9 +80,8 @@ fun HomeScreen(
     val topRatedMovies = moviesViewModel.topRatedMovies.collectAsStateWithLifecycle()
     val popularMovies = moviesViewModel.popularMovies.collectAsStateWithLifecycle()
     val selectedMovie = moviesViewModel.selectedMovie.collectAsStateWithLifecycle()
-    val selectedMovieCast = moviesViewModel.selectedMovieCast.collectAsStateWithLifecycle()
 
-    val popularSerials = moviesViewModel.popularSerials.collectAsStateWithLifecycle()
+    val popularSerials = seriesViewModel.popularSerials.collectAsStateWithLifecycle()
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -236,8 +237,8 @@ fun HomeScreen(
                 navController = navController,
                 onSeeAllClick = {
                     popularSerials.value.let {
-                        moviesViewModel.setMoreSerialsView(
-                            response = {page -> moviesViewModel.getPopularSerials(1)}
+                        seriesViewModel.setMoreSerialsView(
+                            response = {page -> seriesViewModel.getPopularSerials(1)}
                         )
                     }
                  //   moviesViewModel.setMoreMoviesView(popularMovies.value)

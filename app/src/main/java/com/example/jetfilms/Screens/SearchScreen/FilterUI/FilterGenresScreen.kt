@@ -1,6 +1,5 @@
 package com.example.jetfilms.Screens.SearchScreen.FilterUI
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,18 +20,15 @@ import androidx.compose.ui.Modifier
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
+import com.example.jetfilms.Components.Buttons.AcceptFiltersButton
 import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.Components.Cards.MediaGenreCard
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
-import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.states.rememberForeverLazyGridState
-import com.example.jetfilms.ui.theme.hazeStateBlurBackground
-import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
 
 @Composable
 fun FilterGenresScreen(
@@ -110,13 +106,13 @@ fun FilterGenresScreen(
             }
         }
 
-        TextButton(
+        AcceptFiltersButton(
+            isEmpty = selectedGenres.isEmpty(),
+            isDataSameAsBefore = selectedGenres.toList().sorted() == usedGenres,
             onClick = {
                 turnBack()
                 acceptNewGenres(selectedGenres)
             },
-            gradient = blueHorizontalGradient,
-            text = "Accept Filters",
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 9).sdp)

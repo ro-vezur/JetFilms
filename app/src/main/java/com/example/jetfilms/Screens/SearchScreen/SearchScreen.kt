@@ -69,6 +69,8 @@ import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 import com.example.jetfilms.ViewModels.MoviesViewModel
+import com.example.jetfilms.ViewModels.SeriesViewModel
+import com.example.jetfilms.ViewModels.UnifiedMediaViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
@@ -85,7 +87,9 @@ fun SearchScreen(
     selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
     selectSeries: (series: SimplifiedSerialObject) -> Unit,
     navController: NavController,
-    moviesViewModel: MoviesViewModel
+    moviesViewModel: MoviesViewModel,
+    seriesViewModel: SeriesViewModel,
+    unifiedMediaViewModel: UnifiedMediaViewModel
 ) {
     val hazeState = remember { HazeState() }
     val scrollState = rememberScrollState()
@@ -93,20 +97,20 @@ fun SearchScreen(
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val scope = rememberCoroutineScope()
 
-    var searchText = moviesViewModel.searchText.collectAsStateWithLifecycle()
-    var requestSent = moviesViewModel.requestSent.collectAsStateWithLifecycle()
+    var searchText = unifiedMediaViewModel.searchText.collectAsStateWithLifecycle()
+    var requestSent = unifiedMediaViewModel.requestSent.collectAsStateWithLifecycle()
 
     val searchedMovies = moviesViewModel.searchedMovies.collectAsStateWithLifecycle()
-    val searchedSerials = moviesViewModel.searchedSerials.collectAsStateWithLifecycle()
+    val searchedSerials = seriesViewModel.searchedSerials.collectAsStateWithLifecycle()
 
-    val selectedSort = moviesViewModel.selectedSort.collectAsStateWithLifecycle()
-    val filteredUnifiedData = moviesViewModel.filteredUnifiedData.collectAsLazyPagingItems()
+    val selectedSort = unifiedMediaViewModel.selectedSort.collectAsStateWithLifecycle()
+    val filteredUnifiedData = unifiedMediaViewModel.filteredUnifiedData.collectAsLazyPagingItems()
 
     var searchBarXOffset by remember { mutableStateOf(0) }
     val searchBarHeight = 52.sdp
     val columnItemsSpacing = 15
 
-    var showFilteredResults = moviesViewModel.showFilteredResults.collectAsStateWithLifecycle()
+    var showFilteredResults = unifiedMediaViewModel.showFilteredResults.collectAsStateWithLifecycle()
 
     LaunchedEffect(requestSent) {
         searchBarXOffset = if (requestSent.value) screenWidth / 50 else screenWidth / 27
@@ -133,27 +137,20 @@ fun SearchScreen(
                         SearchField(
                             text = searchText.value,
                             onTextChange = {
-                                moviesViewModel.setSearchText(it)
+                                unifiedMediaViewModel.setSearchText(it)
                             },
                             onSearchClick = {
-                                moviesViewModel.setIsRequestSent(true)
+                                unifiedMediaViewModel.setIsRequestSent(true)
                                 moviesViewModel.setSearchedMovies(searchText.value)
-                                moviesViewModel.setSearchedSerials(searchText.value)
-                                // moviesViewModel.setSearchedData(searchText.value)
-
-                                // searchBarXOffset = screenWidth / 50
-
+                                seriesViewModel.setSearchedSerials(searchText.value)
                             },
                             clearText = {
-                                moviesViewModel.setSearchText("")
+                                unifiedMediaViewModel.setSearchText("")
                             },
                             cancelRequest = {
-                                moviesViewModel.setIsRequestSent(false)
+                                unifiedMediaViewModel.setIsRequestSent(false)
                                 moviesViewModel.setSearchedMovies(null)
-                                moviesViewModel.setSearchedSerials(null)
-                                //  moviesViewModel.setSearchedData("")
-
-                                //  searchBarXOffset = screenWidth / 27
+                                seriesViewModel.setSearchedSerials(null)
                             },
                             requestSent = requestSent.value
                         )
@@ -208,9 +205,9 @@ fun SearchScreen(
                                 serialsList = it.results,
                                 navController = navController,
                                 onSeeAllClick = {
-                                    moviesViewModel.setMoreSerialsView(
+                                    seriesViewModel.setMoreSerialsView(
                                         response = { page ->
-                                            moviesViewModel.searchSerials(searchText.value, page)
+                                            seriesViewModel.searchSerials(searchText.value, page)
                                         }
                                     )
                                 },
@@ -233,11 +230,11 @@ fun SearchScreen(
                 containerColor = primaryColor,
                 topBar = {
                     FiltersTopBar(
-                        turnBack = { moviesViewModel.showFilteredData( false) },
+                        turnBack = { unifiedMediaViewModel.showFilteredData( false) },
                         text = "Discover",
                         reset = {
-                            moviesViewModel.setSelectedSort(null)
-                            moviesViewModel.showFilteredData( false)
+                            unifiedMediaViewModel.setSelectedSort(null)
+                            unifiedMediaViewModel.showFilteredData( false)
                                 },
                         hazeState = hazeState
                     )
@@ -294,7 +291,7 @@ fun SearchScreen(
                                                             )
                                                         }
                                                 } else if(searchedObject.mediaType == MediaFormats.SERIES) {
-                                                    moviesViewModel
+                                                    seriesViewModel
                                                         .getSerial(searchedObject.id)
                                                         .let {
                                                             navigateToSelectedSerial(
@@ -337,8 +334,8 @@ fun SearchScreen(
                             navController.navigate("FilterScreen")
                         } else {
                             navController.navigate("FilterScreen")
-                            moviesViewModel.setSelectedSort(selectedSort.value)
-                            moviesViewModel.showFilteredData( true)
+                            unifiedMediaViewModel.setSelectedSort(selectedSort.value)
+                            unifiedMediaViewModel.showFilteredData( true)
                         }
                     }
             ) {
@@ -363,69 +360,3 @@ fun SearchScreen(
         }
     }
 }
-
-
-/*
-           LazyVerticalGrid(
-               modifier = Modifier
-                   //  .padding(innerPadding)
-                   .fillMaxSize()
-                   .haze(
-                       hazeState,
-                       backgroundColor = hazeStateBlurBackground,
-                       tint = hazeStateBlurTint,
-                       blurRadius = HAZE_STATE_BLUR.sdp,
-                   ),
-               columns = GridCells.Fixed(3),
-               horizontalArrangement = Arrangement.spacedBy(7.sdp),
-               verticalArrangement = Arrangement.spacedBy(8.sdp),
-               contentPadding = PaddingValues(horizontal = 0.sdp),
-               userScrollEnabled = true,
-           ) {
-
-               item(span = { GridItemSpan(maxLineSpan) }) { Spacer(modifier = Modifier.height(searchBarHeight))}
-
-               if (searchedData.value.isNotEmpty()) {
-                   items(searchedData.value) { searchedObject ->
-                       if (searchedObject.type == MediaFormats.MOVIE && searchedObject.moviesResponse != null) {
-                           MovieCard(
-                               movie = searchedObject.moviesResponse,
-                               modifier = Modifier
-                                   .clip(RoundedCornerShape(8.sdp))
-                                   .height(155.sdp)
-                                   .clickable {
-                                       scope.launch {
-                                           moviesViewModel
-                                               .getMovie(searchedObject.moviesResponse.id)
-                                               ?.let {
-                                                   navigateToSelectedMovie(navController, it)
-                                               }
-                                       }
-                                   }
-                           )
-                       }
-                       else if(searchedObject.type == MediaFormats.SERIES && searchedObject.seriesResponse != null){
-                           SerialCard(
-                               serial = searchedObject.seriesResponse,
-                               modifier = Modifier
-                                   .clip(RoundedCornerShape(8.sdp))
-                                   .height(155.sdp)
-                                   .clickable {
-                                       scope.launch {
-                                           moviesViewModel
-                                               .getSerial(searchedObject.seriesResponse.id)
-                                               ?.let {
-                                                   navigateToSelectedSerial(navController, it)
-                                               }
-                                       }
-                                   }
-                           )
-                       }
-                   }
-               }
-
-               item(span = { GridItemSpan(maxLineSpan) }) {
-                   Spacer(modifier = Modifier.height(BOTTOM_NAVIGATION_BAR_HEIGHT.sdp))
-               }
-           }
-           */

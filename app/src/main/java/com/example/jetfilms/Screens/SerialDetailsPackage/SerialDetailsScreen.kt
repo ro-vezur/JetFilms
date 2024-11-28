@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -56,17 +57,22 @@ import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.Components.Buttons.TurnBackButton
 import com.example.jetfilms.Components.Cards.EpisodeCard
 import com.example.jetfilms.Components.Gradient.animatedGradient
-import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SerialSeasonResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Components.Cards.PropertyCard
 import com.example.jetfilms.Components.DetailedMediaComponents.DisplayRating
+import com.example.jetfilms.Components.MediaInfoTabRow
+import com.example.jetfilms.Components.TabsContent.SeriesAboutTab
+import com.example.jetfilms.DTOs.SeriesPackage.SerialDisplay
+import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
+import com.example.jetfilms.infoTabs
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
@@ -76,16 +82,24 @@ import kotlinx.coroutines.launch
 @Composable
 fun SerialDetailsScreen(
     navController: NavController,
-    serialResponse: DetailedSerialResponse,
-    selectSeason: suspend (serialId: Int,seasonNumber: Int) -> SerialSeasonResponse?
+    serialDisplay: SerialDisplay,
+    selectSeason: suspend (serialId: Int,seasonNumber: Int) -> SerialSeasonResponse?,
+    selectSerial: (movie: SimplifiedSerialObject) -> Unit,
+    selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
+    val serialResponse = serialDisplay.response
+
     val scrollState = rememberScrollState()
-    val tabs = serialResponse.seasons
-    val tabContentPagerState = rememberPagerState(pageCount = {tabs.size})
-    val currentPage = tabContentPagerState.currentPage
+
+    val seasonTabs = serialResponse.seasons
+    val seasonsPagerState = rememberPagerState(pageCount = {seasonTabs.size})
+    val currentSeasonPage = seasonsPagerState.currentPage
+
+    val infoPagerState = rememberPagerState(pageCount = {infoTabs.size})
+    val currentInfoPage = infoPagerState.currentPage
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
@@ -94,13 +108,13 @@ fun SerialDetailsScreen(
 
     var selectedSeason by remember { mutableStateOf<SerialSeasonResponse?>(null) }
 
-    LaunchedEffect(currentPage) {
+    LaunchedEffect(currentSeasonPage) {
         Log.d("id",serialResponse.id.toString())
         selectedSeason =
            try {
-               selectSeason(serialResponse.id,currentPage)
+               selectSeason(serialResponse.id,currentSeasonPage)
            } catch (e:Exception){
-               selectSeason(serialResponse.id,currentPage+1)
+               selectSeason(serialResponse.id,currentSeasonPage+1)
            }
     }
 
@@ -117,283 +131,315 @@ fun SerialDetailsScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        Column(
+        LazyColumn(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .background(colors.primary)
-                .verticalScroll(scrollState)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(animateIntAsState(targetValue = imageHeight).value.sdp)
-            ) {
-                AsyncImage(
-                    model = "$BASE_IMAGE_API_URL${decodeStringWithSpecialCharacter(serialResponse.poster.toString())}",
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-
+            item{
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color.Transparent,
-                                    colors.primary.copy(0.64f),
-                                    colors.primary.copy(1f),
-                                )
-                            )
-                        )
-                )
-
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(start = 15.sdp)
+                        .fillMaxWidth()
+                        .height(animateIntAsState(targetValue = imageHeight).value.sdp)
                 ) {
-                    DisplayRating(serialResponse.rating)
-
-                    Text(
-                        text = decodeStringWithSpecialCharacter(serialResponse.name),
-                        style = typography.titleLarge,
-                        fontSize = 26f.ssp,
+                    AsyncImage(
+                        model = "$BASE_IMAGE_API_URL${
+                            decodeStringWithSpecialCharacter(
+                                serialResponse.poster.toString()
+                            )
+                        }",
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
                     )
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(14.sdp),
-                        modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
-                    ) {
-                        if(serialResponse.releaseDate.isNotBlank()){
-                            PropertyCard(
-                                text = DateFormats().year(serialResponse.releaseDate).toString(),
-                                lengthMultiplayer = 13
-                            )
-                        }
-
-                        if(serialResponse.genres.isNotEmpty()){
-                            PropertyCard(
-                                text = serialResponse.genres.first().name,
-                                lengthMultiplayer = 8
-                            )
-                        }
-
-                        if(serialResponse.countries.isNotEmpty()){
-                            PropertyCard(
-                                text = serialResponse.countries.first(),
-                                lengthMultiplayer = 21
-                            )
-                        }
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(14.sdp),
-                        modifier = Modifier.padding(top = 18.sdp, start = 3.sdp, bottom = 6.sdp)
-                    ) {
-                        TextButton(
-                            onClick = {
-
-                            },
-                            gradient = blueHorizontalGradient,
-                            width = 138.sdp,
-                            height = 36.sdp,
-                            corners = RoundedCornerShape(18.sdp),
-                            textAlign = Alignment.Center,
-                            text = "Watch Now",
-                            modifier = Modifier
-                        )
-
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .padding(start = 6.sdp)
-                                .size(32.sdp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (false) colors.secondary.copy(.85f)
-                                    else colors.secondary.copy(.92f)
-                                )
-                        ) {
-                            if (false) {
-                                GradientIcon(
-                                    icon = Icons.Filled.Download,
-                                    contentDescription = "download",
-                                    gradient = blueHorizontalGradient,
-                                    modifier = Modifier
-                                        .size(20.sdp)
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Outlined.Download,
-                                    contentDescription = "download",
-                                    tint = Color.White,
-                                    modifier = Modifier
-                                        .size(24.sdp)
-                                )
-                            }
-                        }
-
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .size(32.sdp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (false) colors.secondary.copy(.85f)
-                                    else colors.secondary.copy(.92f)
-                                )
-                        ) {
-                            if (false) {
-                                GradientIcon(
-                                    icon = Icons.Filled.Bookmarks,
-                                    contentDescription = "favorite",
-                                    gradient = blueHorizontalGradient,
-                                    modifier = Modifier
-                                        .size(20.sdp)
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Outlined.Bookmarks,
-                                    contentDescription = "unfavorable",
-                                    tint = Color.White,
-                                    modifier = Modifier
-                                        .size(20.sdp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            Column(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(12.sdp),
-                modifier = Modifier
-                    .padding(start = 14.sdp,end = 14.sdp,top = 16.sdp)
-            ) {
-                Text(
-                    text = "${serialResponse.seasons.size} Season" + if(serialResponse.seasons.size == 1) "" else "s",
-                    fontSize = 16.ssp,
-                    fontWeight = FontWeight.W500
-                )
-
-                Text(
-                    text = decodeStringWithSpecialCharacter(serialResponse.overview),
-                    fontSize = 13.ssp,
-                    color = Color.LightGray.copy(0.9f),
-                    fontWeight = FontWeight.W400,
-                    modifier = Modifier
-                        .padding(start = 2.sdp)
-                )
-            }
-
-            ScrollableTabRow(
-                modifier = Modifier
-                    .padding(top = 8.sdp, start = 6.sdp, end = 6.sdp)
-                    .fillMaxWidth(),
-                edgePadding = 0.sdp,
-                selectedTabIndex = tabContentPagerState.currentPage, divider = {},
-                containerColor = Color.Transparent,
-                indicator = { tabPositions ->
-                    if (tabContentPagerState.currentPage < tabPositions.size) {
-                        Box(
-                            contentAlignment = Alignment.BottomCenter,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ){
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(2f.sdp)
-                                    .clip(CircleShape)
-                                    .background(Color.LightGray.copy(0.42f))
-                            )
-
-                            NeonCard(
-                                glowingColor = buttonsColor1,
-                                containerColor = buttonsColor2,
-                                cornersRadius = Int.MAX_VALUE.sdp,
-                                glowingRadius = 7.sdp,
-                                modifier = Modifier
-                                    .tabIndicatorOffset(tabPositions[tabContentPagerState.currentPage])
-                                    .height(2f.sdp)
-                            )
-                        }
-                    }
-                }
-            ) {
-                tabs.forEachIndexed { index, season ->
-                    if(season.episodeCount != 0){
-                        val selected = tabContentPagerState.currentPage == index
-
-                        var selectedColor1 by remember { mutableStateOf(buttonsColor1) }
-                        var selectedColor2 by remember { mutableStateOf(buttonsColor2) }
-
-                        if (selected) {
-                            selectedColor1 = buttonsColor1
-                            selectedColor2 = buttonsColor2
-                        } else {
-                            selectedColor1 = Color.LightGray.copy(0.42f)
-                            selectedColor2 = Color.LightGray.copy(0.42f)
-                        }
-
-                        Tab(
-                            text = {
-                                Text(
-                                    text = "Season ${
-                                        if(serialResponse.seasons.first().seasonNumber == 0)season.seasonNumber+1
-                                        else season.seasonNumber
-                                    }",
-                                    style = TextStyle(
-                                        brush = animatedGradient(
-                                            colors = listOf(selectedColor1, selectedColor2),
-                                            type = animatedGradientTypes.VERTICAL
-                                        ),
-                                        fontSize = 14f.ssp
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color.Transparent,
+                                        colors.primary.copy(0.64f),
+                                        colors.primary.copy(1f),
                                     )
                                 )
-                            },
-                            selectedContentColor = buttonsColor1,
-                            unselectedContentColor = primaryColor,
-                            selected = selected,
-                            onClick = {
-                                scope.launch { tabContentPagerState.animateScrollToPage(index) }
-                            },
-                            modifier = Modifier
+                            )
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(start = 15.sdp)
+                    ) {
+                        DisplayRating(serialResponse.rating)
+
+                        Text(
+                            text = decodeStringWithSpecialCharacter(serialResponse.name),
+                            style = typography.titleLarge,
+                            fontSize = 26f.ssp,
                         )
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(14.sdp),
+                            modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
+                        ) {
+                            if (serialResponse.releaseDate.isNotBlank()) {
+                                PropertyCard(
+                                    text = DateFormats().year(serialResponse.releaseDate)
+                                        .toString(),
+                                    lengthMultiplayer = 13
+                                )
+                            }
+
+                            if (serialResponse.genres.isNotEmpty()) {
+                                PropertyCard(
+                                    text = serialResponse.genres.first().name,
+                                    lengthMultiplayer = 8
+                                )
+                            }
+
+                            if (serialResponse.originCountries.isNotEmpty()) {
+                                PropertyCard(
+                                    text = serialResponse.originCountries.first(),
+                                    lengthMultiplayer = 21
+                                )
+                            }
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(14.sdp),
+                            modifier = Modifier.padding(top = 18.sdp, start = 3.sdp, bottom = 6.sdp)
+                        ) {
+                            TextButton(
+                                onClick = {
+
+                                },
+                                gradient = blueHorizontalGradient,
+                                width = 138.sdp,
+                                height = 36.sdp,
+                                corners = RoundedCornerShape(18.sdp),
+                                textAlign = Alignment.Center,
+                                text = "Watch Now",
+                                modifier = Modifier
+                            )
+
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .padding(start = 6.sdp)
+                                    .size(32.sdp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (false) colors.secondary.copy(.85f)
+                                        else colors.secondary.copy(.92f)
+                                    )
+                            ) {
+                                if (false) {
+                                    GradientIcon(
+                                        icon = Icons.Filled.Download,
+                                        contentDescription = "download",
+                                        gradient = blueHorizontalGradient,
+                                        modifier = Modifier
+                                            .size(20.sdp)
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Download,
+                                        contentDescription = "download",
+                                        tint = Color.White,
+                                        modifier = Modifier
+                                            .size(24.sdp)
+                                    )
+                                }
+                            }
+
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .size(32.sdp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (false) colors.secondary.copy(.85f)
+                                        else colors.secondary.copy(.92f)
+                                    )
+                            ) {
+                                if (false) {
+                                    GradientIcon(
+                                        icon = Icons.Filled.Bookmarks,
+                                        contentDescription = "favorite",
+                                        gradient = blueHorizontalGradient,
+                                        modifier = Modifier
+                                            .size(20.sdp)
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Bookmarks,
+                                        contentDescription = "unfavorable",
+                                        tint = Color.White,
+                                        modifier = Modifier
+                                            .size(20.sdp)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
 
-            HorizontalPager(
-                userScrollEnabled = false,
-                state = tabContentPagerState,
-                modifier = Modifier
-                    .padding(top = 8.sdp)
-                    .fillMaxWidth()
-            ) { page ->
+            item{
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(11.sdp)
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(12.sdp),
+                    modifier = Modifier
+                        .padding(start = 14.sdp, end = 14.sdp, top = 16.sdp)
                 ) {
-                    selectedSeason?.let {
-                        it.episodes.forEach { episode ->  
-                            EpisodeCard(
+                    Text(
+                        text = "${serialResponse.seasons.size} Season" + if (serialResponse.seasons.size == 1) "" else "s",
+                        fontSize = 16.ssp,
+                        fontWeight = FontWeight.W500
+                    )
+
+                    Text(
+                        text = decodeStringWithSpecialCharacter(serialResponse.overview),
+                        fontSize = 13.ssp,
+                        color = Color.LightGray.copy(0.9f),
+                        fontWeight = FontWeight.W400,
+                        modifier = Modifier
+                            .padding(start = 2.sdp)
+                    )
+                }
+            }
+
+            item{
+                ScrollableTabRow(
+                    modifier = Modifier
+                        .padding(top = 8.sdp, start = 6.sdp, end = 6.sdp)
+                        .fillMaxWidth(),
+                    edgePadding = 0.sdp,
+                    selectedTabIndex = seasonsPagerState.currentPage, divider = {},
+                    containerColor = Color.Transparent,
+                    indicator = { tabPositions ->
+                        if (seasonsPagerState.currentPage < tabPositions.size) {
+                            Box(
+                                contentAlignment = Alignment.BottomCenter,
                                 modifier = Modifier
-                                    .padding(horizontal = 6.sdp)
                                     .fillMaxWidth()
-                                    .height(100.sdp),
-                                episode = episode
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(2f.sdp)
+                                        .clip(CircleShape)
+                                        .background(Color.LightGray.copy(0.42f))
+                                )
+
+                                NeonCard(
+                                    glowingColor = buttonsColor1,
+                                    containerColor = buttonsColor2,
+                                    cornersRadius = Int.MAX_VALUE.sdp,
+                                    glowingRadius = 7.sdp,
+                                    modifier = Modifier
+                                        .tabIndicatorOffset(tabPositions[seasonsPagerState.currentPage])
+                                        .height(2f.sdp)
+                                )
+                            }
+                        }
+                    }
+                ) {
+                    seasonTabs.forEachIndexed { index, season ->
+                        if (season.episodeCount != 0) {
+                            val selected = seasonsPagerState.currentPage == index
+
+                            var selectedColor1 by remember { mutableStateOf(buttonsColor1) }
+                            var selectedColor2 by remember { mutableStateOf(buttonsColor2) }
+
+                            if (selected) {
+                                selectedColor1 = buttonsColor1
+                                selectedColor2 = buttonsColor2
+                            } else {
+                                selectedColor1 = Color.LightGray.copy(0.42f)
+                                selectedColor2 = Color.LightGray.copy(0.42f)
+                            }
+
+                            Tab(
+                                text = {
+                                    Text(
+                                        text = "Season ${
+                                            if (serialResponse.seasons.first().seasonNumber == 0) season.seasonNumber + 1
+                                            else season.seasonNumber
+                                        }",
+                                        style = TextStyle(
+                                            brush = animatedGradient(
+                                                colors = listOf(selectedColor1, selectedColor2),
+                                                type = animatedGradientTypes.VERTICAL
+                                            ),
+                                            fontSize = 14f.ssp
+                                        )
+                                    )
+                                },
+                                selectedContentColor = buttonsColor1,
+                                unselectedContentColor = primaryColor,
+                                selected = selected,
+                                onClick = {
+                                    scope.launch { seasonsPagerState.animateScrollToPage(index) }
+                                },
+                                modifier = Modifier
                             )
                         }
                     }
                 }
+            }
+
+            item{
+                HorizontalPager(
+                    userScrollEnabled = false,
+                    state = seasonsPagerState,
+                    modifier = Modifier
+                        .padding(top = 8.sdp)
+                        .fillMaxWidth()
+                ) { page ->
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(11.sdp)
+                    ) {
+                        selectedSeason?.let {
+                            it.episodes.forEach { episode ->
+                                EpisodeCard(
+                                    modifier = Modifier
+                                        .padding(horizontal = 6.sdp)
+                                        .fillMaxWidth()
+                                        .height(100.sdp),
+                                    episode = episode
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            item{
+                MediaInfoTabRow(
+                    tabs = infoTabs,
+                    pagerState = infoPagerState,
+                    modifier = Modifier
+                        .padding(top = 12.sdp, start = 6.sdp, end = 6.sdp)
+                )
+            }
+
+            item{
+                SeriesAboutTab(
+                    pagerState = infoPagerState,
+                    navigateToSelectedParticipant = selectParticipant,
+                    selectSeries = selectSerial,
+                    seriesDisplay = serialDisplay,
+                    modifier = Modifier
+                        .padding(top = 18.sdp, bottom = 0.sdp),
+                )
             }
         }
 

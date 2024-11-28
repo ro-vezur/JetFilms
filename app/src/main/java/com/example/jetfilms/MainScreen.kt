@@ -2,7 +2,6 @@ package com.example.jetfilms
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -19,8 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -38,7 +35,9 @@ import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantResponse
 import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantDisplay
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.DTOs.SeriesPackage.SerialDisplay
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.Network.ConnectionState
 import com.example.jetfilms.Network.connectivityState
@@ -55,6 +54,9 @@ import com.example.jetfilms.Screens.SearchScreen.SearchScreen
 import com.example.jetfilms.Screens.Start.StartScreen
 import com.example.jetfilms.Screens.StartScreen
 import com.example.jetfilms.ViewModels.MoviesViewModel
+import com.example.jetfilms.ViewModels.ParticipantViewModel
+import com.example.jetfilms.ViewModels.SeriesViewModel
+import com.example.jetfilms.ViewModels.UnifiedMediaViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
@@ -86,13 +88,21 @@ fun MainScreen(
 
     if(isConnected){
         val moviesViewModel: MoviesViewModel = hiltViewModel()
+        val seriesViewModel: SeriesViewModel = hiltViewModel()
+        val participantViewModel: ParticipantViewModel = hiltViewModel()
+        val unifiedMediaViewModel: UnifiedMediaViewModel = hiltViewModel()
 
-        val cast = moviesViewModel.selectedMovieCast.collectAsStateWithLifecycle()
-        val movieImages = moviesViewModel.selectedMovieImages.collectAsStateWithLifecycle()
+        val cast = unifiedMediaViewModel.selectedMediaCast.collectAsStateWithLifecycle()
+        val selectedMediaImages = unifiedMediaViewModel.selectedMediaImages.collectAsStateWithLifecycle()
+
         val similarMovies = moviesViewModel.similarMovies.collectAsStateWithLifecycle()
 
-        val participantFilmography = moviesViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
-        val participantImages = moviesViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
+        val similarSeries = seriesViewModel.similarSerials.collectAsStateWithLifecycle()
+
+        val participantFilmography = participantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
+        val participantImages = participantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
+
+
 
 
         val selectMovie: (movie:SimplifiedMovieDataClass) -> Unit = { movie ->
@@ -105,7 +115,13 @@ fun MainScreen(
 
         val selectSeries: (series: SimplifiedSerialObject) -> Unit = { serial ->
             scope.launch {
-                navigateToSelectedSerial(screensNavController, moviesViewModel.getSerial(serial.id))
+                navigateToSelectedSerial(screensNavController, seriesViewModel.getSerial(serial.id))
+            }
+        }
+
+        val selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit = { participant ->
+            scope.launch {
+                navigateToSelectedParticipant(navController = screensNavController,participantViewModel.getParticipant(participant.id))
             }
         }
 
@@ -147,8 +163,9 @@ fun MainScreen(
                     HomeScreen(
                         selectMovie = selectMovie,
                         selectSeries = selectSeries,
-                        screensNavController,
-                        moviesViewModel
+                        navController = screensNavController,
+                        moviesViewModel = moviesViewModel,
+                        seriesViewModel = seriesViewModel
                     )
                 }
 
@@ -161,7 +178,9 @@ fun MainScreen(
                         selectMovie = selectMovie,
                         selectSeries = selectSeries,
                         navController = screensNavController,
-                        moviesViewModel = moviesViewModel
+                        moviesViewModel = moviesViewModel,
+                        seriesViewModel = seriesViewModel,
+                        unifiedMediaViewModel = unifiedMediaViewModel,
                     )
                 }
 
@@ -205,7 +224,7 @@ fun MainScreen(
                             selectSeries = selectSeries,
                             navController = screensNavController,
                             category = category.toString(),
-                            moviesViewModel = moviesViewModel,
+                            seriesViewModel = seriesViewModel,
                         )
                     }
                 }
@@ -220,7 +239,8 @@ fun MainScreen(
                     val movieResponse = it.arguments?.getParcelable<DetailedMovieResponse>("movie")
                     movieResponse?.let {
                         LaunchedEffect(null) {
-                            moviesViewModel.setSelectedMovieAdditions(movieResponse.id)
+                            unifiedMediaViewModel.setMoviesExtraInformation(movieResponse.id)
+                            moviesViewModel.setSimilarMovies(movieResponse.id)
                         }
 
                         if(cast.value != null && similarMovies.value != null) {
@@ -230,15 +250,11 @@ fun MainScreen(
                                 movieDisplay = MovieDisplay(
                                     response = movieResponse,
                                     movieCast = cast.value!!,
-                                    movieImages = movieImages.value,
+                                    movieImages = selectedMediaImages.value,
                                     similarMovies = similarMovies.value!!
                                 ),
                                 selectMovie = selectMovie,
-                                selectParticipant = { participant ->
-                                    scope.launch {
-                                        navigateToSelectedParticipant(navController = screensNavController,moviesViewModel.getParticipant(participant.id))
-                                    }
-                                }
+                                selectParticipant = selectParticipant
                             )
                         }
                     }
@@ -253,22 +269,31 @@ fun MainScreen(
 
                     val serialResponse = it.arguments?.getParcelable<DetailedSerialResponse>("serial")
                     serialResponse?.let {
+                        LaunchedEffect(null) {
+                            unifiedMediaViewModel.setSeriesExtraInformation(serialResponse.id)
+                            seriesViewModel.setSimilarSerials(serialResponse.id)
+                        }
 
-                        SerialDetailsScreen(
-                            navController = screensNavController,
-                            serialResponse = serialResponse,
-                            selectSeason = { serialId, seasonNumber ->
-                                try {
-                                    moviesViewModel.getSerialSeason(serialId, seasonNumber)
-                                }
-                                catch (e:Exception){
-                                    Log.e("error",e.message.toString())
-                                    Log.d("n",(seasonNumber+1).toString())
-                                    moviesViewModel.getSerialSeason(serialId, seasonNumber + 1)
-                                }
-
-                            }
-                        )
+                        if(cast.value != null && similarSeries.value != null) {
+                            SerialDetailsScreen(
+                                navController = screensNavController,
+                                serialDisplay = SerialDisplay(
+                                    response = serialResponse,
+                                    serialCast = cast.value!!,
+                                    serialImages = selectedMediaImages.value,
+                                    similarSerials = similarSeries.value!!
+                                ),
+                                selectSeason = { serialId, seasonNumber ->
+                                    try {
+                                        seriesViewModel.getSerialSeason(serialId, seasonNumber)
+                                    } catch (e: Exception) {
+                                        seriesViewModel.getSerialSeason(serialId, seasonNumber + 1)
+                                    }
+                                },
+                                selectSerial = selectSeries,
+                                selectParticipant = selectParticipant
+                            )
+                        }
                     }
                 }
 
@@ -282,8 +307,8 @@ fun MainScreen(
                     val participantResponse = it.arguments?.getParcelable<DetailedParticipantResponse>("participant")
                     participantResponse?.let {
                         LaunchedEffect(null) {
-                            moviesViewModel.setParticipantFilmography(participantResponse.id)
-                            moviesViewModel.setParticipantImages(participantResponse.id)
+                            participantViewModel.setParticipantFilmography(participantResponse.id)
+                            participantViewModel.setParticipantImages(participantResponse.id)
                         }
 
                         if(participantFilmography.value != null && participantImages.value != null) {
@@ -305,6 +330,8 @@ fun MainScreen(
                     FiltersMainScreen(
                         turnOffFilter = turnBack,
                         moviesViewModel = moviesViewModel,
+                        seriesViewModel = seriesViewModel,
+                        unifiedMediaViewModel = unifiedMediaViewModel,
                     )
                 }
             }

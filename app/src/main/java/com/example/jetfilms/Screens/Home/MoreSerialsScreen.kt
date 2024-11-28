@@ -44,6 +44,7 @@ import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
 import com.example.jetfilms.HAZE_STATE_BLUR
+import com.example.jetfilms.ViewModels.SeriesViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.states.rememberForeverLazyGridState
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
@@ -60,7 +61,7 @@ fun MoreSerialsScreen(
     selectSeries: (series: SimplifiedSerialObject) -> Unit,
     navController: NavController,
     category: String,
-    moviesViewModel: MoviesViewModel
+    seriesViewModel: SeriesViewModel
 ) {
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colorScheme
@@ -69,7 +70,7 @@ fun MoreSerialsScreen(
     val hazeState = remember{HazeState()}
     val scope = rememberCoroutineScope()
 
-    val moreSerialsView = moviesViewModel.moreSerialsView.collectAsLazyPagingItems()
+    val moreSerialsView = seriesViewModel.moreSerialsView.collectAsLazyPagingItems()
 
     val topBarHeight = 46
     val itemsGridSpacing = 9

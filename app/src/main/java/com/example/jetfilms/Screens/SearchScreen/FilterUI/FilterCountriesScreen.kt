@@ -1,5 +1,7 @@
 package com.example.jetfilms.Screens.SearchScreen.FilterUI
 
+import android.util.Log
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,29 +26,43 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
+import com.example.jetfilms.Components.Buttons.AcceptFiltersButton
 import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.Components.Gradient.animatedGradient
+import com.example.jetfilms.Components.InputFields.SearchField
 import com.example.jetfilms.DTOs.animatedGradientTypes
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
+import com.example.jetfilms.Helpers.Countries.getCountryCode
 import com.example.jetfilms.Helpers.Countries.getCountryList
+import com.example.jetfilms.Helpers.Countries.getCountryName
+import com.example.jetfilms.blueGradientColors
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.states.rememberForeverLazyListState
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
+import com.example.jetfilms.ui.theme.primaryColor
+import com.example.jetfilms.ui.theme.typography
 import com.example.jetfilms.ui.theme.whiteColor
+import com.example.jetfilms.whiteGradient
+import com.example.jetfilms.whiteGradientColors
+import dev.chrisbanes.haze.hazeChild
 import java.util.Locale
 
 
@@ -55,11 +72,19 @@ fun FilterCountriesScreen(
     usedCountries: List<String>,
     acceptNewCountries: (countries:List<String>) -> Unit,
 ) {
+    val typography = typography()
 
     val itemsSpacing = 10
 
     val selectedCountries = remember{ mutableStateListOf<String>() }
     val listState = rememberForeverLazyListState(key = "country filter")
+
+    var searchText by remember{ mutableStateOf("") }
+    var searchedCountries by remember { mutableStateOf<List<String>>(listOf()) }
+
+    LaunchedEffect(searchText) {
+        searchedCountries = getCountryList().filter { getCountryName(it).contains(searchText.uppercase(), true) }
+    }
 
     LaunchedEffect(null) {
         selectedCountries.clear()
@@ -71,60 +96,86 @@ fun FilterCountriesScreen(
             .fillMaxSize()
     ){
 
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(itemsSpacing.sdp),
-            state = listState,
-            modifier = Modifier
-                .align(Alignment.Center)
-        ) {
-            
-            item { Spacer(modifier = Modifier.height((FILTER_TOP_BAR_HEIGHT).sdp)) }
-            
-            item { 
-                val selected = selectedCountries.toList().sorted() == getCountryList()
-                
-                CountryCard(
-                    name = "All",
-                    selected = selectedCountries.toList().sorted() == getCountryList(),
-                    select = {
-                        if(selected){
-                            selectedCountries.clear()
-                        } else {
-                            getCountryList().forEach { country ->
-                                if(!selectedCountries.contains(country)){
-                                    selectedCountries.add(country)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+
+            Box(
+                contentAlignment = Alignment.TopCenter,
+                modifier = Modifier
+                    .padding(top = FILTER_TOP_BAR_HEIGHT.sdp)
+                    .fillMaxWidth()
+                    .height(42.sdp)
+            ){
+                SearchField(
+                    fillWidth = 1f,
+                    shape = RoundedCornerShape(bottomStart = 6.sdp, bottomEnd = 6.sdp),
+                    text = searchText,
+                    onTextChange = {
+                        searchText = it
+                    },
+                    focusedBorder = null,
+                    modifier = Modifier
+                )
+            }
+
+            LazyColumn(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(itemsSpacing.sdp),
+                state = listState,
+                modifier = Modifier
+            ) {
+
+                item { Spacer(modifier = Modifier.height((0).sdp)) }
+
+                item {
+                    val selected = selectedCountries.toList().sorted() == getCountryList()
+
+                    CountryCard(
+                        name = "All",
+                        selected = selectedCountries.toList().sorted() == getCountryList(),
+                        select = {
+                            if (selected) {
+                                selectedCountries.clear()
+                            } else {
+                                getCountryList().forEach { country ->
+                                    if (!selectedCountries.contains(country)) {
+                                        selectedCountries.add(country)
+                                    }
                                 }
                             }
                         }
-                    }
-                )
+                    )
+                }
+
+                items(searchedCountries) { country ->
+
+                    val selected = selectedCountries.contains(country) && selectedCountries.toList()
+                        .sorted() != getCountryList()
+
+                    CountryCard(
+                        name = country,
+                        selected = selected,
+                        select = {
+                            if (selectedCountries.contains(country)) selectedCountries.remove(
+                                country
+                            )
+                            else selectedCountries.add(country)
+                        }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height((BOTTOM_NAVIGATION_BAR_HEIGHT + BASE_BUTTON_HEIGHT + itemsSpacing).sdp)) }
             }
-            
-            items(getCountryList()) { country ->
-
-                val selected = selectedCountries.contains(country) && selectedCountries.toList().sorted() != getCountryList()
-
-                CountryCard(
-                    name = country,
-                    selected = selected,
-                    select = {
-                        if(selectedCountries.contains(country)) selectedCountries.remove(country)
-                        else selectedCountries.add(country)
-                    }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height((BOTTOM_NAVIGATION_BAR_HEIGHT + BASE_BUTTON_HEIGHT + itemsSpacing).sdp)) }
         }
 
-        TextButton(
+        AcceptFiltersButton(
+            isEmpty = selectedCountries.isEmpty(),
+            isDataSameAsBefore = selectedCountries.toList().sorted() == usedCountries,
             onClick = {
                 turnBack()
                 acceptNewCountries(selectedCountries)
-            },
-            gradient = blueHorizontalGradient,
-            text = "Accept Filters",
+                      },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 9).sdp)
