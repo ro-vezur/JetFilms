@@ -18,7 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.example.jetfilms.BASE_IMAGE_API_URL
-import com.example.jetfilms.DTOs.UnifiedMedia
+import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
 import com.example.jetfilms.extensions.sdp
