@@ -1,4 +1,4 @@
-package com.example.jetfilms.DTOs
+package com.example.jetfilms.DTOs.UnifiedDataPackage
 
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 
