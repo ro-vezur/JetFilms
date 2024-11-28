@@ -114,7 +114,6 @@ private fun TextButtonsContent(
         Text(
             text = text,
             style = textStyle,
-            color = Color.White,
             modifier = Modifier.align(Alignment.Center)
         )
     }
