@@ -2,6 +2,9 @@ package com.example.jetfilms
 
 import com.example.jetfilms.API.ApiInterface
 import com.example.jetfilms.Repositories.MoviesRepository
+import com.example.jetfilms.Repositories.ParticipantRepository
+import com.example.jetfilms.Repositories.SeriesRepository
+import com.example.jetfilms.Repositories.UnifiedMediaRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,5 +34,23 @@ object AppModule {
     @ViewModelScoped
     fun provideMoviesRepository(apiInterface: ApiInterface): MoviesRepository{
         return MoviesRepository(apiInterface)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideSeriesRepository(apiInterface: ApiInterface): SeriesRepository{
+        return SeriesRepository(apiInterface)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideParticipantRepository(apiInterface: ApiInterface): ParticipantRepository{
+        return ParticipantRepository(apiInterface)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideUnifiedMediaRepository(apiInterface: ApiInterface): UnifiedMediaRepository{
+        return UnifiedMediaRepository(apiInterface)
     }
 }
