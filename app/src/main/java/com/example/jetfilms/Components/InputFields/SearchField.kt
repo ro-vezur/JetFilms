@@ -59,6 +59,7 @@ import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.secondaryColor
+import com.example.jetfilms.ui.theme.transparentColor
 
 @Composable
 fun SearchField(
@@ -72,7 +73,7 @@ fun SearchField(
     clearText: () -> Unit = {},
     cancelRequest: () -> Unit = {},
     unfocusedBorder: BorderStroke = BorderStroke(1.sdp, Color.Transparent),
-    focusedBorder: BorderStroke = BorderStroke(
+    focusedBorder: BorderStroke? = BorderStroke(
         1.sdp, Brush.horizontalGradient(
             listOf(buttonsColor1, buttonsColor2)
         )
@@ -80,6 +81,7 @@ fun SearchField(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
     requestSent: Boolean = false,
+    realTimeSearch: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val typography = MaterialTheme.typography
@@ -93,6 +95,8 @@ fun SearchField(
     var barWidth by remember{ mutableStateOf(fillWidth) }
     val animatedBarWidth = animateFloatAsState(targetValue = barWidth)
     val requestedBarWidth = fillWidth - .15f
+
+    val noBorder = BorderStroke(0.sdp, transparentColor)
 
     LaunchedEffect(requestSent) {
         barWidth = if(!requestSent){
@@ -116,7 +120,7 @@ fun SearchField(
                 .height(height / 1.05f)
                 .clip(shape)
                 .background(secondaryColor)
-                .border(if (isFocused) focusedBorder else unfocusedBorder, shape)
+                .border(if (isFocused) focusedBorder?:noBorder  else unfocusedBorder, shape)
         ) {
             BasicTextField(
                 modifier = modifier
@@ -157,7 +161,7 @@ fun SearchField(
                             .padding(start = 12.sdp)
                             .size(22.sdp)
                             .clickable {
-                                if (!isTextBlank) {
+                                if (!isTextBlank && !realTimeSearch) {
                                     onSearchClick()
                                 }
                             }
