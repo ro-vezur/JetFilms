@@ -1,10 +1,11 @@
 package com.example.jetfilms.DTOs.MoviePackage
 
-import com.example.jetfilms.DTOs.ParticipantPackage.MovieCreditsResponse
+import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
+import com.example.jetfilms.DTOs.UnifiedDataPackage.ImagesFromUnifiedMediaResponse
 
 data class MovieDisplay(
     val response: DetailedMovieResponse,
-    val movieCast: MovieCreditsResponse,
-    val movieImages: ImagesFromTheMovieResponse,
+    val movieCast: UnifiedMediaCreditsResponse,
+    val movieImages: ImagesFromUnifiedMediaResponse,
     val similarMovies: MoviesResponse
 )
