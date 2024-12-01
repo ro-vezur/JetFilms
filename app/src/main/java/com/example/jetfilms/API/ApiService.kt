@@ -16,6 +16,10 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+// TODO: потрібно знайти рішення для APIKEY, щоб не передавати його весь час у кожен запит
+// TODO: також варто переіменувати APIKEY -> API_KEY, так синтаксично правильніше
+// TODO: для кращого розуміння ватро переіменувати усі DTO і додати постфікс, як тут MoviesResponse -> MoviesResponseDTO
+
 interface ApiInterface {
     @GET("movie/popular?$MINIMUM_VOTE_COUNTS")
     suspend fun popularMovies(
