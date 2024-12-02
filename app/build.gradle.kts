@@ -102,10 +102,7 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:$hilt")
     kapt("com.google.dagger:hilt-compiler:$hilt")
-//    ksp("com.google.dagger:hilt-android-compiler:$hilt")
-    // implementation ("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    //  ksp ("androidx.hilt:hilt-compiler:1.2.0")
 
     //glass morphism effect
     implementation("dev.chrisbanes.haze:haze-jetpack-compose:0.4.1")
@@ -128,6 +125,8 @@ dependencies {
     implementation("androidx.paging:paging-runtime:$paging_version")
     implementation("androidx.paging:paging-compose:1.0.0-alpha17")
 
-    //flow row
-    implementation("com.google.accompanist:accompanist-flowlayout:0.20.0")
+    // room Local Db
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-ktx:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
 }
