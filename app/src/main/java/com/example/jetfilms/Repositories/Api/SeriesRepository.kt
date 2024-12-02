@@ -1,4 +1,4 @@
-package com.example.jetfilms.Repositories
+package com.example.jetfilms.Repositories.Api
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig

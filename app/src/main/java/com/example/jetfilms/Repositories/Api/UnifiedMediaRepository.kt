@@ -1,4 +1,4 @@
-package com.example.jetfilms.Repositories
+package com.example.jetfilms.Repositories.Api
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -6,6 +6,9 @@ import com.example.jetfilms.API.ApiInterface
 import com.example.jetfilms.DTOs.Filters.SortTypes
 import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.Helpers.DTOsConverters.MovieDataToUnifiedMedia
+import com.example.jetfilms.Helpers.DTOsConverters.SeriesDataToUnifiedMedia
 import com.example.jetfilms.Helpers.Pagination.UnifiedPagingSource
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
@@ -16,6 +19,19 @@ import javax.inject.Singleton
 class UnifiedMediaRepository @Inject constructor(
     private val apiService: ApiInterface
 ) {
+
+    suspend fun fetchSearchSuggestions(query: String): List<UnifiedMedia> {
+        val searchMovies = apiService.searchMovies(query,1)
+        val searchSeries = apiService.searchSerials(query,1)
+
+        val unifiedMedia = mutableListOf<UnifiedMedia>()
+
+        unifiedMedia.addAll(searchMovies.results.map { MovieDataToUnifiedMedia(it) })
+        unifiedMedia.addAll(searchSeries.results.map { SeriesDataToUnifiedMedia(it) })
+
+        return (searchMovies.results.map { MovieDataToUnifiedMedia(it)} + searchSeries.results.map { SeriesDataToUnifiedMedia(it)}).sortedByDescending { it.rating }.take(10)
+    }
+
     fun getPaginatedUnifiedData(
         getMoviesResponse: suspend (page: Int) -> MoviesResponse,
         getSerialsResponse: suspend (page: Int) -> SimplifiedSerialsResponse,

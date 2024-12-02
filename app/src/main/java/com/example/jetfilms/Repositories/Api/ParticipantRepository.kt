@@ -1,4 +1,4 @@
-package com.example.jetfilms.Repositories
+package com.example.jetfilms.Repositories.Api
 
 import com.example.jetfilms.API.ApiInterface
 import javax.inject.Inject

@@ -1,20 +1,14 @@
-package com.example.jetfilms.Repositories
+package com.example.jetfilms.Repositories.Api
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.jetfilms.API.ApiInterface
 import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
-import com.example.jetfilms.DTOs.Filters.SortTypes
 import com.example.jetfilms.Helpers.ListToString.CountryListToString
 import com.example.jetfilms.Helpers.ListToString.IntListToString
-import com.example.jetfilms.Helpers.ListToString.StringListToString
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.Helpers.Pagination.MoviesPagingSource
-import com.example.jetfilms.Helpers.Pagination.SerialsPagingSource
-import com.example.jetfilms.Helpers.Pagination.UnifiedPagingSource
-import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 import javax.inject.Inject
 import javax.inject.Singleton
 
