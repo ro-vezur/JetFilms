@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
@@ -82,10 +83,11 @@ fun SearchField(
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
     requestSent: Boolean = false,
     realTimeSearch: Boolean = false,
+    interactionSource: MutableInteractionSource = MutableInteractionSource(),
     modifier: Modifier = Modifier
 ) {
     val typography = MaterialTheme.typography
-    val interactionSource = remember { MutableInteractionSource() }
+//    val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -120,7 +122,7 @@ fun SearchField(
                 .height(height / 1.05f)
                 .clip(shape)
                 .background(secondaryColor)
-                .border(if (isFocused) focusedBorder?:noBorder  else unfocusedBorder, shape)
+                .border(if (isFocused) focusedBorder ?: noBorder else unfocusedBorder, shape)
         ) {
             BasicTextField(
                 modifier = modifier
@@ -153,23 +155,24 @@ fun SearchField(
                         modifier,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search",
-                        tint = Color.LightGray.copy(0.95f),
-                        modifier = Modifier
-                            .padding(start = 12.sdp)
-                            .size(22.sdp)
-                            .clickable {
-                                if (!isTextBlank && !realTimeSearch) {
-                                    onSearchClick()
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search",
+                            tint = Color.LightGray.copy(0.95f),
+                            modifier = Modifier
+                                .padding(start = 9.sdp)
+                                .size(22.sdp)
+                                .clickable {
+                                    if (!isTextBlank && !realTimeSearch) {
+                                        onSearchClick()
+                                        focusManager.clearFocus()
+                                    }
                                 }
-                            }
-                    )
+                        )
 
                         Box(
                             Modifier
-                                .padding(start = 11.sdp)
+                                .padding(start = 4.sdp)
                                 .weight(1f)) {
                             if (text.isEmpty()) {
                                 Text(
@@ -191,7 +194,7 @@ fun SearchField(
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier
-                                    .padding(end = 10.sdp)
+                                    .padding(start = 4.sdp,end = 10.sdp)
                                     .size(19.sdp)
                                     .clip(CircleShape)
                                     .background(Color.LightGray.copy(0.35f))
@@ -235,5 +238,5 @@ fun SearchField(
 @Preview
 @Composable
 private fun previ() {
-    SearchField(text = "niga", onTextChange = {}, requestSent = true)
+   // SearchField(text = "niga", onTextChange = {}, requestSent = true)
 }
