@@ -7,7 +7,7 @@ import androidx.paging.cachedIn
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
-import com.example.jetfilms.Repositories.SeriesRepository
+import com.example.jetfilms.Repositories.Api.SeriesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

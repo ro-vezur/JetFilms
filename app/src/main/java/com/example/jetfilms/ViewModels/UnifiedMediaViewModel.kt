@@ -12,7 +12,7 @@ import com.example.jetfilms.DTOs.UnifiedDataPackage.ImagesFromUnifiedMediaRespon
 import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
 import com.example.jetfilms.Helpers.Countries.getCountryList
-import com.example.jetfilms.Repositories.UnifiedMediaRepository
+import com.example.jetfilms.Repositories.Api.UnifiedMediaRepository
 import com.example.jetfilms.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,6 +59,9 @@ class UnifiedMediaViewModel @Inject constructor(
         PagingData.empty())
     val filteredUnifiedData = _filteredUnifiedData.asStateFlow()
 
+    private val _searchSuggestions: MutableStateFlow<List<UnifiedMedia>> = MutableStateFlow(listOf())
+    val searchSuggestions = _searchSuggestions.asStateFlow()
+
     fun setSearchText(text: String){
         viewModelScope.launch {
             withContext(Dispatchers.IO){
@@ -90,6 +93,14 @@ class UnifiedMediaViewModel @Inject constructor(
         }
     }
 
+    fun fetchSearchSuggestions(query: String){
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                _searchSuggestions.emit(unifiedMediaRepository.fetchSearchSuggestions(query))
+            }
+        }
+    }
+
     fun setFilteredUnifiedData(
         getMoviesResponse: suspend (page: Int) -> MoviesResponse,
         getSerialsResponse: suspend (page: Int) -> SimplifiedSerialsResponse,
@@ -114,6 +125,8 @@ class UnifiedMediaViewModel @Inject constructor(
             }
         }
     }
+
+
 
     fun setFilteredGenres(genres:List<MediaGenres>){
         viewModelScope.launch {
