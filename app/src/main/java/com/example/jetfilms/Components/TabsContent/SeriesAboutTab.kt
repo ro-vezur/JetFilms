@@ -15,7 +15,7 @@ fun SeriesAboutTab(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
     seriesDisplay: SerialDisplay,
-    selectSeries: (movie: SimplifiedSerialObject) -> Unit,
+    selectSeries: (id: Int) -> Unit,
     navigateToSelectedParticipant: (participant: SimplifiedParticipantResponse) -> Unit
 ) {
     val seriesResponse = seriesDisplay.response

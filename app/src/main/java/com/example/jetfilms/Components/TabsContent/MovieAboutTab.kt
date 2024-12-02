@@ -16,7 +16,7 @@ fun MovieAboutTab(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
     movieDisplay: MovieDisplay,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
+    selectMovie: (id: Int) -> Unit,
     navigateToSelectedParticipant: (participant: SimplifiedParticipantResponse) -> Unit
 ) {
     val movieResponse = movieDisplay.response
