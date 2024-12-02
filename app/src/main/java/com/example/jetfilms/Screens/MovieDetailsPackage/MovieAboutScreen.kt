@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import com.example.jetfilms.Components.Cards.MovieParticipantCard
 import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
@@ -36,6 +37,8 @@ fun MovieAboutScreen(
     val typography = MaterialTheme.typography
 
     val movieResponse = movieDisplay.response
+
+    val context = LocalContext.current
 
     Column(
         verticalArrangement = Arrangement.spacedBy(20.sdp),
@@ -118,7 +121,7 @@ fun MovieAboutScreen(
                     )
 
                     Text(
-                        text = DateFormats().year(movieResponse.releaseDate).toString(),
+                        text = DateFormats().getYear(movieResponse.releaseDate).toString(),
                         fontSize = typography.bodyMedium.fontSize / 1.1f,
                         color = Color.LightGray.copy(0.84f),
                         modifier = Modifier

@@ -20,7 +20,7 @@ import com.example.jetfilms.extensions.sdp
 @Composable
 fun SerialMoreLikeThisScreen(
     similarSeries: SimplifiedSerialsResponse,
-    selectSerial: (serial: SimplifiedSerialObject) -> Unit
+    selectSerial: (id: Int) -> Unit
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(9.sdp),
@@ -33,7 +33,7 @@ fun SerialMoreLikeThisScreen(
                     .clip(RoundedCornerShape(6.sdp))
                     .width(126.sdp)
                     .height(200.sdp)
-                    .clickable { selectSerial(serial) },
+                    .clickable { selectSerial(serial.id) },
                 serial = serial
             )
         }

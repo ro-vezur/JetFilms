@@ -63,8 +63,8 @@ import kotlinx.coroutines.launch
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun HomeScreen(
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
-    selectSeries: (serial: SimplifiedSerialObject) -> Unit,
+    selectMovie: (id: Int) -> Unit,
+    selectSeries: (id: Int) -> Unit,
     navController: NavController,
     moviesViewModel: MoviesViewModel,
     seriesViewModel: SeriesViewModel

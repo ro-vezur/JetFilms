@@ -25,15 +25,11 @@ import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -43,19 +39,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.jetfilms.Helpers.fromMinutesToHours
 import com.example.jetfilms.Components.Gradient.GradientIcon
-import com.example.jetfilms.Components.Cards.NeonCard
 import com.example.jetfilms.Components.Buttons.TextButton
 import com.example.jetfilms.Components.Buttons.TurnBackButton
-import com.example.jetfilms.Components.Gradient.animatedGradient
 import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
-import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
@@ -63,23 +55,18 @@ import com.example.jetfilms.Components.Cards.PropertyCard
 import com.example.jetfilms.Components.DetailedMediaComponents.DisplayRating
 import com.example.jetfilms.Components.MediaInfoTabRow
 import com.example.jetfilms.Components.TabsContent.MovieAboutTab
-import com.example.jetfilms.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.infoTabs
-import com.example.jetfilms.ui.theme.buttonsColor1
-import com.example.jetfilms.ui.theme.buttonsColor2
-import com.example.jetfilms.ui.theme.primaryColor
-import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MovieDetailsScreen(
     navController: NavController,
     movieDisplay: MovieDisplay,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
+    selectMovie: (id: Int) -> Unit,
     selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
@@ -162,7 +149,7 @@ fun MovieDetailsScreen(
                         ) {
                             if(movieResponse.releaseDate.isNotBlank()) {
                                 PropertyCard(
-                                    text = DateFormats().year(movieResponse.releaseDate).toString(),
+                                    text = DateFormats().getYear(movieResponse.releaseDate).toString(),
                                     lengthMultiplayer = 13
                                 )
                             }

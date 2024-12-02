@@ -20,7 +20,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Download
@@ -65,7 +64,6 @@ import com.example.jetfilms.Components.DetailedMediaComponents.DisplayRating
 import com.example.jetfilms.Components.MediaInfoTabRow
 import com.example.jetfilms.Components.TabsContent.SeriesAboutTab
 import com.example.jetfilms.DTOs.SeriesPackage.SerialDisplay
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
 import com.example.jetfilms.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
@@ -84,7 +82,7 @@ fun SerialDetailsScreen(
     navController: NavController,
     serialDisplay: SerialDisplay,
     selectSeason: suspend (serialId: Int,seasonNumber: Int) -> SerialSeasonResponse?,
-    selectSerial: (movie: SimplifiedSerialObject) -> Unit,
+    selectSerial: (id: Int) -> Unit,
     selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
@@ -189,7 +187,7 @@ fun SerialDetailsScreen(
                         ) {
                             if (serialResponse.releaseDate.isNotBlank()) {
                                 PropertyCard(
-                                    text = DateFormats().year(serialResponse.releaseDate)
+                                    text = DateFormats().getYear(serialResponse.releaseDate)
                                         .toString(),
                                     lengthMultiplayer = 13
                                 )

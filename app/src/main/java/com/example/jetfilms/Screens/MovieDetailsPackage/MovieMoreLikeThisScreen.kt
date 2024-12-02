@@ -19,7 +19,7 @@ import com.example.jetfilms.extensions.sdp
 @Composable
 fun MovieMoreLikeThisScreen(
     similarMovies: MoviesResponse,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit
+    selectMovie: (id: Int) -> Unit
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(9.sdp),
@@ -33,7 +33,7 @@ fun MovieMoreLikeThisScreen(
                     .clip(RoundedCornerShape(6.sdp))
                     .width(126.sdp)
                     .height(200.sdp)
-                    .clickable { selectMovie(movie) },
+                    .clickable { selectMovie(movie.id) },
                 movie = movie
             )
 

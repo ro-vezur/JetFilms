@@ -60,7 +60,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MoreMoviesScreen(
     turnBack: () -> Unit,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
+    selectMovie: (id: Int) -> Unit,
     category: String,
     moviesViewModel: MoviesViewModel,
 ) {
@@ -157,7 +157,7 @@ fun MoreMoviesScreen(
                                     .clip(RoundedCornerShape(8.sdp))
                                     .height(205.sdp)
                                     .clickable {
-                                        selectMovie(movie)
+                                        selectMovie(movie.id)
                                     }
                             )
                         }

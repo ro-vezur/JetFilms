@@ -92,16 +92,15 @@ fun AcceptFiltersScreen(
         }
 
     val filters = listOf(
-        Filter("Categories",selectedCategoriesTextList,{}),
-        Filter("Genres",selectedGenresTextList,{}),
-        Filter("Country",selectedCountriesTextList,{}),
-        Filter("Year","",{}),
+        Filter("Categories",selectedCategoriesTextList),
+        Filter("Genres",selectedGenresTextList),
+        Filter("Country",selectedCountriesTextList),
+        Filter("Year",""),
     )
 
     val scrollState = rememberForeverScrollState(key = "filter categories")
       
     Column(
-      //  verticalArrangement = Arrangement.spacedBy(15.sdp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(horizontal = 12.sdp)
@@ -156,7 +155,6 @@ fun AcceptFiltersScreen(
                    filter = filter,
                    onClick = {
                        navController.navigate(filter.name)
-                       filter.onClick()
                    }
                )
             }
@@ -224,7 +222,7 @@ private fun FilterCard(filter: Filter,onClick: () -> Unit) {
 
         Divider(
             color = Color.DarkGray.copy(0.5f),
-            thickness = 1.sdp,
+            thickness = 2f.sdp,
             modifier = Modifier
                 .padding(bottom = 6.sdp)
                 .fillMaxWidth()

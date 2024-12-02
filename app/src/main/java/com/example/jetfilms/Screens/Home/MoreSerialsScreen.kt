@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MoreSerialsScreen(
-    selectSeries: (series: SimplifiedSerialObject) -> Unit,
+    selectSeries: (id: Int) -> Unit,
     navController: NavController,
     category: String,
     seriesViewModel: SeriesViewModel
@@ -153,7 +153,7 @@ fun MoreSerialsScreen(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.sdp))
                                     .height(205.sdp)
-                                    .clickable { selectSeries(serial) }
+                                    .clickable { selectSeries(serial.id) }
                             )
                         }
                     }

@@ -56,7 +56,7 @@ import kotlinx.coroutines.launch
 fun ParticipantDetailsScreen(
     navController: NavController,
     participantDisplay: DetailedParticipantDisplay,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit
+    selectMovie: (id: Int) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -228,7 +228,7 @@ private fun TabContent(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
     participantDisplay: DetailedParticipantDisplay,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
+    selectMovie: (id: Int) -> Unit,
 ) {
     val participantResponse = participantDisplay.participantResponse
 

@@ -2,6 +2,7 @@ package com.example.jetfilms
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -31,16 +32,19 @@ import com.example.jetfilms.CustomNavType.DetailedSerialNavType
 import com.example.jetfilms.CustomNavType.ParticipantNavType
 import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.DTOs.MoviePackage.MovieDisplay
-import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantResponse
 import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantDisplay
+import com.example.jetfilms.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SerialDisplay
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
 import com.example.jetfilms.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
+import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.Helpers.DTOsConverters.MovieDataToUnifiedMedia
+import com.example.jetfilms.Helpers.DTOsConverters.SeriesDataToUnifiedMedia
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.Network.ConnectionState
 import com.example.jetfilms.Network.connectivityState
+import com.example.jetfilms.Screens.Favorite.FavoriteNavigateScreen
 import com.example.jetfilms.Screens.Home.HomeScreen
 import com.example.jetfilms.Screens.Home.MoreMoviesScreen
 import com.example.jetfilms.Screens.Home.MoreSerialsScreen
@@ -51,10 +55,12 @@ import com.example.jetfilms.Screens.MovieDetailsPackage.SerialDetailsScreen
 import com.example.jetfilms.Screens.ParticipantDetailsPackage.ParticipantDetailsScreen
 import com.example.jetfilms.Screens.SearchScreen.FilterUI.FiltersMainScreen
 import com.example.jetfilms.Screens.SearchScreen.SearchScreen
+import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 import com.example.jetfilms.Screens.Start.StartScreen
 import com.example.jetfilms.Screens.StartScreen
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.ViewModels.ParticipantViewModel
+import com.example.jetfilms.ViewModels.SearchHistoryViewModel
 import com.example.jetfilms.ViewModels.SeriesViewModel
 import com.example.jetfilms.ViewModels.UnifiedMediaViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
@@ -63,8 +69,12 @@ import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.internal.wait
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -85,12 +95,13 @@ fun MainScreen(
 
     val turnBack = { screensNavController.popBackStackOrIgnore() }
 
-
     if(isConnected){
         val moviesViewModel: MoviesViewModel = hiltViewModel()
         val seriesViewModel: SeriesViewModel = hiltViewModel()
         val participantViewModel: ParticipantViewModel = hiltViewModel()
         val unifiedMediaViewModel: UnifiedMediaViewModel = hiltViewModel()
+
+        val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
 
         val cast = unifiedMediaViewModel.selectedMediaCast.collectAsStateWithLifecycle()
         val selectedMediaImages = unifiedMediaViewModel.selectedMediaImages.collectAsStateWithLifecycle()
@@ -102,20 +113,32 @@ fun MainScreen(
         val participantFilmography = participantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
         val participantImages = participantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
 
+        val searchHistory = searchHistoryViewModel.searchedHistory.collectAsStateWithLifecycle()
 
-
-
-        val selectMovie: (movie:SimplifiedMovieDataClass) -> Unit = { movie ->
-            scope.launch {
-                moviesViewModel.getMovie(movie.id)?.let { detailedMovie ->
-                    navigateToSelectedMovie(screensNavController, detailedMovie)
+        val selectMovie: (movieId: Int) -> Unit = { id ->
+           try {
+                scope.launch {
+                    moviesViewModel.getMovie(id)?.let { detailedMovie ->
+                        navigateToSelectedMovie(screensNavController, detailedMovie)
+                    }
                 }
             }
+           catch (e: Exception){
+               Log.e("error",e.message.toString())
+           }
         }
 
-        val selectSeries: (series: SimplifiedSerialObject) -> Unit = { serial ->
-            scope.launch {
-                navigateToSelectedSerial(screensNavController, seriesViewModel.getSerial(serial.id))
+        val selectSeries: (seriesId: Int) -> Unit = { id ->
+            try {
+                scope.launch {
+                    navigateToSelectedSerial(
+                        screensNavController,
+                        seriesViewModel.getSerial(id)
+                    )
+                }
+            }
+            catch (e: Exception){
+              //  Log.e("error",e.message.toString())
             }
         }
 
@@ -125,6 +148,40 @@ fun MainScreen(
             }
         }
 
+        LaunchedEffect(null) {
+            val searchedMediaToAdd = mutableListOf<UnifiedMedia>()
+            val searchedHistoryMediaIds = searchHistoryViewModel.getSearchHistoryMediaIds()
+            searchedHistoryMediaIds.forEach { searchedMedia: SearchedMedia ->
+                    scope.launch{
+                        if (searchedMedia.mediaType == MediaFormats.MOVIE.format) {
+                            val movie = moviesViewModel.getMovie(searchedMedia.mediaId)
+
+                            movie?.let{
+                                searchedMediaToAdd.add(
+                                    MovieDataToUnifiedMedia(movie)
+                                )
+                            }
+
+                        } else {
+                            val series = seriesViewModel.getSerial(searchedMedia.mediaId)
+                            searchedMediaToAdd.add(
+                                SeriesDataToUnifiedMedia(series)
+                                )
+                        }
+                    }
+            }
+
+            scope.launch{
+                withContext(Dispatchers.IO) {
+                    delay((searchedHistoryMediaIds.size.toLong() * 8))
+
+                    Log.d("searched medias", searchedMediaToAdd.toString())
+
+                    searchHistoryViewModel.setSearchHistoryMedia(searchedMediaToAdd)
+                }
+            }
+
+        }
 
         Scaffold(
             containerColor = Color.Black,
@@ -181,13 +238,18 @@ fun MainScreen(
                         moviesViewModel = moviesViewModel,
                         seriesViewModel = seriesViewModel,
                         unifiedMediaViewModel = unifiedMediaViewModel,
+                        searchHistoryViewModel = searchHistoryViewModel,
                     )
                 }
 
                 composable(
                     route = "FavoriteScreen"
                 ) {
-
+                    FavoriteNavigateScreen(
+                        moviesViewModel = moviesViewModel,
+                        seriesViewModel = seriesViewModel,
+                        unifiedMediaViewModel = unifiedMediaViewModel,
+                    )
                 }
 
                 composable(
