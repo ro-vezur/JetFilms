@@ -6,6 +6,8 @@ import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
 import com.example.jetfilms.DTOs.Filters.SortTypes
 import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.Helpers.DTOsConverters.MovieDataToUnifiedMedia
+import com.example.jetfilms.Helpers.DTOsConverters.SeriesDataToUnifiedMedia
 import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
 
 class UnifiedPagingSource(
@@ -33,28 +35,14 @@ class UnifiedPagingSource(
 
             if(categories.contains(MediaFormats.MOVIE)) {
                 unifiedMediaList.addAll(moviesResponse.results.map {
-                    UnifiedMedia(
-                        id = it.id,
-                        poster = it.poster.toString(),
-                        releaseDate = it.releaseDate,
-                        rating = it.rating,
-                        popularity = it.popularity,
-                        mediaType = MediaFormats.MOVIE
-                    )
+                    MovieDataToUnifiedMedia(it)
                 }
                 )
             }
 
             if(categories.contains(MediaFormats.SERIES)) {
                 unifiedMediaList.addAll(serialsResponse.results.map {
-                    UnifiedMedia(
-                        id = it.id,
-                        poster = it.poster.toString(),
-                        releaseDate = it.releaseDate,
-                        rating = it.rating,
-                        popularity = it.popularity,
-                        mediaType = MediaFormats.SERIES
-                    )
+                    SeriesDataToUnifiedMedia(it)
                 }
                 )
             }
