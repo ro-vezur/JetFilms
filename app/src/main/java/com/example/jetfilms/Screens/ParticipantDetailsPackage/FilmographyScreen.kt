@@ -28,15 +28,10 @@ import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantDisplay
 import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantFilmography
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.states.rememberForeverLazyGridState
-import com.google.accompanist.flowlayout.FlowMainAxisAlignment
-import com.google.accompanist.flowlayout.FlowRow
-import com.google.accompanist.flowlayout.SizeMode
-
-@SuppressLint("SuspiciousIndentation")
 @Composable
 fun FilmographyScreen(
     participantDisplay: DetailedParticipantDisplay,
-    selectMovie:(movie:SimplifiedMovieDataClass) -> Unit,
+    selectMovie:(id: Int) -> Unit,
 ){
 
     val filmography = participantDisplay.filmography
@@ -64,7 +59,7 @@ fun FilmographyScreen(
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.sdp))
                         .height(155.sdp)
-                        .clickable {selectMovie(movie)}
+                        .clickable {selectMovie(movie.id)}
                 )
             }
 
