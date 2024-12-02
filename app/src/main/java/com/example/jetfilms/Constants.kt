@@ -35,4 +35,4 @@ val infoTabs = listOf(
 
 const val BASE_API_URL = "https://api.themoviedb.org/3/"
 const val BASE_IMAGE_API_URL = "https://image.tmdb.org/t/p/w500"
-const val APIKEY = ""
+const val API_KEY = ""
