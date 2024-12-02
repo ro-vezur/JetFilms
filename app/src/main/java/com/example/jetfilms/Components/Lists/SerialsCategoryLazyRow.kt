@@ -35,7 +35,7 @@ import com.example.jetfilms.extensions.ssp
 @Composable
 fun SerialsCategoryList(
     category: String,
-    selectSerial: (movie: SimplifiedSerialObject) -> Unit,
+    selectSerial: (id: Int) -> Unit,
     serialsList: List<SimplifiedSerialObject>,
     navController: NavController,
     onSeeAllClick: () -> Unit,
@@ -45,14 +45,14 @@ fun SerialsCategoryList(
     imageModifier: Modifier = Modifier,
 ) {
     val typography = MaterialTheme.typography
-    val scrollState = rememberScrollState()
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(top = topPadding)
-            .fillMaxWidth()
-    ) {
+    if(serialsList.isNotEmpty()){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(top = topPadding)
+                .fillMaxWidth()
+        ) {
             Row(
                 verticalAlignment = Alignment.Bottom,
                 modifier = Modifier
@@ -69,7 +69,7 @@ fun SerialsCategoryList(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                if(showSeeAllButton){
+                if (showSeeAllButton) {
                     Box(
                         modifier = Modifier
                             .width(58.sdp)
@@ -104,12 +104,11 @@ fun SerialsCategoryList(
 
                     SerialCard(
                         modifier = imageModifier
-                            .clickable { selectSerial(serial) },
+                            .clickable { selectSerial(serial.id) },
                         serial = serial
                     )
-
                 }
             }
         }
-
+    }
 }

@@ -34,7 +34,7 @@ import com.example.jetfilms.extensions.ssp
 @Composable
 fun MoviesCategoryList(
     category: String,
-    selectMovie: (movie: SimplifiedMovieDataClass) -> Unit,
+    selectMovie: (id: Int) -> Unit,
     moviesList: List<SimplifiedMovieDataClass>,
     navController: NavController,
     onSeeAllClick: () -> Unit,
@@ -46,67 +46,69 @@ fun MoviesCategoryList(
     val typography = MaterialTheme.typography
     val scrollState = rememberScrollState()
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(top = topPadding)
-            .fillMaxWidth()
-    ) {
-        Row(
-            verticalAlignment = Alignment.Bottom,
+    if(moviesList.isNotEmpty()){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(start = 10.sdp, end = 12.sdp)
+                .padding(top = topPadding)
                 .fillMaxWidth()
         ) {
-            Text(
-                text = category,
-                style = typography.titleLarge,
-                color = Color.White,
-                fontSize = 25f.ssp,
+            Row(
+                verticalAlignment = Alignment.Bottom,
                 modifier = Modifier
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            if(showSeeAllButton){
-                Box(
+                    .padding(start = 10.sdp, end = 12.sdp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = category,
+                    style = typography.titleLarge,
+                    color = Color.White,
+                    fontSize = 25f.ssp,
                     modifier = Modifier
-                        .width(58.sdp)
-                        .height(22.sdp)
-                        .clip(RoundedCornerShape(8.sdp))
-                        .clickable {
-                            onSeeAllClick()
-                            navController.navigate(MoreMoviesScreenRoute(category))
-                        }
-                ) {
-                    Text(
-                        text = "See All",
-                        style = typography.bodyMedium.copy(
-                            brush = blueHorizontalGradient,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        fontSize = 20.5f.ssp,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-
-                    )
-                }
-            }
-        }
-
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(9.sdp),
-            modifier = Modifier
-                .padding(start = 15.sdp,top = 14.sdp, bottom = bottomPadding)
-        ) {
-            items(items = moviesList) { movie ->
-
-                MovieCard(
-                    modifier = imageModifier
-                        .clickable { selectMovie(movie) },
-                    movie = movie
                 )
 
+                Spacer(modifier = Modifier.weight(1f))
+
+                if (showSeeAllButton) {
+                    Box(
+                        modifier = Modifier
+                            .width(58.sdp)
+                            .height(22.sdp)
+                            .clip(RoundedCornerShape(8.sdp))
+                            .clickable {
+                                onSeeAllClick()
+                                navController.navigate(MoreMoviesScreenRoute(category))
+                            }
+                    ) {
+                        Text(
+                            text = "See All",
+                            style = typography.bodyMedium.copy(
+                                brush = blueHorizontalGradient,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            fontSize = 20.5f.ssp,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+
+                        )
+                    }
+                }
+            }
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(9.sdp),
+                modifier = Modifier
+                    .padding(start = 15.sdp, top = 14.sdp, bottom = bottomPadding)
+            ) {
+                items(items = moviesList) { movie ->
+
+                    MovieCard(
+                        modifier = imageModifier
+                            .clickable { selectMovie(movie.id) },
+                        movie = movie
+                    )
+
+                }
             }
         }
     }
