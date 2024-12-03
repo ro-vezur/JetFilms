@@ -1,5 +1,6 @@
 package com.example.jetfilms.ViewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetfilms.DTOs.SearchHistory_RoomDb.SearchedMedia
@@ -18,22 +19,34 @@ class SearchHistoryViewModel @Inject constructor(
     private val searchedHistoryRepository: SearchedHistoryRepository
 ): ViewModel() {
 
-    private val _searchedHistory: MutableStateFlow<MutableList<UnifiedMedia>> = MutableStateFlow(mutableListOf())
-    val searchedHistory = _searchedHistory.asStateFlow()
+    private val _searchedUnifiedMedia: MutableStateFlow<MutableList<UnifiedMedia>> = MutableStateFlow(
+        mutableListOf()
+    )
+    val searchedUnifiedMedia = _searchedUnifiedMedia.asStateFlow()
 
+    private val _searchedHistoryMedia: MutableStateFlow<MutableList<SearchedMedia>> = MutableStateFlow(
+        mutableListOf()
+    )
+    val searchedHistoryMedia = _searchedHistoryMedia.asStateFlow()
 
-    fun setSearchHistoryMedia(searchedHistoryMedia: MutableList<UnifiedMedia>) {
+    fun addSearchHistoryMedia(unifiedMedia: UnifiedMedia,searchedMedia: SearchedMedia){
         viewModelScope.launch {
             withContext(Dispatchers.IO){
-                _searchedHistory.emit(searchedHistoryMedia)
-            }
-        }
-    }
+                val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaType == unifiedMedia.mediaType }
+                val findSearchedMedia = _searchedHistoryMedia.value.find { it.id == searchedMedia.id && it.mediaType == searchedMedia.mediaType }
 
-    fun addSearchHistoryMedia(unifiedMedia: UnifiedMedia){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                _searchedHistory.value.add(unifiedMedia)
+                if(findUnifiedMedia == null) {
+                    _searchedUnifiedMedia.value.add(unifiedMedia)
+
+                } else{
+                    _searchedUnifiedMedia.value[_searchedUnifiedMedia.value.indexOf(findUnifiedMedia)] = findUnifiedMedia
+                }
+
+                if(findSearchedMedia == null){
+                    _searchedHistoryMedia.value.add(searchedMedia)
+                } else{
+                    _searchedHistoryMedia.value[_searchedHistoryMedia.value.indexOf(findSearchedMedia)] = searchedMedia
+                }
             }
         }
     }
