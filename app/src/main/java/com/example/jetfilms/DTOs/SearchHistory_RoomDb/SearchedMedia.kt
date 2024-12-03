@@ -6,8 +6,8 @@ import okhttp3.MediaType
 
 @Entity(tableName = "searchHistory")
 data class SearchedMedia(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey()
+    val id: String,
     val mediaId: Int,
     val mediaType: String,
     val viewedDate: String,
