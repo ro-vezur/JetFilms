@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -107,7 +108,6 @@ fun SerialDetailsScreen(
     var selectedSeason by remember { mutableStateOf<SerialSeasonResponse?>(null) }
 
     LaunchedEffect(currentSeasonPage) {
-        Log.d("id",serialResponse.id.toString())
         selectedSeason =
            try {
                selectSeason(serialResponse.id,currentSeasonPage)
@@ -400,23 +400,18 @@ fun SerialDetailsScreen(
                     modifier = Modifier
                         .padding(top = 8.sdp)
                         .fillMaxWidth()
-                ) { page ->
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(11.sdp)
-                    ) {
-                        selectedSeason?.let {
-                            it.episodes.forEach { episode ->
-                                EpisodeCard(
-                                    modifier = Modifier
-                                        .padding(horizontal = 6.sdp)
-                                        .fillMaxWidth()
-                                        .height(100.sdp),
-                                    episode = episode
-                                )
-                            }
-                        }
-                    }
+                ) {}
+            }
+
+            selectedSeason?.let {
+                items(it.episodes){ episode ->
+                    EpisodeCard(
+                        modifier = Modifier
+                            .padding(horizontal = 6.sdp, vertical = 6.sdp)
+                            .fillMaxWidth()
+                            .height(105.sdp),
+                        episode = episode
+                    )
                 }
             }
 

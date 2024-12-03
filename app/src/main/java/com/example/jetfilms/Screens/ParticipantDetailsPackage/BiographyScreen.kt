@@ -36,16 +36,13 @@ fun BiographyScreen(participantDisplay: DetailedParticipantDisplay) {
     val typography = typography()
     val participantResponse = participantDisplay.participantResponse
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
     ){
-        item() {
-            Spacer(modifier = Modifier.height(16.sdp))
-        }
+        Spacer(modifier = Modifier.height(16.sdp))
 
-        item{
-            ExpandableText(
+        ExpandableText(
                 text = decodeStringWithSpecialCharacter(participantResponse.biography),
                 minimizedMaxLines = 8,
                 textStyle = TextStyle(
@@ -61,16 +58,16 @@ fun BiographyScreen(participantDisplay: DetailedParticipantDisplay) {
                 ),
                 modifier = Modifier
                     .padding(horizontal = 14.sdp)
-            )
-        }
+        )
+
 
         if(participantDisplay.images.profiles.isNotEmpty()) {
-            item {
-                Column(
+
+            Column(
                     verticalArrangement = Arrangement.spacedBy(9.sdp),
                     modifier = Modifier
                         .padding(start = 1.sdp,top = 16.sdp)
-                ) {
+            ) {
                     Text(
                         text = "Photos",
                         style = typography.bodyMedium,
@@ -99,7 +96,6 @@ fun BiographyScreen(participantDisplay: DetailedParticipantDisplay) {
 
                         item { }
                     }
-                }
             }
         }
     }

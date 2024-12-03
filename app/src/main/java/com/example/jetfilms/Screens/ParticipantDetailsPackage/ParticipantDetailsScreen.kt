@@ -2,18 +2,28 @@ package com.example.jetfilms.Screens.ParticipantDetailsPackage
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
@@ -42,6 +52,7 @@ import com.example.jetfilms.Components.Gradient.animatedGradient
 import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantDisplay
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.Components.Cards.MovieCard
 import com.example.jetfilms.DTOs.animatedGradientTypes
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
@@ -79,137 +90,176 @@ fun ParticipantDetailsScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+        LazyColumn(
+           // columns = GridCells.Fixed(3),
+          //  horizontalArrangement = Arrangement.spacedBy(7.sdp),
+            verticalArrangement = Arrangement.spacedBy(7.sdp),
+            contentPadding = PaddingValues(horizontal = 0.sdp),
+            userScrollEnabled = true,
             modifier = Modifier
                 .fillMaxSize()
                 .background(colors.primary)
-                .verticalScroll(scrollState)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(315.sdp)
-            ) {
-                AsyncImage(
-                    model = "$BASE_IMAGE_API_URL${decodeStringWithSpecialCharacter(participantResponse.image.toString())}",
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-
+            item{
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color.Transparent,
-                                    colors.primary.copy(0.58f),
-                                    colors.primary.copy(1f),
-                                )
-                            )
-                        )
-                )
-
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(start = 15.sdp)
+                        .fillMaxWidth()
+                        .height(315.sdp)
                 ) {
-                    Text(
-                        text = decodeStringWithSpecialCharacter(participantResponse.name),
-                        style = typography.titleLarge,
-                        fontSize = 26f.ssp,
+                    AsyncImage(
+                        model = "$BASE_IMAGE_API_URL${
+                            decodeStringWithSpecialCharacter(
+                                participantResponse.image.toString()
+                            )
+                        }",
+                        contentDescription = "",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
                     )
 
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color.Transparent,
+                                        colors.primary.copy(0.58f),
+                                        colors.primary.copy(1f),
+                                    )
+                                )
+                            )
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(start = 15.sdp)
+                    ) {
+                        Text(
+                            text = decodeStringWithSpecialCharacter(participantResponse.name),
+                            style = typography.titleLarge,
+                            fontSize = 26f.ssp,
+                        )
+
+                    }
                 }
             }
 
-            TabRow(
-                modifier = Modifier
-                    .padding(top = 8.sdp, start = 6.sdp,end = 6.sdp),
-                selectedTabIndex = tabPagerState.currentPage, divider = {},
-                containerColor = Color.Transparent,
-                indicator = { tabPositions ->
-                    if (tabPagerState.currentPage < tabPositions.size) {
-                        Box(
-                            contentAlignment = Alignment.BottomCenter,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ){
+            item{
+                TabRow(
+                    modifier = Modifier
+                        .padding(top = 8.sdp, start = 6.sdp, end = 6.sdp),
+                    selectedTabIndex = tabPagerState.currentPage, divider = {},
+                    containerColor = Color.Transparent,
+                    indicator = { tabPositions ->
+                        if (tabPagerState.currentPage < tabPositions.size) {
                             Box(
+                                contentAlignment = Alignment.BottomCenter,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(2f.sdp)
-                                    .clip(CircleShape)
-                                    .background(Color.LightGray.copy(0.42f))
-                            )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(2f.sdp)
+                                        .clip(CircleShape)
+                                        .background(Color.LightGray.copy(0.42f))
+                                )
 
-                            NeonCard(
-                                glowingColor = buttonsColor1,
-                                containerColor = buttonsColor2,
-                                cornersRadius = Int.MAX_VALUE.sdp,
-                                glowingRadius = 7.sdp,
+                                NeonCard(
+                                    glowingColor = buttonsColor1,
+                                    containerColor = buttonsColor2,
+                                    cornersRadius = Int.MAX_VALUE.sdp,
+                                    glowingRadius = 7.sdp,
+                                    modifier = Modifier
+                                        .tabIndicatorOffset(tabPositions[tabPagerState.currentPage])
+                                        .height(2f.sdp)
+                                )
+
+
+                            }
+                        }
+                    }
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        val selected = tabPagerState.currentPage == index
+
+                        var selectedColor1 by remember { mutableStateOf(buttonsColor1) }
+                        var selectedColor2 by remember { mutableStateOf(buttonsColor2) }
+
+                        var unselectedColor by remember { mutableStateOf(Color.DarkGray) }
+
+                        if (selected) {
+                            selectedColor1 = buttonsColor1
+                            selectedColor2 = buttonsColor2
+                        } else {
+                            selectedColor1 = Color.LightGray.copy(0.42f)
+                            selectedColor2 = Color.LightGray.copy(0.42f)
+                        }
+
+                        Tab(
+                            text = {
+                                Text(
+                                    title,
+                                    style = TextStyle(
+                                        brush = animatedGradient(
+                                            colors = listOf(selectedColor1, selectedColor2),
+                                            type = animatedGradientTypes.VERTICAL
+                                        ),
+                                        fontSize = 14.5f.ssp
+                                    )
+                                )
+                            },
+                            selectedContentColor = buttonsColor1,
+                            unselectedContentColor = primaryColor,
+                            selected = selected,
+                            onClick = { scope.launch { tabPagerState.animateScrollToPage(index) } },
+                            modifier = Modifier
+                        )
+                    }
+                }
+            }
+
+            item{
+                HorizontalPager(
+                    state = tabPagerState,
+                    userScrollEnabled = false
+                ){}
+            }
+
+            if(tabPagerState.currentPage == 0){
+                items(participantDisplay.filmography.cast.sortedByDescending { it.popularity }.chunked(3)){ chunk ->
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.sdp),
+                        modifier = Modifier
+                            .padding(horizontal = 7.sdp)
+                            .fillMaxWidth()
+                    ) {
+                        chunk.forEach { movie ->
+                            MovieCard(
+                                movie = movie,
                                 modifier = Modifier
-                                    .tabIndicatorOffset(tabPositions[tabPagerState.currentPage])
-                                    .height(2f.sdp)
+                                    .clip(RoundedCornerShape(8.sdp))
+                                    .height(155.sdp)
+                                    .weight(1f)
+                                    .clickable { selectMovie(movie.id) }
                             )
-
-
                         }
                     }
                 }
-            ) {
-                tabs.forEachIndexed { index, title ->
-                    val selected = tabPagerState.currentPage == index
-
-                    var selectedColor1 by remember{ mutableStateOf(buttonsColor1) }
-                    var selectedColor2 by remember{ mutableStateOf(buttonsColor2) }
-
-                    var unselectedColor by remember{ mutableStateOf(Color.DarkGray) }
-
-                    if(selected){
-                        selectedColor1 = buttonsColor1
-                        selectedColor2 = buttonsColor2
-                    } else{
-                        selectedColor1 = Color.LightGray.copy(0.42f)
-                        selectedColor2 = Color.LightGray.copy(0.42f)
-                    }
-
-                    Tab(
-                        text = {
-                            Text(
-                                title,
-                                style = TextStyle(
-                                    brush = animatedGradient(
-                                        colors = listOf(selectedColor1,selectedColor2),
-                                        type = animatedGradientTypes.VERTICAL
-                                    ),
-                                    fontSize = 14.5f.ssp
-                                )
-                            )
-                        },
-                        selectedContentColor = buttonsColor1,
-                        unselectedContentColor = primaryColor,
-                        selected = selected,
-                        onClick = { scope.launch { tabPagerState.animateScrollToPage(index) } },
-                        modifier = Modifier
-                    )
-                }
             }
 
-            TabContent(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                ,
-                pagerState = tabPagerState,
-                participantDisplay = participantDisplay,
-                selectMovie = selectMovie
-            )
+            item {
+
+                AnimatedVisibility(visible = tabPagerState.currentPage == 1) {
+                    BiographyScreen(participantDisplay = participantDisplay)
+                }
+            }
         }
+
+
 
         TurnBackButton(
             onClick = {

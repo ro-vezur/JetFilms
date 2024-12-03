@@ -113,8 +113,6 @@ fun MainScreen(
         val participantFilmography = participantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
         val participantImages = participantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
 
-        val searchHistory = searchHistoryViewModel.searchedHistory.collectAsStateWithLifecycle()
-
         val selectMovie: (movieId: Int) -> Unit = { id ->
            try {
                 scope.launch {
@@ -137,9 +135,7 @@ fun MainScreen(
                     )
                 }
             }
-            catch (e: Exception){
-              //  Log.e("error",e.message.toString())
-            }
+            catch (_: Exception){ }
         }
 
         val selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit = { participant ->
@@ -149,38 +145,25 @@ fun MainScreen(
         }
 
         LaunchedEffect(null) {
-            val searchedMediaToAdd = mutableListOf<UnifiedMedia>()
             val searchedHistoryMediaIds = searchHistoryViewModel.getSearchHistoryMediaIds()
+
             searchedHistoryMediaIds.forEach { searchedMedia: SearchedMedia ->
                     scope.launch{
                         if (searchedMedia.mediaType == MediaFormats.MOVIE.format) {
                             val movie = moviesViewModel.getMovie(searchedMedia.mediaId)
-
                             movie?.let{
-                                searchedMediaToAdd.add(
-                                    MovieDataToUnifiedMedia(movie)
+                                searchHistoryViewModel.addSearchHistoryMedia(
+                                    MovieDataToUnifiedMedia(movie),searchedMedia
                                 )
                             }
-
                         } else {
                             val series = seriesViewModel.getSerial(searchedMedia.mediaId)
-                            searchedMediaToAdd.add(
-                                SeriesDataToUnifiedMedia(series)
-                                )
+                            searchHistoryViewModel.addSearchHistoryMedia(
+                                SeriesDataToUnifiedMedia(series),searchedMedia
+                            )
                         }
                     }
             }
-
-            scope.launch{
-                withContext(Dispatchers.IO) {
-                    delay((searchedHistoryMediaIds.size.toLong() * 8))
-
-                    Log.d("searched medias", searchedMediaToAdd.toString())
-
-                    searchHistoryViewModel.setSearchHistoryMedia(searchedMediaToAdd)
-                }
-            }
-
         }
 
         Scaffold(

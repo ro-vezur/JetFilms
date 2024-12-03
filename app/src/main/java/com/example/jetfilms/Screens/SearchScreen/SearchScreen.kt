@@ -1,7 +1,6 @@
 package com.example.jetfilms.Screens.SearchScreen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateIntAsState
@@ -64,17 +63,12 @@ import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
-import com.example.jetfilms.Components.Cards.MovieCard
-import com.example.jetfilms.Components.Cards.SerialCard
 import com.example.jetfilms.Components.Cards.UnifiedCard
 import com.example.jetfilms.Components.InputFields.SearchField
 import com.example.jetfilms.Components.Lists.MoviesCategoryList
 import com.example.jetfilms.Components.Lists.SerialsCategoryList
 import com.example.jetfilms.Components.TopBars.FiltersTopBar
-import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.DTOs.SearchHistory_RoomDb.SearchedMedia
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
-import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.Helpers.DTOsConverters.MovieDataToUnifiedMedia
@@ -95,14 +89,11 @@ import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import com.example.jetfilms.ui.theme.primaryColor
-import com.example.jetfilms.ui.theme.secondaryColor
 import com.example.jetfilms.ui.theme.whiteColor
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -131,7 +122,8 @@ fun SearchScreen(
     val filteredUnifiedData = unifiedMediaViewModel.filteredUnifiedData.collectAsLazyPagingItems()
     val showFilteredResults = unifiedMediaViewModel.showFilteredResults.collectAsStateWithLifecycle()
 
-    val searchHistory = searchHistoryViewModel.searchedHistory.collectAsStateWithLifecycle()
+    val searchedHistoryUnifiedMedia = searchHistoryViewModel.searchedUnifiedMedia.collectAsStateWithLifecycle()
+    val searchedHistorySearchedMedia = searchHistoryViewModel.searchedHistoryMedia.collectAsStateWithLifecycle()
     val searchSuggestions = unifiedMediaViewModel.searchSuggestions.collectAsStateWithLifecycle()
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -222,19 +214,19 @@ fun SearchScreen(
                                             val searchedMovie = moviesViewModel.getMovie(id)
 
                                             searchedMovie?.let {
-                                                searchHistoryViewModel.insertSearchedMedia(
-                                                    SearchedMedia(
-                                                        mediaId = searchedMovie.id,
-                                                        mediaType = MediaFormats.MOVIE.format,
-                                                        viewedDate = DateFormats.getCurrentDate()
-                                                    )
+                                                val searchedMedia = SearchedMedia(
+                                                    id = "${searchedMovie.id}${MediaFormats.MOVIE.format}",
+                                                    mediaId = searchedMovie.id,
+                                                    mediaType = MediaFormats.MOVIE.format,
+                                                    viewedDate = DateFormats.getCurrentDate()
                                                 )
 
+                                                searchHistoryViewModel.insertSearchedMedia(searchedMedia)
                                                 searchHistoryViewModel.addSearchHistoryMedia(
-                                                    MovieDataToUnifiedMedia(searchedMovie)
+                                                    unifiedMedia = MovieDataToUnifiedMedia(searchedMovie),
+                                                    searchedMedia = searchedMedia,
                                                 )
                                             }
-
                                         }
                                     },
                                     moviesList = it.results,
@@ -261,17 +253,17 @@ fun SearchScreen(
                                         selectSeries(id)
                                         scope.launch {
                                             val searchedSeries = seriesViewModel.getSerial(id)
-
-                                            searchHistoryViewModel.insertSearchedMedia(
-                                                SearchedMedia(
-                                                    mediaId = searchedSeries.id,
-                                                    mediaType = MediaFormats.SERIES.format,
-                                                    viewedDate = DateFormats.getCurrentDate()
-                                                )
+                                            val searchedMedia = SearchedMedia(
+                                                id = "${searchedSeries.id}${MediaFormats.SERIES.format}",
+                                                mediaId = searchedSeries.id,
+                                                mediaType = MediaFormats.SERIES.format,
+                                                viewedDate = DateFormats.getCurrentDate()
                                             )
 
+                                            searchHistoryViewModel.insertSearchedMedia(searchedMedia)
                                             searchHistoryViewModel.addSearchHistoryMedia(
-                                                SeriesDataToUnifiedMedia(searchedSeries)
+                                                unifiedMedia = SeriesDataToUnifiedMedia(searchedSeries),
+                                                searchedMedia = searchedMedia,
                                             )
                                         }
                                     },
@@ -323,19 +315,23 @@ fun SearchScreen(
                                 )
                             }
 
-                            items(searchHistory.value) { searchedMedia ->
+                            items(searchedHistoryUnifiedMedia.value.sortedByDescending { unifiedMedia ->
+                                searchedHistorySearchedMedia.value.find {
+                                    it.id == "${unifiedMedia.id}${unifiedMedia.mediaType.format}"
+                                }?.viewedDate
+                            }) { unifiedMedia ->
 
                                 UnifiedCard(
-                                    unifiedMedia = searchedMedia,
+                                    unifiedMedia = unifiedMedia,
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(8.sdp))
                                         .height(155.sdp)
                                         .clickable {
                                             scope.launch {
-                                                if (searchedMedia.mediaType == MediaFormats.MOVIE) {
-                                                    selectMovie(searchedMedia.id)
+                                                if (unifiedMedia.mediaType == MediaFormats.MOVIE) {
+                                                    selectMovie(unifiedMedia.id)
                                                 } else {
-                                                    selectSeries(searchedMedia.id)
+                                                    selectSeries(unifiedMedia.id)
                                                 }
                                             }
                                         }
@@ -348,7 +344,11 @@ fun SearchScreen(
                         }
                     }
 
-                    if(isSearchBarFocused){
+                    AnimatedVisibility(
+                        visible = isSearchBarFocused,
+                        enter = fadeIn() ,
+                        exit = fadeOut(),
+                    ){
                         LazyColumn(
                             verticalArrangement = Arrangement.spacedBy(4.sdp),
                             modifier = Modifier
@@ -357,8 +357,6 @@ fun SearchScreen(
                                 .clip(RoundedCornerShape(8.sdp))
                                 .background(primaryColor)
                         ) {
-                            Log.d("suggestions", searchSuggestions.value.toString())
-
                             items(searchSuggestions.value) { suggestion ->
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -404,7 +402,7 @@ fun SearchScreen(
                                     Text(
                                         text = removeNumbersAfterDecimal(
                                             suggestion.rating,
-                                            2
+                                            numbersAfterDecimal = 2
                                         ).toString(),
                                         color = whiteColor,
                                         fontSize = 12.ssp,
