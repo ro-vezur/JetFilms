@@ -51,5 +51,4 @@ class MoviesRepository @Inject constructor(private val apiService: ApiInterface)
             )
         }
     }
-
 }
