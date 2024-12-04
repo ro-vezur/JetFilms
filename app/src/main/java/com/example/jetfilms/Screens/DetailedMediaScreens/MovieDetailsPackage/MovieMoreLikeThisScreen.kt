@@ -1,4 +1,4 @@
-package com.example.jetfilms.Screens.SerialDetailsPackage
+package com.example.jetfilms.Screens.DetailedMediaScreens.MovieDetailsPackage
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,31 +11,32 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import com.example.jetfilms.Components.Cards.SerialCard
+import com.example.jetfilms.Components.Cards.MovieCard
+import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
 import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
 import com.example.jetfilms.extensions.sdp
 
 @Composable
-fun SerialMoreLikeThisScreen(
-    similarSeries: SimplifiedSerialsResponse,
-    selectSerial: (id: Int) -> Unit
+fun MovieMoreLikeThisScreen(
+    similarMovies: MoviesResponse,
+    selectMovie: (id: Int) -> Unit
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(9.sdp),
         modifier = Modifier
             .padding(top = 14.sdp, bottom = 10.sdp)
     ) {
-        items(items = similarSeries.results) { serial ->
-            SerialCard(
+        items(items = similarMovies.results) { movie ->
+
+            MovieCard(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.sdp))
                     .width(126.sdp)
                     .height(200.sdp)
-                    .clickable { selectSerial(serial.id) },
-                serial = serial
+                    .clickable { selectMovie(movie.id) },
+                movie = movie
             )
+
         }
     }
 }

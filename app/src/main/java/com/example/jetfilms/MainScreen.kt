@@ -38,7 +38,6 @@ import com.example.jetfilms.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SerialDisplay
 import com.example.jetfilms.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
-import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Helpers.DTOsConverters.MovieDataToUnifiedMedia
 import com.example.jetfilms.Helpers.DTOsConverters.SeriesDataToUnifiedMedia
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
@@ -50,7 +49,7 @@ import com.example.jetfilms.Screens.Home.MoreMoviesScreen
 import com.example.jetfilms.Screens.Home.MoreSerialsScreen
 import com.example.jetfilms.Screens.MoreMoviesScreenRoute
 import com.example.jetfilms.Screens.MoreSerialsScreenRoute
-import com.example.jetfilms.Screens.MovieDetailsPackage.MovieDetailsScreen
+import com.example.jetfilms.Screens.DetailedMediaScreens.MovieDetailsPackage.MovieDetailsScreen
 import com.example.jetfilms.Screens.MovieDetailsPackage.SerialDetailsScreen
 import com.example.jetfilms.Screens.ParticipantDetailsPackage.ParticipantDetailsScreen
 import com.example.jetfilms.Screens.SearchScreen.FilterUI.FiltersMainScreen
@@ -69,12 +68,8 @@ import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.internal.wait
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -103,8 +98,9 @@ fun MainScreen(
 
         val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
 
-        val cast = unifiedMediaViewModel.selectedMediaCast.collectAsStateWithLifecycle()
+        val selectedMediaCast = unifiedMediaViewModel.selectedMediaCast.collectAsStateWithLifecycle()
         val selectedMediaImages = unifiedMediaViewModel.selectedMediaImages.collectAsStateWithLifecycle()
+        val selectedMediaTrailers = unifiedMediaViewModel.selectedMediaTrailers.collectAsStateWithLifecycle()
 
         val similarMovies = moviesViewModel.similarMovies.collectAsStateWithLifecycle()
 
@@ -288,15 +284,15 @@ fun MainScreen(
                             moviesViewModel.setSimilarMovies(movieResponse.id)
                         }
 
-                        if(cast.value != null && similarMovies.value != null) {
-
+                        if(similarMovies.value != null) {
                             MovieDetailsScreen(
                                 navController = screensNavController,
                                 movieDisplay = MovieDisplay(
                                     response = movieResponse,
-                                    movieCast = cast.value!!,
+                                    movieCast = selectedMediaCast.value,
                                     movieImages = selectedMediaImages.value,
-                                    similarMovies = similarMovies.value!!
+                                    similarMovies = similarMovies.value!!,
+                                    movieTrailers = selectedMediaTrailers.value
                                 ),
                                 selectMovie = selectMovie,
                                 selectParticipant = selectParticipant
@@ -308,6 +304,7 @@ fun MainScreen(
                 composable(
                     route = "serial_details/{serial}",
                     arguments = listOf(navArgument("serial") { type = DetailedSerialNavType() }),
+                    enterTransition = { fadeIn(animationSpec = tween(75)) }
                 ) {
                     homeDelay = 350
                     showBottomBar = false
@@ -319,14 +316,15 @@ fun MainScreen(
                             seriesViewModel.setSimilarSerials(serialResponse.id)
                         }
 
-                        if(cast.value != null && similarSeries.value != null) {
+                        if(similarSeries.value != null) {
                             SerialDetailsScreen(
                                 navController = screensNavController,
                                 serialDisplay = SerialDisplay(
                                     response = serialResponse,
-                                    serialCast = cast.value!!,
+                                    serialCast = selectedMediaCast.value,
                                     serialImages = selectedMediaImages.value,
-                                    similarSerials = similarSeries.value!!
+                                    similarSerials = similarSeries.value!!,
+                                    seriesTrailers = selectedMediaTrailers.value
                                 ),
                                 selectSeason = { serialId, seasonNumber ->
                                     try {
