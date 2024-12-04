@@ -65,6 +65,7 @@ android {
 
 dependencies {
     val compose_version = "1.7.4"
+    val hilt = "2.48"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -98,8 +99,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Hilt
-    val hilt = "2.48"
-
     implementation("com.google.dagger:hilt-android:$hilt")
     kapt("com.google.dagger:hilt-compiler:$hilt")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
@@ -129,4 +128,7 @@ dependencies {
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-ktx:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
+
+    // youtube video player
+    implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
 }
