@@ -8,8 +8,7 @@ import kotlinx.serialization.Serializable
 @Parcelize
 @Serializable
 data class UnifiedMediaCreditsResponse (
-    val id: Int,
-    val cast: List<SimplifiedParticipantResponse>
+    val cast: List<SimplifiedParticipantResponse> = listOf()
 ): Parcelable
 @Parcelize
 @Serializable
