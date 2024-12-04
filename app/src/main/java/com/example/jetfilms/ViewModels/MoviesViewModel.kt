@@ -114,4 +114,5 @@ class MoviesViewModel @Inject constructor(
     )
 
     suspend fun getPopularMovies(page: Int) = moviesRepository.getPopularMovies(page)
+
 }

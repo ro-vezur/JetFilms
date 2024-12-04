@@ -8,6 +8,7 @@ import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.DTOs.Filters.SortTypes
 import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.DTOs.TrailersResponse.TrailersResponse
 import com.example.jetfilms.DTOs.UnifiedDataPackage.ImagesFromUnifiedMediaResponse
 import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
@@ -28,11 +29,14 @@ class UnifiedMediaViewModel @Inject constructor(
     private val unifiedMediaRepository: UnifiedMediaRepository
 ): ViewModel(){
 
-    private val _selectedMediaCast = MutableStateFlow<UnifiedMediaCreditsResponse?>(null)
+    private val _selectedMediaCast = MutableStateFlow(UnifiedMediaCreditsResponse())
     val selectedMediaCast = _selectedMediaCast.asStateFlow()
 
     private val _selectedMediaImages = MutableStateFlow(ImagesFromUnifiedMediaResponse())
     val selectedMediaImages = _selectedMediaImages.asStateFlow()
+
+    private val _selectedMediaTrailers = MutableStateFlow(TrailersResponse())
+    val selectedMediaTrailers = _selectedMediaTrailers.asStateFlow()
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -155,6 +159,7 @@ class UnifiedMediaViewModel @Inject constructor(
     fun setMoviesExtraInformation(movieId: Int) {
         viewModelScope.launch {
             withContext(Dispatchers.IO){
+                _selectedMediaTrailers.emit(unifiedMediaRepository.getMovieTrailers(movieId))
                 _selectedMediaCast.emit(unifiedMediaRepository.getMovieCredits(movieId))
                 _selectedMediaImages.emit(unifiedMediaRepository.getMovieImages(movieId))
             }
@@ -166,6 +171,7 @@ class UnifiedMediaViewModel @Inject constructor(
             withContext(Dispatchers.IO){
                 _selectedMediaCast.emit(unifiedMediaRepository.getSeriesCredits(seriesId))
                 _selectedMediaImages.emit(unifiedMediaRepository.getSeriesImages(seriesId))
+                _selectedMediaTrailers.emit(unifiedMediaRepository.getSeriesTrailers(seriesId))
             }
         }
     }
