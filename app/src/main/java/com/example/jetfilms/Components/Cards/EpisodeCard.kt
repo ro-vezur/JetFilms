@@ -26,6 +26,7 @@ fun EpisodeCard(
     episode: Episode
 ) {
     val typography = typography()
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(5.sdp)
