@@ -10,6 +10,7 @@ import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantImagesResponse
 import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SerialSeasonResponse
 import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.DTOs.TrailersResponse.TrailersResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -133,4 +134,14 @@ interface ApiInterface {
         @Query("sort_by") sortBy: String,
         @Query("with_origin_country") countries: String,
     ): MoviesResponse
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun movieTrailers(
+        @Path("movie_id") movieId: Int,
+    ): TrailersResponse
+
+    @GET("tv/{series_id}/videos")
+    suspend fun seriesTrailers(
+        @Path("series_id") seriesId: Int
+    ): TrailersResponse
 }
