@@ -36,3 +36,6 @@ val infoTabs = listOf(
 const val BASE_API_URL = "https://api.themoviedb.org/3/"
 const val BASE_IMAGE_API_URL = "https://image.tmdb.org/t/p/w500"
 const val API_KEY = ""
+
+const val BASE_YOUTUBE_IMAGES_URL = "https://img.youtube.com/vi/"
+const val YOUTUBE_IMAGE_THUMBNAIL_TYPE = "/mqdefault.jpg"
