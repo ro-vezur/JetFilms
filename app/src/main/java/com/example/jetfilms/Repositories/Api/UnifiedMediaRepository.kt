@@ -60,4 +60,8 @@ class UnifiedMediaRepository @Inject constructor(
     suspend fun getSeriesCredits(serialId: Int) = apiService.serialCredits(serialId)
 
     suspend fun getSeriesImages(serialId: Int) = apiService.imagesFromSerial(serialId)
+
+    suspend fun getMovieTrailers(movieId: Int) = apiService.movieTrailers(movieId)
+
+    suspend fun getSeriesTrailers(seriesId: Int) = apiService.seriesTrailers(seriesId)
 }
