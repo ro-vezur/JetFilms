@@ -1,4 +1,4 @@
-package com.example.jetfilms.Screens.SerialDetailsPackage
+package com.example.jetfilms.Screens.DetailedMediaScreens.SerialDetailsPackage
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
