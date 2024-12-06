@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "809913150797",
+    "project_id": "jetfilms-a7f3f",
+    "storage_bucket": "jetfilms-a7f3f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809913150797:android:00f3ad0aa60d88136c9b04",
+        "android_client_info": {
+          "package_name": "com.example.jetfilms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLyMeL--VneNN9hKsZmPd-QYGUUoJO3sw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

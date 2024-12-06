@@ -2,9 +2,9 @@ package com.example.jetfilms.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantFilmography
-import com.example.jetfilms.DTOs.ParticipantPackage.ParticipantImagesResponse
-import com.example.jetfilms.Repositories.Api.ParticipantRepository
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantFilmography
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantImagesResponse
+import com.example.jetfilms.Models.Repositories.Api.ParticipantRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

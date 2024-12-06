@@ -1,9 +1,9 @@
 package com.example.jetfilms.Helpers.DTOsConverters
 
-import com.example.jetfilms.DTOs.MoviePackage.DetailedMovieResponse
-import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
-import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
 
 fun MovieDataToUnifiedMedia(movie: SimplifiedMovieDataClass): UnifiedMedia {
     return UnifiedMedia(

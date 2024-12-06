@@ -1,9 +1,9 @@
 package com.example.jetfilms.Helpers.DTOsConverters
 
-import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
-import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
-import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
 
 fun SeriesDataToUnifiedMedia(series: SimplifiedSerialObject): UnifiedMedia {
     return UnifiedMedia(

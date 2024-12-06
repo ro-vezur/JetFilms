@@ -2,13 +2,13 @@ package com.example.jetfilms.Helpers.Pagination
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
-import com.example.jetfilms.DTOs.Filters.SortTypes
-import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.Models.DTOs.Filters.SortTypes
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Helpers.DTOsConverters.MovieDataToUnifiedMedia
 import com.example.jetfilms.Helpers.DTOsConverters.SeriesDataToUnifiedMedia
-import com.example.jetfilms.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
 
 class UnifiedPagingSource(
     val getMoviesResponse: suspend (page: Int) -> MoviesResponse,

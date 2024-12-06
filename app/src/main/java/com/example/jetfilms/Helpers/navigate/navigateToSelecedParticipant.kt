@@ -1,7 +1,7 @@
 package com.example.jetfilms.Helpers.navigate
 
 import androidx.navigation.NavController
-import com.example.jetfilms.DTOs.ParticipantPackage.DetailedParticipantResponse
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantResponse
 import com.example.jetfilms.Helpers.encodes.encodeStringWithSpecialCharacter
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

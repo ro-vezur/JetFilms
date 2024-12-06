@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.jetfilms.DTOs.SeriesPackage.DetailedSerialResponse
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialObject
-import com.example.jetfilms.DTOs.SeriesPackage.SimplifiedSerialsResponse
-import com.example.jetfilms.Repositories.Api.SeriesRepository
+import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.Models.Repositories.Api.SeriesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

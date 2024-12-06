@@ -3,9 +3,9 @@ package com.example.jetfilms.Helpers.Pagination
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.jetfilms.API.ApiInterface
-import com.example.jetfilms.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Models.API.ApiInterface
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
 
 class MoviesPagingSource(
     val getResponse: suspend (page: Int) -> MoviesResponse,

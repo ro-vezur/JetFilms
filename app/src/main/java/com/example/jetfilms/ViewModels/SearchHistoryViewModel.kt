@@ -3,9 +3,9 @@ package com.example.jetfilms.ViewModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.DTOs.SearchHistory_RoomDb.SearchedMedia
-import com.example.jetfilms.DTOs.UnifiedDataPackage.UnifiedMedia
-import com.example.jetfilms.Repositories.Room.SearchedHistoryRepository
+import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.Models.Repositories.Room.SearchedHistoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +29,7 @@ class SearchHistoryViewModel @Inject constructor(
     )
     val searchedHistoryMedia = _searchedHistoryMedia.asStateFlow()
 
-    fun addSearchHistoryMedia(unifiedMedia: UnifiedMedia,searchedMedia: SearchedMedia){
+    fun addSearchHistoryMedia(unifiedMedia: UnifiedMedia, searchedMedia: SearchedMedia){
         viewModelScope.launch {
             withContext(Dispatchers.IO){
                 val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaType == unifiedMedia.mediaType }

@@ -7,6 +7,7 @@ plugins {
     id("kotlin-kapt")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
 }
 
 tasks{
@@ -131,4 +132,8 @@ dependencies {
 
     // youtube video player
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
+
+    //Firebase
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
 }
