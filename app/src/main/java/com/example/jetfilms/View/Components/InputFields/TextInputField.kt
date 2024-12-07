@@ -46,6 +46,7 @@ import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
+import com.example.jetfilms.ui.theme.errorColor
 import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.secondaryColor
 
@@ -57,6 +58,7 @@ fun CustomTextField(
     colors: TextFieldColors = TextFieldDefaults.colors(),
     singleLine:Boolean = true,
     text: String,
+    isError: Boolean = false,
     onTextChange: (value: String) -> Unit,
     unfocusedBorder: BorderStroke = BorderStroke(1.sdp, Color.LightGray.copy(0.6f)),
     focusedBorder: BorderStroke = BorderStroke(
@@ -64,6 +66,7 @@ fun CustomTextField(
             listOf(buttonsColor1, buttonsColor2)
         )
     ),
+    errorBorder: BorderStroke = BorderStroke(1.sdp, errorColor),
     leadingIcon: ImageVector? = null,
     placeHolder: String = "",
     trailingIcon: @Composable ((modifier:Modifier) -> Unit)? = null,
@@ -77,6 +80,19 @@ fun CustomTextField(
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
+    val border = if (isError) errorBorder
+    else { if (isFocused) focusedBorder else unfocusedBorder }
+
+    val background = Brush.Companion.horizontalGradient(
+        if (isFocused)
+            listOf(secondaryColor.copy(0.52f), secondaryColor.copy(0.38f))
+        else listOf(primaryColor, primaryColor)
+    )
+
+    val textColor = if(isError) errorColor
+    else { if (isFocused) Color.White else Color.LightGray.copy(0.82f) }
+
+    val leadingIconColor = if(isError) errorColor else Color.LightGray.copy(0.9f)
 
     Box(
         modifier = modifier
@@ -84,20 +100,15 @@ fun CustomTextField(
             .height(height / 1.01f)
             .clip(shape)
             .background(primaryColor)
-            .border(if (isFocused) focusedBorder else unfocusedBorder, shape)
+            .border(border, shape)
     ){
         BasicTextField(
             modifier = modifier
                 .fillMaxSize()
-                .background(
-                    if (isFocused) Brush.horizontalGradient(
-                        listOf(secondaryColor.copy(0.52f), secondaryColor.copy(0.38f))
-                    ) else Brush.horizontalGradient(
-                        listOf(primaryColor, primaryColor)
-                    )
-                )
+                .background(background)
                 .focusRequester(focusRequester),
             value = text,
+
             onValueChange = onTextChange,
             singleLine = singleLine,
             interactionSource = interactionSource,
@@ -111,7 +122,7 @@ fun CustomTextField(
             cursorBrush = SolidColor(Color.White),
             textStyle = typography.bodySmall.copy(
                 fontWeight = FontWeight.Normal,
-                color = if(isFocused) Color.White else Color.LightGray.copy(0.82f),
+                color = textColor,
                 fontSize = typography.bodySmall.fontSize * if(visualTransformation == PasswordVisualTransformation()) (1.18f) else(1f) ,
                 letterSpacing = if(visualTransformation == PasswordVisualTransformation()) 1.6f.ssp else 0.ssp
             ),
@@ -120,31 +131,39 @@ fun CustomTextField(
                     modifier,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (leadingIcon != null) Icon(
-                        imageVector = leadingIcon,
-                        contentDescription = placeHolder,
-                        tint = Color.LightGray.copy(0.9f),
-                        modifier = Modifier
-                            .padding(start = 12.sdp)
-                            .size(20.sdp)
-                    )
+                    if (leadingIcon != null) {
+                        Icon(
+                            imageVector = leadingIcon,
+                            contentDescription = placeHolder,
+                            tint = leadingIconColor,
+                            modifier = Modifier
+                                .padding(start = 12.sdp)
+                                .size(20.sdp)
+                        )
+                    }
 
-                    Box(Modifier.padding(start = 11.sdp).weight(1f)) {
-                        if (text.isEmpty()) {
+                    Box(
+                        Modifier
+                            .padding(start = 11.sdp)
+                            .weight(1f)) {
+
+                        if(text.isBlank()){
                             Text(
                                 text = text.ifBlank { placeHolder },
                                 style = typography.bodySmall.copy(
                                     fontWeight = FontWeight.Normal,
-                                    color = if(isFocused) Color.White else Color.LightGray.copy(0.82f)
+                                    color = textColor
                                 ),
                                 modifier = Modifier
                                     .align(Alignment.CenterStart)
                             )
                         }
+
                         innerTextField()
                     }
                     if (trailingIcon != null) trailingIcon(
-                        Modifier.padding(end = 18.sdp)
+                        Modifier
+                            .padding(end = 18.sdp)
                             .clip(CircleShape)
                             .size(21.sdp)
                     )
