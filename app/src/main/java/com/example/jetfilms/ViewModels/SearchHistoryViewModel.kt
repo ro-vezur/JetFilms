@@ -31,7 +31,8 @@ class SearchHistoryViewModel @Inject constructor(
 
     fun addSearchHistoryMedia(unifiedMedia: UnifiedMedia, searchedMedia: SearchedMedia){
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
+          //  withContext(Dispatchers.IO){
+                Log.d("searched unified media",_searchedUnifiedMedia.value.toString())
                 val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaType == unifiedMedia.mediaType }
                 val findSearchedMedia = _searchedHistoryMedia.value.find { it.id == searchedMedia.id && it.mediaType == searchedMedia.mediaType }
 
@@ -47,7 +48,7 @@ class SearchHistoryViewModel @Inject constructor(
                 } else{
                     _searchedHistoryMedia.value[_searchedHistoryMedia.value.indexOf(findSearchedMedia)] = searchedMedia
                 }
-            }
+          //  }
         }
     }
 
