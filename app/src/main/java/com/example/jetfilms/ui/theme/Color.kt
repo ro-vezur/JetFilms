@@ -21,3 +21,6 @@ val transparentColor = Color.Transparent
 
 val hazeStateBlurBackground = primaryColor
 val hazeStateBlurTint = primaryColor.copy(0.25f)
+
+val errorColor = Color(0xFFf03749)
+val correctColor = Color.Green
