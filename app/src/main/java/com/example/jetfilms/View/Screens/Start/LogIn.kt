@@ -48,7 +48,8 @@ import com.example.jetfilms.ui.theme.buttonsColor2
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun LogInScreen(
-    stepsNavController: NavController
+    stepsNavController: NavController,
+    logIn: (email: String, password: String) -> Unit,
 ) {
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colorScheme
@@ -144,7 +145,9 @@ fun LogInScreen(
 
                 TextButton(
                     onClick = {
-
+                        if(emailText.isNotBlank() && passwordText.isNotBlank()) {
+                            logIn(emailText,passwordText)
+                        }
                     },
                     text = "Log in",
                     corners = RoundedCornerShape(12.sdp),

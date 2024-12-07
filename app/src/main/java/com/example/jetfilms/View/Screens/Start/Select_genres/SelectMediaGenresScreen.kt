@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,9 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
-import com.example.jetfilms.View.Screens.Start.SelectMediaFormatScreenRoute
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BASE_MEDIA_GENRES
+import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.View.Components.Cards.MediaGenreCard
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -44,6 +45,9 @@ import dev.chrisbanes.haze.HazeState
 @Composable
 fun SelectMediaGenresScreen(
     stepsNavController: NavController,
+    user: User,
+    setUser: (newUser: User) -> Unit,
+    signUp: (userToAdd: User) -> Unit,
 ) {
     val typography = MaterialTheme.typography
 
@@ -51,13 +55,19 @@ fun SelectMediaGenresScreen(
     val grindState = rememberLazyGridState()
     val hazeState = remember { HazeState() }
 
+    LaunchedEffect(null) {
+        selectedGenres.addAll(user.recommendedMediaGenres)
+    }
+
     Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
             BottomBar(
                 selectedItems = selectedGenres.isEmpty(),
                 onClick = {
-
+                    if(selectedGenres.isNotEmpty()) {
+                        signUp(user)
+                    }
                 }
             )
         }
@@ -69,7 +79,7 @@ fun SelectMediaGenresScreen(
         ) {
 
             TurnBackButton(
-                onClick = { stepsNavController.navigate(SelectMediaFormatScreenRoute)
+                onClick = { stepsNavController.navigateUp()
                 },
                 background =  Color.LightGray.copy(0.6f),
                 iconColor = Color.White,
@@ -115,10 +125,16 @@ fun SelectMediaGenresScreen(
                            onClick = {
                                if (selectedGenres.toList().sorted() == BASE_MEDIA_GENRES.sorted()) {
                                    selectedGenres.clear()
+                                   setUser(
+                                       user.copy(recommendedMediaGenres = selectedGenres)
+                                   )
                                } else {
                                    BASE_MEDIA_GENRES.forEach { genre ->
                                        if(!selectedGenres.contains(genre)){
                                            selectedGenres.add(genre)
+                                           setUser(
+                                               user.copy(recommendedMediaGenres = selectedGenres)
+                                           )
                                        }
                                    }
                                }
@@ -127,14 +143,21 @@ fun SelectMediaGenresScreen(
                    }
 
                     items(BASE_MEDIA_GENRES){ genre ->
+                        val selected = selectedGenres.contains(genre)
                         MediaGenreCard(
                             mediaGenre = genre,
-                            selected = selectedGenres.contains(genre),
+                            selected = selected,
                             onClick = {
-                                if (selectedGenres.contains(genre)) {
+                                if (selected) {
                                     selectedGenres.remove(genre)
+                                    setUser(
+                                        user.copy(recommendedMediaGenres = selectedGenres)
+                                    )
                                 } else {
                                     selectedGenres.add(genre)
+                                    setUser(
+                                        user.copy(recommendedMediaGenres = selectedGenres)
+                                    )
                                 }
                             }
                         )

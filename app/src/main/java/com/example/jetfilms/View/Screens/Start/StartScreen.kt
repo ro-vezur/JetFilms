@@ -21,16 +21,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jetfilms.R
 import com.example.jetfilms.View.Screens.Start.Select_genres.SelectMediaGenresScreen
 import com.example.jetfilms.View.Screens.Start.Select_type.SelectMediaFormatScreen
+import com.example.jetfilms.ViewModels.UserViewModel
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
-fun StartScreen() {
+fun StartScreen(
+    userViewModel: UserViewModel
+) {
     val stepsNavController = rememberNavController()
 
     val colors = MaterialTheme.colorScheme
@@ -42,6 +46,8 @@ fun StartScreen() {
     var seventhShadowPoint by remember{ mutableStateOf(.5f) }
 
     val backgroundAnimationDelay = 20
+
+    val user = userViewModel.user.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier
@@ -112,6 +118,8 @@ fun StartScreen() {
                 sixthShadowPoint = 0.5f
                 seventhShadowPoint = 0.5f
 
+                userViewModel.setUser(null)
+
                 WelcomeScreen(stepsNavController)
             }
 
@@ -122,7 +130,10 @@ fun StartScreen() {
                 sixthShadowPoint = 0.5f
                 seventhShadowPoint = 0.5f
 
-                LogInScreen(stepsNavController)
+                LogInScreen(
+                    stepsNavController = stepsNavController,
+                    logIn = { email, password ->  userViewModel.logIn(email, password)}
+                )
             }
 
             composable<SignUpScreenRoute>{
@@ -132,16 +143,36 @@ fun StartScreen() {
                 sixthShadowPoint = 0.7f
                 seventhShadowPoint = 0.5f
 
-                SignUpScreen(stepsNavController)
+                SignUpScreen(
+                    stepsNavController = stepsNavController,
+                    userViewModel = userViewModel
+                )
             }
 
-            composable<SelectMediaFormatScreenRoute>{
-
-                SelectMediaFormatScreen(stepsNavController)
+            composable<SelectMediaFormatScreenRoute> {
+                user.value?.let{
+                    SelectMediaFormatScreen(
+                        stepsNavController = stepsNavController,
+                        user = it,
+                        setUser = {newUser -> userViewModel.setUser(newUser)}
+                    )
+                }
             }
 
             composable<SelectMediaGenresScreenRoute> {
-                SelectMediaGenresScreen(stepsNavController)
+                user.value?.let{
+                    SelectMediaGenresScreen(
+                        stepsNavController = stepsNavController,
+                        user = it,
+                        setUser = { newUser -> userViewModel.setUser(newUser) },
+                        signUp = { userToAdd ->
+                            userViewModel.signUp(
+                                user = userToAdd,
+                                onSuccess = { uid -> userViewModel.addOrUpdateUser(userToAdd.copy(id = uid))}
+                            )
+                        }
+                    )
+                }
             }
         }
     }

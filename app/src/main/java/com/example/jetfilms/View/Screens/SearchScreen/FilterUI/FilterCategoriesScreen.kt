@@ -51,9 +51,17 @@ fun FilterCategoriesScreen(
         ) {
 
             items(MediaFormats.entries) { format ->
+                val selected = selectedCategories.contains(format)
                 MediaFormatCard(
                     mediaFormat = format,
-                    selectedFormats = selectedCategories
+                    selected = selected,
+                    onClick = {
+                        if(selected){
+                            selectedCategories.remove(format)
+                        }else{
+                            selectedCategories.add(format)
+                        }
+                    }
                 )
 
                 Spacer(modifier = Modifier.height((itemsSpacing).sdp))

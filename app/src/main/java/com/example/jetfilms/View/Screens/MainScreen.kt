@@ -50,6 +50,7 @@ import com.example.jetfilms.View.Screens.Home.MoreMoviesScreen
 import com.example.jetfilms.View.Screens.Home.MoreSerialsScreen
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.MovieDetailsPackage.MovieDetailsScreen
 import com.example.jetfilms.Screens.MovieDetailsPackage.SerialDetailsScreen
+import com.example.jetfilms.View.Screens.Account.NavigateAccountScreen
 import com.example.jetfilms.View.Screens.ParticipantDetailsPackage.ParticipantDetailsScreen
 import com.example.jetfilms.View.Screens.SearchScreen.FilterUI.FiltersMainScreen
 import com.example.jetfilms.View.Screens.SearchScreen.SearchScreen
@@ -60,10 +61,12 @@ import com.example.jetfilms.ViewModels.ParticipantViewModel
 import com.example.jetfilms.ViewModels.SearchHistoryViewModel
 import com.example.jetfilms.ViewModels.SeriesViewModel
 import com.example.jetfilms.ViewModels.UnifiedMediaViewModel
+import com.example.jetfilms.ViewModels.UserViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
+import com.google.firebase.auth.FirebaseAuth
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -89,292 +92,323 @@ fun MainScreen(
     val turnBack = { screensNavController.popBackStackOrIgnore() }
 
     if(isConnected){
-        val moviesViewModel: MoviesViewModel = hiltViewModel()
-        val seriesViewModel: SeriesViewModel = hiltViewModel()
-        val participantViewModel: ParticipantViewModel = hiltViewModel()
-        val unifiedMediaViewModel: UnifiedMediaViewModel = hiltViewModel()
+        val userViewModel: UserViewModel = hiltViewModel()
+        val firebaseUser = userViewModel.firebaseUser.collectAsStateWithLifecycle()
+        Log.d("firebaseUser",firebaseUser.toString())
+        if(firebaseUser.value != null) {
 
-        val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
+            val moviesViewModel: MoviesViewModel = hiltViewModel()
+            val seriesViewModel: SeriesViewModel = hiltViewModel()
+            val participantViewModel: ParticipantViewModel = hiltViewModel()
+            val unifiedMediaViewModel: UnifiedMediaViewModel = hiltViewModel()
+            val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
 
-        val selectedMediaCast = unifiedMediaViewModel.selectedMediaCast.collectAsStateWithLifecycle()
-        val selectedMediaImages = unifiedMediaViewModel.selectedMediaImages.collectAsStateWithLifecycle()
-        val selectedMediaTrailers = unifiedMediaViewModel.selectedMediaTrailers.collectAsStateWithLifecycle()
 
-        val similarMovies = moviesViewModel.similarMovies.collectAsStateWithLifecycle()
+            val selectedMediaCast =
+                unifiedMediaViewModel.selectedMediaCast.collectAsStateWithLifecycle()
+            val selectedMediaImages =
+                unifiedMediaViewModel.selectedMediaImages.collectAsStateWithLifecycle()
+            val selectedMediaTrailers =
+                unifiedMediaViewModel.selectedMediaTrailers.collectAsStateWithLifecycle()
 
-        val similarSeries = seriesViewModel.similarSerials.collectAsStateWithLifecycle()
+            val similarMovies = moviesViewModel.similarMovies.collectAsStateWithLifecycle()
 
-        val participantFilmography = participantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
-        val participantImages = participantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
+            val similarSeries = seriesViewModel.similarSerials.collectAsStateWithLifecycle()
 
-        val selectMovie: (movieId: Int) -> Unit = { id ->
-           try {
-                scope.launch {
-                    moviesViewModel.getMovie(id)?.let { detailedMovie ->
-                        navigateToSelectedMovie(screensNavController, detailedMovie)
+            val participantFilmography =
+                participantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
+            val participantImages =
+                participantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
+
+            val selectMovie: (movieId: Int) -> Unit = { id ->
+                try {
+                    scope.launch {
+                        moviesViewModel.getMovie(id)?.let { detailedMovie ->
+                            navigateToSelectedMovie(screensNavController, detailedMovie)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("error", e.message.toString())
+                }
+            }
+
+            val selectSeries: (seriesId: Int) -> Unit = { id ->
+                try {
+                    scope.launch {
+                        navigateToSelectedSerial(
+                            screensNavController,
+                            seriesViewModel.getSerial(id)
+                        )
+                    }
+                } catch (_: Exception) {
+                }
+            }
+
+            val selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit =
+                { participant ->
+                    scope.launch {
+                        navigateToSelectedParticipant(
+                            navController = screensNavController,
+                            participantViewModel.getParticipant(participant.id)
+                        )
                     }
                 }
-            }
-           catch (e: Exception){
-               Log.e("error",e.message.toString())
-           }
-        }
 
-        val selectSeries: (seriesId: Int) -> Unit = { id ->
-            try {
-                scope.launch {
-                    navigateToSelectedSerial(
-                        screensNavController,
-                        seriesViewModel.getSerial(id)
-                    )
-                }
-            }
-            catch (_: Exception){ }
-        }
-
-        val selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit = { participant ->
-            scope.launch {
-                navigateToSelectedParticipant(navController = screensNavController,participantViewModel.getParticipant(participant.id))
-            }
-        }
-
-        LaunchedEffect(null) {
-            val searchedHistoryMediaIds = searchHistoryViewModel.getSearchHistoryMediaIds()
-
-            searchedHistoryMediaIds.forEach { searchedMedia: SearchedMedia ->
-                    scope.launch{
+            LaunchedEffect(null) {
+                val searchedHistoryMediaIds = searchHistoryViewModel.getSearchHistoryMediaIds()
+                Log.d("searched media ids", searchedHistoryMediaIds.toString())
+                searchedHistoryMediaIds.forEach { searchedMedia: SearchedMedia ->
+                    scope.launch {
                         if (searchedMedia.mediaType == MediaFormats.MOVIE.format) {
                             val movie = moviesViewModel.getMovie(searchedMedia.mediaId)
-                            movie?.let{
+                            movie?.let {
                                 searchHistoryViewModel.addSearchHistoryMedia(
-                                    MovieDataToUnifiedMedia(movie),searchedMedia
+                                    MovieDataToUnifiedMedia(movie), searchedMedia
                                 )
                             }
                         } else {
                             val series = seriesViewModel.getSerial(searchedMedia.mediaId)
                             searchHistoryViewModel.addSearchHistoryMedia(
-                                SeriesDataToUnifiedMedia(series),searchedMedia
+                                SeriesDataToUnifiedMedia(series), searchedMedia
                             )
                         }
                     }
+                }
             }
-        }
 
-        Scaffold(
-            containerColor = Color.Black,
-            bottomBar = {
-                BottomNavBar(
-                    navController = screensNavController,
-                    hazeState = hazeState,
-                    showBottomBar = showBottomBar
-                )
-            },
-        ) {
-            NavHost(
-                navController = screensNavController,
-                startDestination = StartScreen,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .haze(
-                        hazeState,
-                        backgroundColor = hazeStateBlurBackground,
-                        tint = hazeStateBlurTint,
-                        blurRadius = HAZE_STATE_BLUR.sdp,
+            Scaffold(
+                containerColor = Color.Black,
+                bottomBar = {
+                    BottomNavBar(
+                        navController = screensNavController,
+                        hazeState = hazeState,
+                        showBottomBar = showBottomBar
                     )
+                },
             ) {
-                composable<StartScreen> {
-                    showBottomBar = false
-                    StartScreen()
-                }
-
-                composable(
-                    route = "HomeScreen",
-                    enterTransition = { fadeIn(tween(delayMillis = 350)) }
-                ) {
-                    homeDelay = 70
-                    showBottomBar = true
-
-                    HomeScreen(
-                        selectMovie = selectMovie,
-                        selectSeries = selectSeries,
-                        navController = screensNavController,
-                        moviesViewModel = moviesViewModel,
-                        seriesViewModel = seriesViewModel
-                    )
-                }
-
-                composable(
-                    route = "ExploreScreen"
-                ) {
-                    showBottomBar = true
-
-                    SearchScreen(
-                        selectMovie = selectMovie,
-                        selectSeries = selectSeries,
-                        navController = screensNavController,
-                        moviesViewModel = moviesViewModel,
-                        seriesViewModel = seriesViewModel,
-                        unifiedMediaViewModel = unifiedMediaViewModel,
-                        searchHistoryViewModel = searchHistoryViewModel,
-                    )
-                }
-
-                composable(
-                    route = "FavoriteScreen"
-                ) {
-                    FavoriteNavigateScreen(
-                        moviesViewModel = moviesViewModel,
-                        seriesViewModel = seriesViewModel,
-                        unifiedMediaViewModel = unifiedMediaViewModel,
-                    )
-                }
-
-                composable(
-                    route = "AccountScreen"
-                ) {
-
-                }
-
-                composable<MoreMoviesScreenRoute> {
-                    homeDelay = 70
-                    showBottomBar = true
-
-                    val category = screensNavController.currentBackStackEntry?.arguments?.getString("category")
-
-                    category?.let {
-                        MoreMoviesScreen(
-                            turnBack = turnBack,
-                            selectMovie = selectMovie,
-                            category = category.toString(),
-                            moviesViewModel = moviesViewModel,
+                NavHost(
+                    navController = screensNavController,
+                    startDestination = "HomeScreen",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .haze(
+                            hazeState,
+                            backgroundColor = hazeStateBlurBackground,
+                            tint = hazeStateBlurTint,
+                            blurRadius = HAZE_STATE_BLUR.sdp,
                         )
-                    }
-                }
+                ) {
 
-                composable<MoreSerialsScreenRoute> {
-                    homeDelay = 70
-                    showBottomBar = true
+                    composable(
+                        route = "HomeScreen",
+                        enterTransition = { fadeIn(tween(delayMillis = 350)) }
+                    ) {
+                        homeDelay = 70
+                        showBottomBar = true
 
-                    val category =
-                        screensNavController.currentBackStackEntry?.arguments?.getString("category")
-
-                    category?.let {
-                        MoreSerialsScreen(
+                        HomeScreen(
+                            selectMovie = selectMovie,
                             selectSeries = selectSeries,
                             navController = screensNavController,
-                            category = category.toString(),
+                            moviesViewModel = moviesViewModel,
+                            seriesViewModel = seriesViewModel
+                        )
+                    }
+
+                    composable(
+                        route = "ExploreScreen"
+                    ) {
+                        showBottomBar = true
+
+                        SearchScreen(
+                            selectMovie = selectMovie,
+                            selectSeries = selectSeries,
+                            navController = screensNavController,
+                            moviesViewModel = moviesViewModel,
                             seriesViewModel = seriesViewModel,
+                            unifiedMediaViewModel = unifiedMediaViewModel,
+                            searchHistoryViewModel = searchHistoryViewModel,
+                        )
+                    }
+
+                    composable(
+                        route = "FavoriteScreen"
+                    ) {
+                        FavoriteNavigateScreen(
+                            moviesViewModel = moviesViewModel,
+                            seriesViewModel = seriesViewModel,
+                            unifiedMediaViewModel = unifiedMediaViewModel,
+                        )
+                    }
+
+                    composable(
+                        route = "AccountScreen"
+                    ) {
+                       NavigateAccountScreen(
+                           userViewModel = userViewModel
+                       )
+                    }
+
+                    composable<MoreMoviesScreenRoute> {
+                        homeDelay = 70
+                        showBottomBar = true
+
+                        val category =
+                            screensNavController.currentBackStackEntry?.arguments?.getString("category")
+
+                        category?.let {
+                            MoreMoviesScreen(
+                                turnBack = turnBack,
+                                selectMovie = selectMovie,
+                                category = category.toString(),
+                                moviesViewModel = moviesViewModel,
+                            )
+                        }
+                    }
+
+                    composable<MoreSerialsScreenRoute> {
+                        homeDelay = 70
+                        showBottomBar = true
+
+                        val category =
+                            screensNavController.currentBackStackEntry?.arguments?.getString("category")
+
+                        category?.let {
+                            MoreSerialsScreen(
+                                selectSeries = selectSeries,
+                                navController = screensNavController,
+                                category = category.toString(),
+                                seriesViewModel = seriesViewModel,
+                            )
+                        }
+                    }
+
+                    composable(
+                        route = "movie_details/{movie}",
+                        arguments = listOf(navArgument("movie") { type = DetailedMovieNavType() }),
+                    ) {
+                        homeDelay = 350
+                        showBottomBar = false
+
+                        val movieResponse =
+                            it.arguments?.getParcelable<DetailedMovieResponse>("movie")
+                        movieResponse?.let {
+                            LaunchedEffect(null) {
+                                unifiedMediaViewModel.setMoviesExtraInformation(movieResponse.id)
+                                moviesViewModel.setSimilarMovies(movieResponse.id)
+                            }
+
+                            if (similarMovies.value != null) {
+                                MovieDetailsScreen(
+                                    navController = screensNavController,
+                                    movieDisplay = MovieDisplay(
+                                        response = movieResponse,
+                                        movieCast = selectedMediaCast.value,
+                                        movieImages = selectedMediaImages.value,
+                                        similarMovies = similarMovies.value!!,
+                                        movieTrailers = selectedMediaTrailers.value
+                                    ),
+                                    selectMovie = selectMovie,
+                                    selectParticipant = selectParticipant
+                                )
+                            }
+                        }
+                    }
+
+                    composable(
+                        route = "serial_details/{serial}",
+                        arguments = listOf(navArgument("serial") {
+                            type = DetailedSerialNavType()
+                        }),
+                        enterTransition = { fadeIn(animationSpec = tween(75)) }
+                    ) {
+                        homeDelay = 350
+                        showBottomBar = false
+
+                        val serialResponse =
+                            it.arguments?.getParcelable<DetailedSerialResponse>("serial")
+                        serialResponse?.let {
+                            LaunchedEffect(null) {
+                                unifiedMediaViewModel.setSeriesExtraInformation(serialResponse.id)
+                                seriesViewModel.setSimilarSerials(serialResponse.id)
+                            }
+
+                            if (similarSeries.value != null) {
+                                SerialDetailsScreen(
+                                    navController = screensNavController,
+                                    serialDisplay = SerialDisplay(
+                                        response = serialResponse,
+                                        serialCast = selectedMediaCast.value,
+                                        serialImages = selectedMediaImages.value,
+                                        similarSerials = similarSeries.value!!,
+                                        seriesTrailers = selectedMediaTrailers.value
+                                    ),
+                                    selectSeason = { serialId, seasonNumber ->
+                                        try {
+                                            seriesViewModel.getSerialSeason(serialId, seasonNumber)
+                                        } catch (e: Exception) {
+                                            seriesViewModel.getSerialSeason(
+                                                serialId,
+                                                seasonNumber + 1
+                                            )
+                                        }
+                                    },
+                                    selectSerial = selectSeries,
+                                    selectParticipant = selectParticipant
+                                )
+                            }
+                        }
+                    }
+
+                    composable(
+                        route = "participant_details/{participant}",
+                        arguments = listOf(navArgument("participant") {
+                            type = ParticipantNavType()
+                        }),
+                    ) {
+                        homeDelay = 350
+                        showBottomBar = false
+
+                        val participantResponse =
+                            it.arguments?.getParcelable<DetailedParticipantResponse>("participant")
+                        participantResponse?.let {
+                            LaunchedEffect(null) {
+                                participantViewModel.setParticipantFilmography(participantResponse.id)
+                                participantViewModel.setParticipantImages(participantResponse.id)
+                            }
+
+                            if (participantFilmography.value != null && participantImages.value != null) {
+                                ParticipantDetailsScreen(
+                                    navController = screensNavController,
+                                    participantDisplay = DetailedParticipantDisplay(
+                                        participantResponse = participantResponse,
+                                        filmography = participantFilmography.value!!,
+                                        images = participantImages.value!!,
+                                    ),
+                                    selectMovie = selectMovie
+                                )
+                            }
+                        }
+                    }
+
+                    composable("FilterScreen") {
+                        showBottomBar = true
+                        FiltersMainScreen(
+                            turnOffFilter = turnBack,
+                            moviesViewModel = moviesViewModel,
+                            seriesViewModel = seriesViewModel,
+                            unifiedMediaViewModel = unifiedMediaViewModel,
                         )
                     }
                 }
-
-                composable(
-                    route = "movie_details/{movie}",
-                    arguments = listOf(navArgument("movie") { type = DetailedMovieNavType() }),
-                ) {
-                    homeDelay = 350
-                    showBottomBar = false
-
-                    val movieResponse = it.arguments?.getParcelable<DetailedMovieResponse>("movie")
-                    movieResponse?.let {
-                        LaunchedEffect(null) {
-                            unifiedMediaViewModel.setMoviesExtraInformation(movieResponse.id)
-                            moviesViewModel.setSimilarMovies(movieResponse.id)
-                        }
-
-                        if(similarMovies.value != null) {
-                            MovieDetailsScreen(
-                                navController = screensNavController,
-                                movieDisplay = MovieDisplay(
-                                    response = movieResponse,
-                                    movieCast = selectedMediaCast.value,
-                                    movieImages = selectedMediaImages.value,
-                                    similarMovies = similarMovies.value!!,
-                                    movieTrailers = selectedMediaTrailers.value
-                                ),
-                                selectMovie = selectMovie,
-                                selectParticipant = selectParticipant
-                            )
-                        }
-                    }
-                }
-
-                composable(
-                    route = "serial_details/{serial}",
-                    arguments = listOf(navArgument("serial") { type = DetailedSerialNavType() }),
-                    enterTransition = { fadeIn(animationSpec = tween(75)) }
-                ) {
-                    homeDelay = 350
-                    showBottomBar = false
-
-                    val serialResponse = it.arguments?.getParcelable<DetailedSerialResponse>("serial")
-                    serialResponse?.let {
-                        LaunchedEffect(null) {
-                            unifiedMediaViewModel.setSeriesExtraInformation(serialResponse.id)
-                            seriesViewModel.setSimilarSerials(serialResponse.id)
-                        }
-
-                        if(similarSeries.value != null) {
-                            SerialDetailsScreen(
-                                navController = screensNavController,
-                                serialDisplay = SerialDisplay(
-                                    response = serialResponse,
-                                    serialCast = selectedMediaCast.value,
-                                    serialImages = selectedMediaImages.value,
-                                    similarSerials = similarSeries.value!!,
-                                    seriesTrailers = selectedMediaTrailers.value
-                                ),
-                                selectSeason = { serialId, seasonNumber ->
-                                    try {
-                                        seriesViewModel.getSerialSeason(serialId, seasonNumber)
-                                    } catch (e: Exception) {
-                                        seriesViewModel.getSerialSeason(serialId, seasonNumber + 1)
-                                    }
-                                },
-                                selectSerial = selectSeries,
-                                selectParticipant = selectParticipant
-                            )
-                        }
-                    }
-                }
-
-                composable(
-                    route = "participant_details/{participant}",
-                    arguments = listOf(navArgument("participant") { type = ParticipantNavType() }),
-                ) {
-                    homeDelay = 350
-                    showBottomBar = false
-
-                    val participantResponse = it.arguments?.getParcelable<DetailedParticipantResponse>("participant")
-                    participantResponse?.let {
-                        LaunchedEffect(null) {
-                            participantViewModel.setParticipantFilmography(participantResponse.id)
-                            participantViewModel.setParticipantImages(participantResponse.id)
-                        }
-
-                        if(participantFilmography.value != null && participantImages.value != null) {
-                            ParticipantDetailsScreen(
-                                navController = screensNavController,
-                                participantDisplay = DetailedParticipantDisplay(
-                                    participantResponse = participantResponse,
-                                    filmography = participantFilmography.value!!,
-                                    images = participantImages.value!!,
-                                ),
-                                selectMovie = selectMovie
-                            )
-                        }
-                    }
-                }
-
-                composable("FilterScreen") {
-                    showBottomBar = true
-                    FiltersMainScreen(
-                        turnOffFilter = turnBack,
-                        moviesViewModel = moviesViewModel,
-                        seriesViewModel = seriesViewModel,
-                        unifiedMediaViewModel = unifiedMediaViewModel,
-                    )
-                }
+            }
+        } else {
+            Scaffold(
+                containerColor = Color.Black,
+            ) {
+                StartScreen(
+                    userViewModel = userViewModel
+                )
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.jetfilms.View.Screens.Start.Select_type
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -22,13 +24,16 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.View.Screens.Start.SelectMediaGenresScreenRoute
 import com.example.jetfilms.View.Screens.Start.SignUpScreenRoute
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
+import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.View.Components.Cards.MediaFormatCard
+import com.example.jetfilms.ViewModels.UserViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
@@ -36,11 +41,20 @@ import com.example.jetfilms.ui.theme.buttonsColor2
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun SelectMediaFormatScreen(
-    stepsNavController: NavController
+    stepsNavController: NavController,
+    user: User,
+    setUser: (user: User) -> Unit,
 ) {
     val typography = MaterialTheme.typography
 
     val selectedFormats = remember{ mutableStateListOf<MediaFormats>() }
+
+    LaunchedEffect(null) {
+        Log.d("user",user.toString())
+        user.run {
+            selectedFormats.addAll(recommendedMediaFormats)
+        }
+    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -78,8 +92,7 @@ fun SelectMediaFormatScreen(
         ) {
 
             TurnBackButton(
-                onClick = { stepsNavController.navigate(SignUpScreenRoute)
-                          },
+                onClick = { stepsNavController.navigateUp() },
                 background = Color.LightGray.copy(0.6f),
                 iconColor = Color.White,
                 modifier = Modifier
@@ -111,7 +124,25 @@ fun SelectMediaFormatScreen(
                         .padding(bottom = 10.sdp)
                 ) {
                     MediaFormats.entries.forEach { format ->
-                        MediaFormatCard(mediaFormat = format,selectedFormats)
+                        val isSelected = selectedFormats.contains(format)
+                        MediaFormatCard(
+                            mediaFormat = format,
+                            selected = isSelected,
+                            onClick = {
+                                if (isSelected) {
+                                    selectedFormats.remove(format)
+                                    setUser(
+                                        user.copy(recommendedMediaFormats = selectedFormats)
+                                    )
+                                } else {
+                                    selectedFormats.add(format)
+                                    setUser(
+                                        user.copy(recommendedMediaFormats = selectedFormats)
+                                    )
+                                }
+
+                            }
+                        )
                     }
                 }
             }
