@@ -38,32 +38,25 @@ import com.primex.core.noise
 
 @OptIn(ExperimentalToolkitApi::class)
 @Composable
-fun MediaFormatCard(mediaFormat: MediaFormats, selectedFormats:MutableList<MediaFormats>) {
+fun MediaFormatCard(mediaFormat: MediaFormats, selected: Boolean, onClick: () -> Unit) {
     val typography = MaterialTheme.typography
-    val request = ImageRequest.Builder(LocalContext.current).data(mediaFormat.imageUrl).allowHardware(false).build()
 
     Box(
         modifier = Modifier
             .width((267).sdp)
             .height(104.sdp)
             .border(
-                if (selectedFormats.contains(mediaFormat)) BorderStroke(
+                if (selected) BorderStroke(
                     2f.sdp,
                     Brush.horizontalGradient(listOf(buttonsColor1, buttonsColor2))
                 )
                 else BorderStroke(1.sdp, Color.Transparent),
                 RoundedCornerShape(8.sdp)
             )
-            .clickable {
-                if (selectedFormats.contains(mediaFormat)) {
-                    selectedFormats.remove(mediaFormat)
-                } else {
-                    selectedFormats.add(mediaFormat)
-                }
-            }
+            .clickable { onClick() }
     ){
         AsyncImage(
-            model = request,
+            model = mediaFormat.imageUrl,
             contentDescription = "image poster",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -88,7 +81,7 @@ fun MediaFormatCard(mediaFormat: MediaFormats, selectedFormats:MutableList<Media
             )
         }
 
-        if(selectedFormats.contains(mediaFormat)){
+        if(selected){
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -107,6 +100,5 @@ fun MediaFormatCard(mediaFormat: MediaFormats, selectedFormats:MutableList<Media
                 )
             }
         }
-
     }
 }
