@@ -1,5 +1,6 @@
 package com.example.jetfilms.View.Screens.Start
 
+import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import kotlinx.serialization.Serializable
 
 @Serializable
