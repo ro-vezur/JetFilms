@@ -15,9 +15,10 @@ import com.example.jetfilms.extensions.ssp
 @Composable
 fun typography():Typography {
     return Typography(
-        bodyLarge = TextStyle(
-            fontSize = 1.ssp,
-         //   letterSpacing = 0.5f.ssp
+
+        bodySmall = TextStyle(
+            fontSize = (12).ssp,
+            fontWeight = FontWeight.W500
         ),
 
         bodyMedium = TextStyle(
@@ -25,9 +26,9 @@ fun typography():Typography {
             fontWeight = FontWeight.SemiBold
         ),
 
-        bodySmall = TextStyle(
-            fontSize = (12).ssp,
-            fontWeight = FontWeight.W500
+        bodyLarge = TextStyle(
+            fontSize = (16).ssp,
+            fontWeight = FontWeight.W400
         ),
 
         titleLarge = TextStyle(
