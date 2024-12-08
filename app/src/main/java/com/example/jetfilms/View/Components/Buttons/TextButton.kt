@@ -27,6 +27,7 @@ import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BASE_BUTTON_WIDTH
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
+import com.example.jetfilms.ui.theme.whiteColor
 
 @Composable
 fun TextButton(
@@ -35,7 +36,7 @@ fun TextButton(
     text:String,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     textAlign: Alignment = Alignment.Center,
-    fontSize:TextUnit = 16.5f.ssp,
+    textColor: Color = whiteColor,
     height:Dp = BASE_BUTTON_HEIGHT.sdp,
     width:Dp = BASE_BUTTON_WIDTH.sdp,
     corners:RoundedCornerShape = RoundedCornerShape(12.sdp),
@@ -56,7 +57,7 @@ fun TextButton(
         TextButtonsContent(
             image = image,
             text = text,
-            textStyle = textStyle,
+            textStyle = textStyle.copy(color = textColor),
             modifier = Modifier.align(textAlign)
         )
     }
@@ -68,7 +69,7 @@ fun TextButton(
     onClick:() -> Unit,
     text:String = "",
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
-    fontSize:TextUnit = 17.5f.ssp,
+    textColor: Color = whiteColor,
     height:Dp = BASE_BUTTON_HEIGHT.sdp,
     width:Dp = BASE_BUTTON_WIDTH.sdp,
     textAlign: Alignment = Alignment.Center,
@@ -91,7 +92,7 @@ fun TextButton(
         TextButtonsContent(
             image = image,
             text = text,
-            textStyle = textStyle,
+            textStyle = textStyle.copy(color = textColor),
             Modifier.align(textAlign)
         )
     }
