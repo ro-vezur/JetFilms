@@ -1,6 +1,5 @@
 package com.example.jetfilms.ViewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
@@ -20,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val auth: FirebaseAuth,
-    private val usersDbRepository: UsersCollectionRepository,
+    private val usersCollectionRepository: UsersCollectionRepository,
     private val authRepository: AuthService
 ): ViewModel() {
     private val _firebaseUser: MutableStateFlow<FirebaseUser?> = MutableStateFlow(auth.currentUser)
@@ -40,11 +39,11 @@ class UserViewModel @Inject constructor(
     }
 
     fun addOrUpdateUser(newUser: User) {
-        usersDbRepository.addOrUpdateUser(newUser,{})
+        usersCollectionRepository.addOrUpdateUser(newUser,{})
     }
 
     suspend fun getUser(userId: String): User? {
-        return usersDbRepository.getUser(userId)
+        return usersCollectionRepository.getUser(userId)
     }
 
     fun signUp(user: User, onSuccess: (userId: String) -> Unit) = viewModelScope.launch{
