@@ -8,6 +8,7 @@
     <application
         android:name=".Hilt.MyApplication"
         android:configChanges="orientation|screenSize"
+        android:screenOrientation="portrait"
         android:hardwareAccelerated="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
