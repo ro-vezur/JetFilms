@@ -1,5 +1,7 @@
 package com.example.jetfilms
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,6 +23,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val activity = this as Activity
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
             JetsFilmsTheme(
                 dynamicColor = false
             ) {

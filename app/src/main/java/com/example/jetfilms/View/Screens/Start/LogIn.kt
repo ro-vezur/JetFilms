@@ -37,7 +37,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavController
 import com.example.jetfilms.View.Components.InputFields.BaseTextFieldColors
-import com.example.jetfilms.View.Components.InputFields.CustomTextField
+import com.example.jetfilms.View.Components.InputFields.TextInputField
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
@@ -96,7 +96,7 @@ fun LogInScreen(
                     .padding(bottom = 38.sdp)
                     .fillMaxWidth()
             ) {
-                CustomTextField(
+                TextInputField(
                     colors = BaseTextFieldColors(),
                     text = emailText,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
@@ -109,7 +109,7 @@ fun LogInScreen(
                     modifier = Modifier
                 )
 
-                CustomTextField(
+                TextInputField(
                     colors = BaseTextFieldColors(),
                     text = passwordText,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,

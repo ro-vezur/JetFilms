@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,23 +47,23 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.jetfilms.View.Components.InputFields.BaseTextFieldColors
-import com.example.jetfilms.View.Components.InputFields.CustomTextField
+import com.example.jetfilms.View.Components.InputFields.TextInputField
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
-import com.example.jetfilms.Helpers.Validators.Email.EmailValidationResult
-import com.example.jetfilms.Helpers.Validators.Password.PasswordValidationResult
-import com.example.jetfilms.Helpers.Validators.PasswordConfirm.PasswordConfirmValidationResult
-import com.example.jetfilms.Helpers.Validators.Username.UsernameValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.PasswordConfirmValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.UsernameValidationResult
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
-import com.example.jetfilms.ViewModels.ValidationViewModel
+import com.example.jetfilms.ViewModels.SingUpValidationViewModel
 import com.example.jetfilms.ViewModels.UserViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.errorColor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.util.UUID
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RequiresApi(Build.VERSION_CODES.S)
@@ -70,11 +71,13 @@ import java.util.UUID
 fun SignUpScreen(
     stepsNavController: NavController,
     userViewModel: UserViewModel,
-    signUpViewModel: ValidationViewModel = hiltViewModel(),
+    signUpViewModel: SingUpValidationViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colorScheme
+
+    val scope = rememberCoroutineScope()
 
     val usernameValidationResult = signUpViewModel.usernameValidation.collectAsStateWithLifecycle()
     val emailValidationResult = signUpViewModel.emailValidation.collectAsStateWithLifecycle()
@@ -135,7 +138,7 @@ fun SignUpScreen(
                     .padding(bottom = 38.sdp)
                     .fillMaxWidth()
             ) {
-                CustomTextField(
+                TextInputField(
                     colors = BaseTextFieldColors(),
                     text = firstName,
                     isError = usernameValidationResult.value != UsernameValidationResult.CORRECT &&
@@ -163,7 +166,7 @@ fun SignUpScreen(
                     modifier = Modifier
                 )
 
-                CustomTextField(
+                TextInputField(
                     colors = BaseTextFieldColors(),
                     text = lastName,
                     isError = usernameValidationResult.value != UsernameValidationResult.CORRECT &&
@@ -191,7 +194,7 @@ fun SignUpScreen(
                     modifier = Modifier
                 )
 
-                CustomTextField(
+                TextInputField(
                     colors = BaseTextFieldColors(),
                     text = emailText,
                     isError = emailValidationResult.value != EmailValidationResult.CORRECT &&
@@ -220,7 +223,7 @@ fun SignUpScreen(
                     modifier = Modifier
                 )
 
-                CustomTextField(
+                TextInputField(
                     colors = BaseTextFieldColors(),
                     text = passwordText,
                     isError = passwordError,
@@ -265,14 +268,15 @@ fun SignUpScreen(
                     modifier = Modifier
                 )
 
-                CustomTextField(
+                TextInputField(
                     colors = BaseTextFieldColors(),
                     text = passwordConfirmText,
                     isError = passwordConfirmError,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         passwordConfirmText = value
-                        signUpViewModel.setPasswordConfirmValidationResult(PasswordConfirmValidationResult.NONE)
+                        signUpViewModel.setPasswordConfirmValidationResult(
+                            PasswordConfirmValidationResult.NONE)
                     },
                     placeHolder = "Password Confirm",
                     leadingIcon = Icons.Filled.Lock,
@@ -314,27 +318,31 @@ fun SignUpScreen(
             TextButton(
                 onClick = {
 
-                    val valid = signUpViewModel.validation(
-                        name = "$firstName $lastName",
-                        email = emailText,
-                        password = passwordText,
-                        passwordConfirm = passwordConfirmText,
-                    )
-
-                    if(valid){
-
-                        val newUser = User(
-                            id = "",
-                            firstName = firstName,
-                            lastName = lastName,
+                    scope.launch {
+                        val valid = signUpViewModel.validation(
+                            name = "$firstName $lastName",
                             email = emailText,
                             password = passwordText,
-                            recommendedMediaFormats = user.value?.recommendedMediaFormats?: listOf(),
-                            recommendedMediaGenres = user.value?.recommendedMediaGenres?: listOf(),
+                            passwordConfirm = passwordConfirmText,
                         )
 
-                        userViewModel.setUser(newUser)
-                        stepsNavController.navigate(SelectMediaFormatScreenRoute)
+                        if (valid) {
+
+                            val newUser = User(
+                                id = "",
+                                firstName = firstName,
+                                lastName = lastName,
+                                email = emailText,
+                                password = passwordText,
+                                recommendedMediaFormats = user.value?.recommendedMediaFormats
+                                    ?: listOf(),
+                                recommendedMediaGenres = user.value?.recommendedMediaGenres
+                                    ?: listOf(),
+                            )
+
+                            userViewModel.setUser(newUser)
+                            stepsNavController.navigate(SelectMediaFormatScreenRoute)
+                        }
                     }
 
                 },
