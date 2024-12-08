@@ -25,6 +25,19 @@ class UsersCollectionRepository @Inject constructor(
         return document.toObject(User::class.java)
     }
 
+    override suspend fun checkIfEmailIsRegistered(emailToCheck: String): Boolean {
+        val users = fireStore.collection(USERS_COLLECTION).get().await()
+        return users.documents.find {it.toObject(User::class.java)?.email == emailToCheck} != null
+    }
+
+    override suspend fun checkIfPasswordMatches(email: String, password: String): Boolean {
+        val users = fireStore.collection(USERS_COLLECTION).get().await()
+        return users.documents.find {
+            it.toObject(User::class.java)?.email == email && it.toObject(User::class.java)?.password == password
+        } != null
+    }
+
+
     override fun deleteUser(userId: String) {
 
     }
