@@ -51,12 +51,13 @@ import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.secondaryColor
 
 @Composable
-fun CustomTextField(
+fun TextInputField(
     width:Dp = BASE_BUTTON_WIDTH.sdp,
     height:Dp = (BASE_BUTTON_HEIGHT).sdp,
     shape: RoundedCornerShape = RoundedCornerShape(20.sdp),
     colors: TextFieldColors = TextFieldDefaults.colors(),
-    singleLine:Boolean = true,
+    singleLine: Boolean = true,
+    readOnly: Boolean = false,
     text: String,
     isError: Boolean = false,
     onTextChange: (value: String) -> Unit,
@@ -81,16 +82,19 @@ fun CustomTextField(
     val focusManager = LocalFocusManager.current
 
     val border = if (isError) errorBorder
-    else { if (isFocused) focusedBorder else unfocusedBorder }
+    else { if (isFocused && !readOnly) focusedBorder else unfocusedBorder }
 
     val background = Brush.Companion.horizontalGradient(
-        if (isFocused)
+        if (isFocused && !readOnly)
             listOf(secondaryColor.copy(0.52f), secondaryColor.copy(0.38f))
         else listOf(primaryColor, primaryColor)
     )
 
-    val textColor = if(isError) errorColor
-    else { if (isFocused) Color.White else Color.LightGray.copy(0.82f) }
+    val textColor = if(!readOnly) {
+        if (isError) errorColor else {
+            if (isFocused) Color.White else Color.LightGray.copy(0.82f)
+        }
+    } else Color.White
 
     val leadingIconColor = if(isError) errorColor else Color.LightGray.copy(0.9f)
 
@@ -103,7 +107,7 @@ fun CustomTextField(
             .border(border, shape)
     ){
         BasicTextField(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .background(background)
                 .focusRequester(focusRequester),
@@ -111,6 +115,7 @@ fun CustomTextField(
 
             onValueChange = onTextChange,
             singleLine = singleLine,
+            readOnly = readOnly,
             interactionSource = interactionSource,
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions,
@@ -128,7 +133,7 @@ fun CustomTextField(
             ),
             decorationBox = { innerTextField ->
                 Row(
-                    modifier,
+                    modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (leadingIcon != null) {
@@ -178,7 +183,7 @@ fun CustomTextField(
 @Composable
 private fun afsa(
 ) {
-    CustomTextField(
+    TextInputField(
         colors = BaseTextFieldColors(),
         text = "asf",
         onTextChange = {}
