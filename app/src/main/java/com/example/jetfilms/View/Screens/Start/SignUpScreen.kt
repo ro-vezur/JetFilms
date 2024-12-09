@@ -275,8 +275,7 @@ fun SignUpScreen(
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         passwordConfirmText = value
-                        signUpViewModel.setPasswordConfirmValidationResult(
-                            PasswordConfirmValidationResult.NONE)
+                        signUpViewModel.setPasswordConfirmValidationResult(PasswordConfirmValidationResult.NONE)
                     },
                     placeHolder = "Password Confirm",
                     leadingIcon = Icons.Filled.Lock,
@@ -327,7 +326,6 @@ fun SignUpScreen(
                         )
 
                         if (valid) {
-
                             val newUser = User(
                                 id = "",
                                 firstName = firstName,
@@ -335,9 +333,9 @@ fun SignUpScreen(
                                 email = emailText,
                                 password = passwordText,
                                 recommendedMediaFormats = user.value?.recommendedMediaFormats
-                                    ?: listOf(),
+                                    ?: mutableListOf(),
                                 recommendedMediaGenres = user.value?.recommendedMediaGenres
-                                    ?: listOf(),
+                                    ?: mutableListOf(),
                             )
 
                             userViewModel.setUser(newUser)

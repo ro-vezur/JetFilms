@@ -8,9 +8,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -25,9 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -35,24 +40,42 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.jetfilms.View.Components.InputFields.BaseTextFieldColors
 import com.example.jetfilms.View.Components.InputFields.TextInputField
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
+import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
+import com.example.jetfilms.ViewModels.LogInValidationViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
+import com.example.jetfilms.ui.theme.errorColor
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun LogInScreen(
     stepsNavController: NavController,
     logIn: (email: String, password: String) -> Unit,
+    logInValidationViewModel: LogInValidationViewModel = hiltViewModel(),
 ) {
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colorScheme
+
+    val scope = rememberCoroutineScope()
+
+    val passwordValidationResult = logInValidationViewModel.passwordValidation.collectAsStateWithLifecycle()
+    val emailValidationResult = logInValidationViewModel.emailValidation.collectAsStateWithLifecycle()
+
+    val passwordError = passwordValidationResult.value != PasswordValidationResult.CORRECT &&
+            passwordValidationResult.value != PasswordValidationResult.NONE
+    val emailError = emailValidationResult.value != EmailValidationResult.CORRECT &&
+            emailValidationResult.value != EmailValidationResult.NONE
 
     var passwordText by remember{ mutableStateOf("") }
     var showPassword by remember{ mutableStateOf(false) }
@@ -99,12 +122,27 @@ fun LogInScreen(
                 TextInputField(
                     colors = BaseTextFieldColors(),
                     text = emailText,
+                    isError = emailError,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         emailText = value
+                        logInValidationViewModel.setEmailValidationResult(EmailValidationResult.NONE)
                     },
                     placeHolder = "Email",
                     leadingIcon = Icons.Filled.Email,
+                    trailingIcon = {
+                        if(emailValidationResult.value != EmailValidationResult.NONE){
+                            Icon(
+                                imageVector = emailValidationResult.value.icon,
+                                contentDescription = "check icon",
+                                tint = emailValidationResult.value.tint,
+                                modifier = Modifier
+                                    .padding(end = 11.sdp)
+                                    .clip(CircleShape)
+                                    .size(20.sdp)
+                            )
+                        }
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier
                 )
@@ -112,22 +150,42 @@ fun LogInScreen(
                 TextInputField(
                     colors = BaseTextFieldColors(),
                     text = passwordText,
+                    isError = passwordError,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         passwordText = value
+                        logInValidationViewModel.setPasswordValidationResult(PasswordValidationResult.NONE)
                     },
                     placeHolder = "Password",
                     leadingIcon = Icons.Filled.Lock,
                     trailingIcon = { modifier ->
-                        Icon(
-                            imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                            contentDescription = "password",
-                            tint = Color.LightGray.copy(0.9f),
-                            modifier = modifier
-                                .clickable {
-                                    showPassword = !showPassword
-                                }
-                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.sdp)
+                        ){
+                            if(passwordValidationResult.value != PasswordValidationResult.NONE){
+                                Icon(
+                                    imageVector = passwordValidationResult.value.icon,
+                                    contentDescription = "check icon",
+                                    tint = passwordValidationResult.value.tint,
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .size(20.sdp)
+                                )
+                            }
+
+                            Icon(
+                                imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                contentDescription = "password",
+                                tint = if(passwordError) errorColor else Color.LightGray.copy(0.9f) ,
+                                modifier = Modifier
+                                    .padding(end = 11.sdp)
+                                    .clip(CircleShape)
+                                    .size(20.sdp)
+                                    .clickable {
+                                        showPassword = !showPassword
+                                    }
+                            )
+                        }
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
@@ -145,8 +203,15 @@ fun LogInScreen(
 
                 TextButton(
                     onClick = {
-                        if(emailText.isNotBlank() && passwordText.isNotBlank()) {
-                            logIn(emailText,passwordText)
+                        scope.launch{
+                            val valid = logInValidationViewModel.validation(
+                                email = emailText,
+                                password = passwordText
+                            )
+
+                            if (valid) {
+                                logIn(emailText, passwordText)
+                            }
                         }
                     },
                     text = "Log in",

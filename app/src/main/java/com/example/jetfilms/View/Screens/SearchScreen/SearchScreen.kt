@@ -79,6 +79,7 @@ import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.R
+import com.example.jetfilms.View.Components.LazyComponents.LazyGrid.UnifiedMediaVerticalLazyGrid
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
 import com.example.jetfilms.ViewModels.MoviesViewModel
 import com.example.jetfilms.ViewModels.SearchHistoryViewModel
@@ -218,7 +219,7 @@ fun SearchScreen(
                                                     id = "${searchedMovie.id}${MediaFormats.MOVIE.format}",
                                                     mediaId = searchedMovie.id,
                                                     mediaType = MediaFormats.MOVIE.format,
-                                                    viewedDate = DateFormats.getCurrentDate()
+                                                    viewedDateMillis = DateFormats.getCurrentDateMillis()
                                                 )
 
                                                 searchHistoryViewModel.insertSearchedMedia(searchedMedia)
@@ -257,7 +258,7 @@ fun SearchScreen(
                                                 id = "${searchedSeries.id}${MediaFormats.SERIES.format}",
                                                 mediaId = searchedSeries.id,
                                                 mediaType = MediaFormats.SERIES.format,
-                                                viewedDate = DateFormats.getCurrentDate()
+                                                viewedDateMillis = DateFormats.getCurrentDateMillis()
                                             )
 
                                             searchHistoryViewModel.insertSearchedMedia(searchedMedia)
@@ -290,7 +291,7 @@ fun SearchScreen(
                             Spacer(modifier = Modifier.height((BOTTOM_NAVIGATION_BAR_HEIGHT).sdp))
                         }
                     } else {
-                        LazyVerticalGrid(
+                        UnifiedMediaVerticalLazyGrid(
                             modifier = Modifier
                                 .padding(horizontal = 6.sdp)
                                 .fillMaxSize()
@@ -300,48 +301,20 @@ fun SearchScreen(
                                     tint = hazeStateBlurTint,
                                     blurRadius = HAZE_STATE_BLUR.sdp,
                                 ),
-                            columns = GridCells.Fixed(3),
-                            horizontalArrangement = Arrangement.spacedBy(7.sdp),
-                            verticalArrangement = Arrangement.spacedBy(8.sdp),
-                            contentPadding = PaddingValues(horizontal = 0.sdp),
-                            userScrollEnabled = true,
-                        ) {
-
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                Spacer(
-                                    modifier = Modifier.height(
-                                        searchBarHeight
-                                    )
-                                )
-                            }
-
-                            items(searchedHistoryUnifiedMedia.value.sortedByDescending { unifiedMedia ->
+                            topPadding = searchBarHeight,
+                            data = searchedHistoryUnifiedMedia.value.sortedByDescending { unifiedMedia ->
                                 searchedHistorySearchedMedia.value.find {
                                     it.id == "${unifiedMedia.id}${unifiedMedia.mediaType.format}"
-                                }?.viewedDate
-                            }) { unifiedMedia ->
-
-                                UnifiedCard(
-                                    unifiedMedia = unifiedMedia,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(8.sdp))
-                                        .height(155.sdp)
-                                        .clickable {
-                                            scope.launch {
-                                                if (unifiedMedia.mediaType == MediaFormats.MOVIE) {
-                                                    selectMovie(unifiedMedia.id)
-                                                } else {
-                                                    selectSeries(unifiedMedia.id)
-                                                }
-                                            }
-                                        }
-                                )
+                                }?.viewedDateMillis
+                            },
+                            selectMedia = { unifiedMedia ->
+                                if (unifiedMedia.mediaType == MediaFormats.MOVIE) {
+                                    selectMovie(unifiedMedia.id)
+                                } else {
+                                    selectSeries(unifiedMedia.id)
+                                }
                             }
-
-                            item(span = { GridItemSpan(maxLineSpan) }) {
-                                Spacer(modifier = Modifier.height(BOTTOM_NAVIGATION_BAR_HEIGHT.sdp))
-                            }
-                        }
+                        )
                     }
 
                     AnimatedVisibility(

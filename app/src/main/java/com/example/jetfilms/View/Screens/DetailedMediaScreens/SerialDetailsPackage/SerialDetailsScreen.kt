@@ -70,6 +70,7 @@ import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipant
 import com.example.jetfilms.Models.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
+import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
@@ -86,7 +87,8 @@ fun SerialDetailsScreen(
     serialDisplay: SerialDisplay,
     selectSeason: suspend (serialId: Int,seasonNumber: Int) -> SerialSeasonResponse?,
     selectSerial: (id: Int) -> Unit,
-    selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit
+    selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit,
+    addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -190,7 +192,7 @@ fun SerialDetailsScreen(
                         ) {
                             if (serialResponse.releaseDate.isNotBlank()) {
                                 PropertyCard(
-                                    text = DateFormats().getYear(serialResponse.releaseDate)
+                                    text = DateFormats.getYear(serialResponse.releaseDate)
                                         .toString(),
                                     lengthMultiplayer = 13
                                 )

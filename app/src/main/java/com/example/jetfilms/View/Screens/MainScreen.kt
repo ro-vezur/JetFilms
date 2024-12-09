@@ -66,7 +66,6 @@ import com.example.jetfilms.extensions.popBackStackOrIgnore
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
-import com.google.firebase.auth.FirebaseAuth
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -94,7 +93,7 @@ fun MainScreen(
     if(isConnected){
         val userViewModel: UserViewModel = hiltViewModel()
         val firebaseUser = userViewModel.firebaseUser.collectAsStateWithLifecycle()
-        Log.d("firebaseUser",firebaseUser.toString())
+
         if(firebaseUser.value != null) {
 
             val moviesViewModel: MoviesViewModel = hiltViewModel()
@@ -104,21 +103,17 @@ fun MainScreen(
             val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
 
 
-            val selectedMediaCast =
-                unifiedMediaViewModel.selectedMediaCast.collectAsStateWithLifecycle()
-            val selectedMediaImages =
-                unifiedMediaViewModel.selectedMediaImages.collectAsStateWithLifecycle()
-            val selectedMediaTrailers =
-                unifiedMediaViewModel.selectedMediaTrailers.collectAsStateWithLifecycle()
+            val selectedMediaCast = unifiedMediaViewModel.selectedMediaCast.collectAsStateWithLifecycle()
+            val selectedMediaImages = unifiedMediaViewModel.selectedMediaImages.collectAsStateWithLifecycle()
+            val selectedMediaTrailers = unifiedMediaViewModel.selectedMediaTrailers.collectAsStateWithLifecycle()
 
             val similarMovies = moviesViewModel.similarMovies.collectAsStateWithLifecycle()
-
             val similarSeries = seriesViewModel.similarSerials.collectAsStateWithLifecycle()
 
-            val participantFilmography =
-                participantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
-            val participantImages =
-                participantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
+            val participantFilmography = participantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
+            val participantImages = participantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
+
+            val user = userViewModel.user.collectAsStateWithLifecycle()
 
             val selectMovie: (movieId: Int) -> Unit = { id ->
                 try {
@@ -156,7 +151,9 @@ fun MainScreen(
 
             LaunchedEffect(null) {
                 val searchedHistoryMediaIds = searchHistoryViewModel.getSearchHistoryMediaIds()
-                Log.d("searched media ids", searchedHistoryMediaIds.toString())
+
+             //   Log.d("user",user.value.toString())
+
                 searchedHistoryMediaIds.forEach { searchedMedia: SearchedMedia ->
                     scope.launch {
                         if (searchedMedia.mediaType == MediaFormats.MOVIE.format) {
@@ -174,6 +171,15 @@ fun MainScreen(
                         }
                     }
                 }
+
+
+
+                user.value?.let { checkedUser ->
+                    unifiedMediaViewModel.setFavoriteMedia(checkedUser.favoriteMediaList)
+                  //  Log.d("favorite media list in launched effect",checkedUser.favoriteMediaList.toString())
+                }
+
+
             }
 
             Scaffold(
@@ -234,10 +240,18 @@ fun MainScreen(
                     composable(
                         route = "FavoriteScreen"
                     ) {
+                        showBottomBar = true
+
                         FavoriteNavigateScreen(
-                            moviesViewModel = moviesViewModel,
-                            seriesViewModel = seriesViewModel,
+                            searchHistoryViewModel = searchHistoryViewModel,
                             unifiedMediaViewModel = unifiedMediaViewModel,
+                            selectMedia = { unifiedMedia ->
+                                if (unifiedMedia.mediaType == MediaFormats.MOVIE) {
+                                    selectMovie(unifiedMedia.id)
+                                } else {
+                                    selectSeries(unifiedMedia.id)
+                                }
+                            }
                         )
                     }
 
@@ -286,12 +300,12 @@ fun MainScreen(
                     composable(
                         route = "movie_details/{movie}",
                         arguments = listOf(navArgument("movie") { type = DetailedMovieNavType() }),
-                    ) {
+                    ) { route ->
                         homeDelay = 350
                         showBottomBar = false
 
                         val movieResponse =
-                            it.arguments?.getParcelable<DetailedMovieResponse>("movie")
+                            route.arguments?.getParcelable<DetailedMovieResponse>("movie")
                         movieResponse?.let {
                             LaunchedEffect(null) {
                                 unifiedMediaViewModel.setMoviesExtraInformation(movieResponse.id)
@@ -309,7 +323,14 @@ fun MainScreen(
                                         movieTrailers = selectedMediaTrailers.value
                                     ),
                                     selectMovie = selectMovie,
-                                    selectParticipant = selectParticipant
+                                    selectParticipant = selectParticipant,
+                                    addToFavorite = { favoriteMedia ->
+                                        userViewModel.addFavoriteMedia(favoriteMedia)
+                                        unifiedMediaViewModel.addFavoriteMedia(favoriteMedia)
+                                                    },
+                                    isFavoriteUnit = { favoriteMedia ->
+                                        user.value?.favoriteMediaList?.find { it.id == favoriteMedia.id } != null
+                                    }
                                 )
                             }
                         }
@@ -354,7 +375,8 @@ fun MainScreen(
                                         }
                                     },
                                     selectSerial = selectSeries,
-                                    selectParticipant = selectParticipant
+                                    selectParticipant = selectParticipant,
+                                    addToFavorite = {favoriteMedia -> userViewModel.addFavoriteMedia(favoriteMedia) }
                                 )
                             }
                         }

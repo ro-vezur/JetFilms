@@ -3,10 +3,10 @@ package com.example.jetfilms.View.Screens.DetailedMediaScreens.MovieDetailsPacka
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
@@ -54,13 +56,17 @@ import com.example.jetfilms.Models.DTOs.MoviePackage.MovieDisplay
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.Helpers.DTOsConverters.DetailedMovieDataToFavoriteMedia
 import com.example.jetfilms.View.Components.Cards.PropertyCard
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
 import com.example.jetfilms.View.Components.MediaInfoTabRow
 import com.example.jetfilms.View.Components.TabsContent.MovieAboutTab
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
+import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
+import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
+import com.example.jetfilms.ViewModels.UserViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.infoTabs
@@ -71,7 +77,9 @@ fun MovieDetailsScreen(
     navController: NavController,
     movieDisplay: MovieDisplay,
     selectMovie: (id: Int) -> Unit,
-    selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit
+    selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit,
+    addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit,
+    isFavoriteUnit: (favoriteMedia: FavoriteMedia) -> Boolean,
 ) {
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
@@ -89,9 +97,10 @@ fun MovieDetailsScreen(
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(activity.isChangingConfigurations) {
-        Log.d("trailer",selectedTrailerKey.toString())
-        Log.d("image height",imageHeight.toString())
+    var isFavorite by remember { mutableStateOf(false) }
+
+    LaunchedEffect(null) {
+        isFavorite = isFavoriteUnit(DetailedMovieDataToFavoriteMedia(movieResponse))
     }
 
     LaunchedEffect(currentBackStackEntry) {
@@ -101,7 +110,6 @@ fun MovieDetailsScreen(
             290
         }
     }
-
 
         Box(
             modifier = Modifier
@@ -161,7 +169,7 @@ fun MovieDetailsScreen(
                         ) {
                             if(movieResponse.releaseDate.isNotBlank()) {
                                 PropertyCard(
-                                    text = DateFormats().getYear(movieResponse.releaseDate).toString(),
+                                    text = DateFormats.getYear(movieResponse.releaseDate).toString(),
                                     lengthMultiplayer = 13
                                 )
                             }
@@ -235,11 +243,19 @@ fun MovieDetailsScreen(
                                     .size(32.sdp)
                                     .clip(CircleShape)
                                     .background(
-                                        if (false) colors.secondary.copy(.85f)
+                                        if (isFavorite) colors.secondary.copy(.85f)
                                         else colors.secondary.copy(.92f)
                                     )
+                                    .clickable {
+                                        isFavorite = !isFavorite
+                                        addToFavorite(
+                                            DetailedMovieDataToFavoriteMedia(
+                                                movieResponse
+                                            )
+                                        )
+                                    }
                             ) {
-                                if (false) {
+                                if (isFavorite) {
                                     GradientIcon(
                                         icon = Icons.Filled.Bookmarks,
                                         contentDescription = "favorite",
@@ -305,9 +321,6 @@ fun MovieDetailsScreen(
                         .padding(top = 18.sdp, bottom = 0.sdp),
                 )
 
-
-
-
                 if(selectedTrailerKey != null) {
                     TrailerScreen(
                         trailerKey = selectedTrailerKey!!,
@@ -317,7 +330,6 @@ fun MovieDetailsScreen(
                         }
                     )
                 }
-
             }
 
             TurnBackButton(

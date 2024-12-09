@@ -118,7 +118,7 @@ fun SerialAboutScreen(
                     )
 
                     Text(
-                        text = DateFormats().getYear(movieResponse.releaseDate).toString(),
+                        text = DateFormats.getYear(movieResponse.releaseDate).toString(),
                         fontSize = typography.bodyMedium.fontSize / 1.1f,
                         color = Color.LightGray.copy(0.84f),
                         modifier = Modifier
