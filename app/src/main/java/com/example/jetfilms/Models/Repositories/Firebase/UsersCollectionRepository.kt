@@ -1,6 +1,7 @@
 package com.example.jetfilms.Models.Repositories.Firebase
 
 import android.util.Log
+import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.Models.Firebase.UsersCollectionService
 import com.example.jetfilms.USERS_COLLECTION
@@ -37,6 +38,12 @@ class UsersCollectionRepository @Inject constructor(
         } != null
     }
 
+    override suspend fun addFavoriteMedia(userId: String, mediaList: MutableList<FavoriteMedia>) {
+        fireStore.runTransaction {
+            fireStore.collection(USERS_COLLECTION).document(userId).update("favoriteMediaList",mediaList)
+        }
+
+    }
 
     override fun deleteUser(userId: String) {
 

@@ -1,7 +1,10 @@
 package com.example.jetfilms.ViewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.Models.Firebase.AuthService
 import com.example.jetfilms.Models.Firebase.Resource
@@ -44,6 +47,26 @@ class UserViewModel @Inject constructor(
 
     suspend fun getUser(userId: String): User? {
         return usersCollectionRepository.getUser(userId)
+    }
+
+    fun addFavoriteMedia(media: FavoriteMedia) = viewModelScope.launch {
+        _user.value?.let { checkedUser ->
+            val favoriteMediaList = checkedUser.favoriteMediaList
+            Log.d("checked user",checkedUser.toString())
+            Log.d("favorite media list",favoriteMediaList.toString())
+            Log.d("media in list",(favoriteMediaList.find { it.id == media.id }).toString())
+            if(favoriteMediaList.find { it.id == media.id } != null) {
+                favoriteMediaList.removeAll { it.id == media.id }
+                setUser(checkedUser.copy(favoriteMediaList = favoriteMediaList))
+                usersCollectionRepository.addFavoriteMedia(checkedUser.id,favoriteMediaList)
+            } else {
+                favoriteMediaList.add(media)
+                setUser(checkedUser.copy(favoriteMediaList = favoriteMediaList))
+                usersCollectionRepository.addFavoriteMedia(checkedUser.id,favoriteMediaList)
+            }
+
+        }
+
     }
 
     fun signUp(user: User, onSuccess: (userId: String) -> Unit) = viewModelScope.launch{
