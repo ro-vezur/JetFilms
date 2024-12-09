@@ -2,25 +2,26 @@ package com.example.jetfilms.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.Helpers.Validators.Email.EmailValidationResult
-import com.example.jetfilms.Helpers.Validators.Email.EmailValidator
-import com.example.jetfilms.Helpers.Validators.Password.PasswordValidationResult
-import com.example.jetfilms.Helpers.Validators.Password.PasswordValidator
-import com.example.jetfilms.Helpers.Validators.PasswordConfirm.PasswordConfirmValidationResult
-import com.example.jetfilms.Helpers.Validators.PasswordConfirm.PasswordConfirmValidator
-import com.example.jetfilms.Helpers.Validators.Username.UsernameValidationResult
-import com.example.jetfilms.Helpers.Validators.Username.UsernameValidator
-import com.example.jetfilms.Models.Firebase.AuthService
+import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
+import com.example.jetfilms.Helpers.Validators.Validators.Email.EmailValidator
+import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.PasswordConfirmValidationResult
+import com.example.jetfilms.Helpers.Validators.Validators.PasswordConfirm.PasswordConfirmValidator
+import com.example.jetfilms.Helpers.Validators.Results.UsernameValidationResult
+import com.example.jetfilms.Helpers.Validators.Validators.Password.PasswordValidator
+import com.example.jetfilms.Helpers.Validators.Validators.Username.UsernameValidator
+import com.example.jetfilms.Models.Repositories.Firebase.UsersCollectionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ValidationViewModel @Inject constructor(): ViewModel() {
+class SingUpValidationViewModel @Inject constructor(
+    private val usersCollectionRepository: UsersCollectionRepository,
+): ViewModel() {
 
     private val _usernameValidation: MutableStateFlow<UsernameValidationResult> = MutableStateFlow(
         UsernameValidationResult.NONE
@@ -42,14 +43,16 @@ class ValidationViewModel @Inject constructor(): ViewModel() {
     )
     val passwordConfirmValidation: StateFlow<PasswordConfirmValidationResult> = _passwordConfirmValidation.asStateFlow()
 
-    fun validation(
+    suspend fun validation(
         name: String,
         email: String,
         password: String,
         passwordConfirm: String,
     ): Boolean {
         val passwordValidator = PasswordValidator().invoke(password)
-        val emailValidator = EmailValidator().invoke(email)
+        val emailValidator = EmailValidator().invoke(email, additionalValidators = {
+            !checkIfEmailIsRegistered(email)
+        })
         val usernameValidator = UsernameValidator().invoke(name)
         val passwordConfirmValidator = PasswordConfirmValidator().invoke(password,passwordConfirm)
 
@@ -82,5 +85,9 @@ class ValidationViewModel @Inject constructor(): ViewModel() {
 
     fun setPasswordConfirmValidationResult(result: PasswordConfirmValidationResult) = viewModelScope.launch {
         _passwordConfirmValidation.emit(result)
+    }
+
+    suspend fun checkIfEmailIsRegistered(emailToCheck: String): Boolean {
+        return usersCollectionRepository.checkIfEmailIsRegistered(emailToCheck)
     }
 }
