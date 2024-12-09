@@ -8,7 +8,10 @@ import kotlinx.serialization.Serializable
 @Parcelize
 @Serializable
 data class FavoriteMedia(
-    val id: Int,
+    val id: String,
+    val mediaId: Int,
     val mediaFormat: MediaFormats,
-    val addedDate: String,
-): Parcelable
+    val addedDateMillis: Long,
+): Parcelable {
+    constructor(): this("",0,MediaFormats.MOVIE,0)
+}

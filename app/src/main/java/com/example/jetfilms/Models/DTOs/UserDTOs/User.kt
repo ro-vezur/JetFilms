@@ -15,10 +15,9 @@ data class User (
     val lastName: String,
     val email: String,
     val password: String,
-    val recommendedMediaFormats: List<MediaFormats> = listOf(),
-    val recommendedMediaGenres: List<MediaGenres> = listOf(),
-    val favoriteMovies: List<FavoriteMedia> = listOf(),
-    val favoriteSeries: List<FavoriteMedia> = listOf(),
+    val recommendedMediaFormats: MutableList<MediaFormats> = mutableListOf(),
+    val recommendedMediaGenres: MutableList<MediaGenres> = mutableListOf(),
+    val favoriteMediaList: MutableList<FavoriteMedia> = mutableListOf(),
 ): Parcelable {
     constructor(): this("","","","","")
 }
