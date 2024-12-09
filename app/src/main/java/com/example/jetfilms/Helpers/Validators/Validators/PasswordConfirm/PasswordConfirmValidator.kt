@@ -1,4 +1,6 @@
-package com.example.jetfilms.Helpers.Validators.PasswordConfirm
+package com.example.jetfilms.Helpers.Validators.Validators.PasswordConfirm
+
+import com.example.jetfilms.Helpers.Validators.Results.PasswordConfirmValidationResult
 
 class PasswordConfirmValidator {
     operator fun invoke(password: String,passwordConfirm: String): PasswordConfirmValidationResult {
