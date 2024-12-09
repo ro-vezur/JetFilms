@@ -1,5 +1,6 @@
 package com.example.jetfilms.ViewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -13,12 +14,18 @@ import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.ImagesFromUnifiedMedi
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
 import com.example.jetfilms.Helpers.Countries.getCountryList
+import com.example.jetfilms.Helpers.DTOsConverters.MovieDataToUnifiedMedia
+import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
+import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
+import com.example.jetfilms.Models.Repositories.Api.SeriesRepository
 import com.example.jetfilms.Models.Repositories.Api.UnifiedMediaRepository
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,7 +33,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UnifiedMediaViewModel @Inject constructor(
-    private val unifiedMediaRepository: UnifiedMediaRepository
+    private val unifiedMediaRepository: UnifiedMediaRepository,
+    private val moviesRepository: MoviesRepository,
+    private val seriesRepository: SeriesRepository,
 ): ViewModel(){
 
     private val _selectedMediaCast = MutableStateFlow(UnifiedMediaCreditsResponse())
@@ -65,6 +74,9 @@ class UnifiedMediaViewModel @Inject constructor(
 
     private val _searchSuggestions: MutableStateFlow<List<UnifiedMedia>> = MutableStateFlow(listOf())
     val searchSuggestions = _searchSuggestions.asStateFlow()
+
+    private val _favoriteMediaList: MutableStateFlow<MutableList<UnifiedMedia>> = MutableStateFlow(mutableListOf())
+    val favoriteMediaList: StateFlow<List<UnifiedMedia>> = _favoriteMediaList.asStateFlow()
 
     fun setSearchText(text: String){
         viewModelScope.launch {
@@ -172,6 +184,30 @@ class UnifiedMediaViewModel @Inject constructor(
                 _selectedMediaCast.emit(unifiedMediaRepository.getSeriesCredits(seriesId))
                 _selectedMediaImages.emit(unifiedMediaRepository.getSeriesImages(seriesId))
                 _selectedMediaTrailers.emit(unifiedMediaRepository.getSeriesTrailers(seriesId))
+            }
+        }
+    }
+
+    fun setFavoriteMedia(newFavoriteMediaList: List<FavoriteMedia>) = viewModelScope.launch {
+        newFavoriteMediaList.forEach { media ->
+            addFavoriteMedia(media)
+        }
+    }
+
+    fun addFavoriteMedia(newFavoriteMedia: FavoriteMedia) = viewModelScope.launch {
+        if(newFavoriteMedia.mediaFormat == MediaFormats.MOVIE){
+            moviesRepository.getMovie(newFavoriteMedia.mediaId).body()?.let { checkedDetailedMovieResponse ->
+                val movie =  MovieDataToUnifiedMedia(checkedDetailedMovieResponse)
+
+                val findCondition = { unifiedMedia: UnifiedMedia ->
+                    unifiedMedia.id == movie.id && unifiedMedia.mediaType == movie.mediaType
+                }
+
+                if(_favoriteMediaList.value.find { findCondition(it) } == null) {
+                    _favoriteMediaList.value.add(movie)
+                } else {
+                    _favoriteMediaList.value.removeAll { findCondition(it) }
+                }
             }
         }
     }
