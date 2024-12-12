@@ -9,7 +9,7 @@ import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantFilmograph
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantImagesResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SerialSeasonResponse
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailersResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -30,7 +30,7 @@ interface ApiInterface {
     @GET("movie/{movie_id}")
     suspend fun movie(
         @Path("movie_id") movieId: Int,
-    ): Response<DetailedMovieResponse>
+    ): DetailedMovieResponse
 
     @GET("movie/{movie_id}/credits")
     suspend fun movieCredits(
@@ -50,7 +50,7 @@ interface ApiInterface {
     @GET("tv/popular?$MINIMUM_VOTE_COUNTS")
     suspend fun popularSerials(
         @Query("page") page: Int,
-    ): SimplifiedSerialsResponse
+    ): SeriesResponse
 
     @GET("tv/{serial_id}")
     suspend fun serial(
@@ -70,7 +70,7 @@ interface ApiInterface {
     @GET("tv/{serial_id}/similar?$MINIMUM_VOTE_COUNTS")
     suspend fun similarSerials(
         @Path("serial_id") id: Int,
-    ): SimplifiedSerialsResponse
+    ): SeriesResponse
 
     @GET("tv/{serial_id}/season/{season_number}")
     suspend fun serialSeason(
@@ -103,7 +103,7 @@ interface ApiInterface {
     suspend fun searchSerials(
         @Query("query") query: String,
         @Query("page") page: Int,
-    ): SimplifiedSerialsResponse
+    ): SeriesResponse
 
     @GET("discover/movie?$MINIMUM_VOTE_COUNTS")
     suspend fun filteredGenresDiscoverMovies(
@@ -119,14 +119,14 @@ interface ApiInterface {
         @Query("sort_by") sortBy: String,
         @Query("with_genres") genres: String,
         @Query("with_origin_country") countries: String,
-    ): SimplifiedSerialsResponse
+    ): SeriesResponse
 
     @GET("discover/tv?$MINIMUM_VOTE_COUNTS")
     suspend fun discoverSerials(
         @Query("page") page: Int,
         @Query("sort_by") sortBy: String,
         @Query("with_origin_country") countries: String,
-    ): SimplifiedSerialsResponse
+    ): SeriesResponse
 
     @GET("discover/movie?$MINIMUM_VOTE_COUNTS")
     suspend fun discoverMovies(

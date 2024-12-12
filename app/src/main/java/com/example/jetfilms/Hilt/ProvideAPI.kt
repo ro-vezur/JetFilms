@@ -6,12 +6,12 @@ import com.example.jetfilms.Models.API.ApiInterceptor
 import com.example.jetfilms.Models.API.ApiInterface
 import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
 import com.example.jetfilms.Models.Repositories.Api.ParticipantRepository
+import com.example.jetfilms.Models.Repositories.Api.SearchRepository
 import com.example.jetfilms.Models.Repositories.Api.SeriesRepository
-import com.example.jetfilms.Models.Repositories.Api.UnifiedMediaRepository
+import com.example.jetfilms.Models.Repositories.Api.FilterRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -62,7 +62,13 @@ object ProvideAPI {
 
     @Provides
     @Singleton
-    fun provideUnifiedMediaRepository(apiInterface: ApiInterface): UnifiedMediaRepository {
-        return UnifiedMediaRepository(apiInterface)
+    fun provideUnifiedMediaRepository(apiInterface: ApiInterface): FilterRepository {
+        return FilterRepository(apiInterface)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchRepository(apiInterface: ApiInterface): SearchRepository {
+        return SearchRepository(apiInterface)
     }
 }
