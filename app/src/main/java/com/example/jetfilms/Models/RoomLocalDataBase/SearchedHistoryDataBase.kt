@@ -8,7 +8,7 @@ import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 
 @Database(entities = [SearchedMedia::class], version = 1)
 abstract class SearchedHistoryDataBase: RoomDatabase() {
-    abstract val dao: DataBaseDao
+    abstract val dao: Dao
 
     companion object{
         @Volatile
