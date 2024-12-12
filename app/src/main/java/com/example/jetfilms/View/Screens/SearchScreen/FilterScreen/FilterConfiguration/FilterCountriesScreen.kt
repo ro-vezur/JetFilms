@@ -1,5 +1,7 @@
-package com.example.jetfilms.View.Screens.SearchScreen.FilterUI
+package com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfiguration
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,19 +47,23 @@ import com.example.jetfilms.Models.DTOs.animatedGradientTypes
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Helpers.Countries.getCountryName
+import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.View.states.rememberForeverLazyListState
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
+import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.typography
 import com.example.jetfilms.ui.theme.whiteColor
 import java.util.Locale
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FilterCountriesScreen(
     turnBack: () -> Unit,
+    resetFilters: () -> Unit,
     usedCountries: List<String>,
     acceptNewCountries: (countries:List<String>) -> Unit,
 ) {
@@ -79,95 +86,110 @@ fun FilterCountriesScreen(
         selectedCountries.addAll(usedCountries)
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ){
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-
-            Box(
-                contentAlignment = Alignment.TopCenter,
+    Scaffold(
+        containerColor = primaryColor,
+        topBar = {
+            FiltersTopBar(
                 modifier = Modifier
-                    .padding(top = FILTER_TOP_BAR_HEIGHT.sdp)
                     .fillMaxWidth()
-                    .height(42.sdp)
-            ){
-                SearchField(
-                    fillWidth = 1f,
-                    shape = RoundedCornerShape(bottomStart = 6.sdp, bottomEnd = 6.sdp),
-                    text = searchText,
-                    onTextChange = {
-                        searchText = it
-                    },
-                    focusedBorder = null,
-                    modifier = Modifier
-                )
-            }
+                    .height(FILTER_TOP_BAR_HEIGHT.sdp),
+                turnBack = {turnBack() },
+                reset = resetFilters,
+                text = "Countries"
+            )
+        }
+    ){ innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
 
-            LazyColumn(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(itemsSpacing.sdp),
-                state = listState,
-                modifier = Modifier
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                item { Spacer(modifier = Modifier.height((0).sdp)) }
+                Box(
+                    contentAlignment = Alignment.TopCenter,
+                    modifier = Modifier
+                        .padding(top = FILTER_TOP_BAR_HEIGHT.sdp)
+                        .fillMaxWidth()
+                        .height(42.sdp)
+                ) {
+                    SearchField(
+                        fillWidth = 1f,
+                        shape = RoundedCornerShape(bottomStart = 6.sdp, bottomEnd = 6.sdp),
+                        text = searchText,
+                        onTextChange = {
+                            searchText = it
+                        },
+                        focusedBorder = null,
+                        modifier = Modifier
+                    )
+                }
 
-                item {
-                    val selected = selectedCountries.toList().sorted() == getCountryList()
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(itemsSpacing.sdp),
+                    state = listState,
+                    modifier = Modifier
+                ) {
 
-                    CountryCard(
-                        name = "All",
-                        selected = selectedCountries.toList().sorted() == getCountryList(),
-                        select = {
-                            if (selected) {
-                                selectedCountries.clear()
-                            } else {
-                                getCountryList().forEach { country ->
-                                    if (!selectedCountries.contains(country)) {
-                                        selectedCountries.add(country)
+                    item { Spacer(modifier = Modifier.height((0).sdp)) }
+
+                    item {
+                        val selected = selectedCountries.toList().sorted() == getCountryList()
+
+                        CountryCard(
+                            name = "All",
+                            selected = selectedCountries.toList().sorted() == getCountryList(),
+                            select = {
+                                if (selected) {
+                                    selectedCountries.clear()
+                                } else {
+                                    getCountryList().forEach { country ->
+                                        if (!selectedCountries.contains(country)) {
+                                            selectedCountries.add(country)
+                                        }
                                     }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
+
+                    items(searchedCountries) { country ->
+
+                        val selected =
+                            selectedCountries.contains(country) && selectedCountries.toList()
+                                .sorted() != getCountryList()
+
+                        CountryCard(
+                            name = country,
+                            selected = selected,
+                            select = {
+                                if (selectedCountries.contains(country)) selectedCountries.remove(
+                                    country
+                                )
+                                else selectedCountries.add(country)
+                            }
+                        )
+                    }
+
+                    item { Spacer(modifier = Modifier.height((BOTTOM_NAVIGATION_BAR_HEIGHT + BASE_BUTTON_HEIGHT + itemsSpacing).sdp)) }
                 }
-
-                items(searchedCountries) { country ->
-
-                    val selected = selectedCountries.contains(country) && selectedCountries.toList()
-                        .sorted() != getCountryList()
-
-                    CountryCard(
-                        name = country,
-                        selected = selected,
-                        select = {
-                            if (selectedCountries.contains(country)) selectedCountries.remove(
-                                country
-                            )
-                            else selectedCountries.add(country)
-                        }
-                    )
-                }
-
-                item { Spacer(modifier = Modifier.height((BOTTOM_NAVIGATION_BAR_HEIGHT + BASE_BUTTON_HEIGHT + itemsSpacing).sdp)) }
             }
-        }
 
-        AcceptFiltersButton(
-            isEmpty = selectedCountries.isEmpty(),
-            isDataSameAsBefore = selectedCountries.toList().sorted() == usedCountries,
-            onClick = {
-                turnBack()
-                acceptNewCountries(selectedCountries)
-                      },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 9).sdp)
-        )
+            AcceptFiltersButton(
+                isEmpty = selectedCountries.isEmpty(),
+                isDataSameAsBefore = selectedCountries.toList().sorted() == usedCountries,
+                onClick = {
+                    turnBack()
+                    acceptNewCountries(selectedCountries)
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 9).sdp)
+            )
+        }
     }
 }
 

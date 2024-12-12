@@ -30,20 +30,17 @@ import dev.chrisbanes.haze.hazeChild
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FiltersTopBar(
+    modifier: Modifier = Modifier,
     turnBack: () -> Unit,
     reset: () -> Unit,
     text: String,
-    hazeState: HazeState,
 ) {
     val typography = typography()
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(FILTER_TOP_BAR_HEIGHT.sdp)
-            .hazeChild(hazeState)
+        modifier = modifier
     ) {
         TurnBackButton(
             iconColor = whiteColor,
