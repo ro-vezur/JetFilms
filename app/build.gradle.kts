@@ -66,7 +66,7 @@ android {
 
 dependencies {
     val compose_version = "1.7.4"
-    val hilt = "2.48"
+    val hilt = "2.51.1"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -102,7 +102,7 @@ dependencies {
     // Hilt
     implementation("com.google.dagger:hilt-android:$hilt")
     kapt("com.google.dagger:hilt-compiler:$hilt")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     //glass morphism effect
     implementation("dev.chrisbanes.haze:haze-jetpack-compose:0.4.1")
@@ -136,4 +136,7 @@ dependencies {
     //Firebase
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+
+    //live data
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
 }
