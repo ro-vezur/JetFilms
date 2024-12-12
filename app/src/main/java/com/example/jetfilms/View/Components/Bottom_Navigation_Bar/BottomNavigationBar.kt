@@ -1,6 +1,5 @@
 package com.example.jetfilms.View.Components.Bottom_Navigation_Bar
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -21,7 +20,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +50,8 @@ fun BottomNavBar(
     hazeState: HazeState,
     showBottomBar: Boolean,
 ) {
+    var selected by remember { mutableStateOf(BottomNavItems.HOME) }
+
     AnimatedVisibility(visible = showBottomBar){
         Row(
             horizontalArrangement = Arrangement.SpaceAround,
@@ -62,17 +62,23 @@ fun BottomNavBar(
                 .hazeChild(state = hazeState)
         ) {
             BottomNavItems.entries.forEach { item ->
-                BottomNavItem(item = item, navController)
+                BottomNavItem(
+                    item = item,
+                    selectedItem = selected,
+                    onClick = {
+                        selected = item
+                        navController.navigate(item.route)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun BottomNavItem(item: BottomNavItems, navController: NavController) {
+private fun BottomNavItem(item: BottomNavItems,selectedItem: BottomNavItems, onClick: () -> Unit) {
 
-    var selected by rememberSaveable{ mutableStateOf(false) }
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val isSelected = item == selectedItem
 
     var gradientPoint1 by remember{ mutableStateOf(Color.White.copy(0.82f)) }
     var gradientPoint2 by remember{ mutableStateOf(Color.White.copy(0.82f)) }
@@ -80,23 +86,15 @@ private fun BottomNavItem(item: BottomNavItems, navController: NavController) {
     val animatedGradientPoint1 = animateColorAsState(targetValue = gradientPoint1, tween(310))
     val animatedGradientPoint2 = animateColorAsState(targetValue = gradientPoint2, tween(200,120))
 
-    LaunchedEffect(navBackStackEntry) {
-        val currentRoute = navBackStackEntry?.destination?.route.toString()
-        val itemRoute = item.route.toString()
-
-        if(BottomNavItems.entries.map { it.route }.contains(currentRoute)) {
-            selected = currentRoute == itemRoute
-            Log.d("current route",currentRoute)
-
-            if(selected){
-                gradientPoint1 = buttonsColor1
-                gradientPoint2 = buttonsColor2
-            }else{
-                gradientPoint1 = Color.White.copy(0.82f)
-                gradientPoint2 = Color.White.copy(0.82f)
-            }
+    LaunchedEffect(selectedItem) {
+        if(isSelected){
+            gradientPoint1 = buttonsColor1
+            gradientPoint2 = buttonsColor2
+        }else{
+            gradientPoint1 = Color.White.copy(0.82f)
+            gradientPoint2 = Color.White.copy(0.82f)
         }
-        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -106,9 +104,7 @@ private fun BottomNavItem(item: BottomNavItems, navController: NavController) {
             .width(48.sdp)
             .clip(RoundedCornerShape(7.sdp))
             .clickable {
-                if (!selected) {
-                    navController.navigate(item.route.toString())
-                }
+                if (!isSelected) { onClick() }
             }
     ) {
         if(item == BottomNavItems.ACCOUNT){
@@ -134,7 +130,6 @@ private fun BottomNavItem(item: BottomNavItems, navController: NavController) {
                     },
             )
         }else{
-
             GradientIcon(
                 icon = item.icon,
                 contentDescription = "nav icon",
