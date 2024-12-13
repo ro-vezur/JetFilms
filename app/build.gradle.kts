@@ -65,6 +65,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.material)
     val compose_version = "1.7.4"
     val hilt = "2.51.1"
 
