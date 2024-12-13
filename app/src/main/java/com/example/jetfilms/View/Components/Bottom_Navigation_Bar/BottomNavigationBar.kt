@@ -1,5 +1,6 @@
 package com.example.jetfilms.View.Components.Bottom_Navigation_Bar
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -51,6 +52,17 @@ fun BottomNavBar(
     showBottomBar: Boolean,
 ) {
     var selected by remember { mutableStateOf(BottomNavItems.HOME) }
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+
+    LaunchedEffect(currentBackStackEntry) {
+        val currentRoute = currentBackStackEntry?.destination?.route.toString()
+
+        BottomNavItems.entries.forEach { item ->
+            if(item.route.toString().replace("$",".").contains(currentRoute)) {
+                selected = item
+            }
+        }
+    }
 
     AnimatedVisibility(visible = showBottomBar){
         Row(
@@ -104,7 +116,9 @@ private fun BottomNavItem(item: BottomNavItems,selectedItem: BottomNavItems, onC
             .width(48.sdp)
             .clip(RoundedCornerShape(7.sdp))
             .clickable {
-                if (!isSelected) { onClick() }
+                if (!isSelected) {
+                    onClick()
+                }
             }
     ) {
         if(item == BottomNavItems.ACCOUNT){

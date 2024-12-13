@@ -14,7 +14,7 @@ import com.example.jetfilms.View.Screens.HomeScreen
 
 enum class BottomNavItems(val title: String,val icon:ImageVector,val route:Any){
     HOME("Home",Icons.Filled.Home, HomeScreen),
-    EXPLORE("Explore",Icons.Filled.Search, ExploreScreen),
+    EXPLORE("Explore",Icons.Filled.Search, ExploreScreen.SearchScreen),
     FAVORITE("Favorite",Icons.Outlined.BookmarkBorder, FavoriteScreen),
     ACCOUNT("Account",Icons.Filled.Person, AccountScreen)
 }
