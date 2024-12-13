@@ -1,5 +1,6 @@
 package com.example.jetfilms.Models.API
 
+import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.ImagesFromUnifiedMediaResponse
@@ -11,7 +12,6 @@ import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SerialSeasonResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailersResponse
-import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -105,27 +105,36 @@ interface ApiInterface {
         @Query("page") page: Int,
     ): SeriesResponse
 
-    @GET("discover/movie?$MINIMUM_VOTE_COUNTS")
-    suspend fun filteredGenresDiscoverMovies(
-        @Query("page") page: Int,
-        @Query("sort_by") sortBy: String,
-        @Query("with_genres") genres: String,
-        @Query("with_origin_country") countries: String,
-    ): MoviesResponse
-
     @GET("discover/tv?$MINIMUM_VOTE_COUNTS")
     suspend fun filteredGenresDiscoverSerials(
         @Query("page") page: Int,
         @Query("sort_by") sortBy: String,
         @Query("with_genres") genres: String,
         @Query("with_origin_country") countries: String,
+        @Query("first_air_date_year") releaseYear: String,
+        @Query("first_air_date.gte") fromYear: String,
+        @Query("first_air_date.lte") toYear: String
     ): SeriesResponse
+
+    @GET("discover/movie?$MINIMUM_VOTE_COUNTS")
+    suspend fun filteredGenresDiscoverMovies(
+        @Query("page") page: Int,
+        @Query("sort_by") sortBy: String,
+        @Query("with_genres") genres: String,
+        @Query("with_origin_country") countries: String,
+        @Query("primary_release_year") releaseYear: String,
+        @Query("primary_release_date.gte") fromYear: String,
+        @Query("primary_release_date.lte") toYear: String
+    ): MoviesResponse
 
     @GET("discover/tv?$MINIMUM_VOTE_COUNTS")
     suspend fun discoverSerials(
         @Query("page") page: Int,
         @Query("sort_by") sortBy: String,
         @Query("with_origin_country") countries: String,
+        @Query("first_air_date_year") releaseYear: String,
+        @Query("first_air_date.gte") fromYear: String,
+        @Query("first_air_date.lte") toYear: String
     ): SeriesResponse
 
     @GET("discover/movie?$MINIMUM_VOTE_COUNTS")
@@ -133,6 +142,9 @@ interface ApiInterface {
         @Query("page") page: Int,
         @Query("sort_by") sortBy: String,
         @Query("with_origin_country") countries: String,
+        @Query("primary_release_year") releaseYear: String,
+        @Query("primary_release_date.gte") fromYear: String,
+        @Query("primary_release_date.lte") toYear: String
     ): MoviesResponse
 
     @GET("movie/{movie_id}/videos")
