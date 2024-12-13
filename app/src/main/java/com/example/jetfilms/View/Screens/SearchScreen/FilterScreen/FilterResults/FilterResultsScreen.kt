@@ -30,7 +30,6 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FilteredResultsScreen(
     filteredResults: LazyPagingItems<UnifiedMedia>,

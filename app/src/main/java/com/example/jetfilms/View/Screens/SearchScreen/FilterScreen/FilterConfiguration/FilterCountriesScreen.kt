@@ -59,7 +59,6 @@ import com.example.jetfilms.ui.theme.whiteColor
 import java.util.Locale
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FilterCountriesScreen(
     turnBack: () -> Unit,

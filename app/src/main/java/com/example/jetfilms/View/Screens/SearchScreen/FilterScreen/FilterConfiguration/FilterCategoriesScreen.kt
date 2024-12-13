@@ -28,7 +28,6 @@ import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.primaryColor
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FilterCategoriesScreen(
     turnBack: () -> Unit,

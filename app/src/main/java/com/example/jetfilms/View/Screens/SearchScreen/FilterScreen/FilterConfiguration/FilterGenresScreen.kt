@@ -35,7 +35,6 @@ import com.example.jetfilms.View.states.rememberForeverLazyGridState
 import com.example.jetfilms.ui.theme.primaryColor
 import dev.chrisbanes.haze.HazeState
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FilterGenresScreen(
     turnBack: () -> Unit,

@@ -27,7 +27,6 @@ import com.example.jetfilms.ui.theme.whiteColor
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun FiltersTopBar(
     modifier: Modifier = Modifier,
@@ -41,62 +40,6 @@ fun FiltersTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
-    ) {
-        TurnBackButton(
-            iconColor = whiteColor,
-            size = 22.sdp,
-            iconSize = 22.sdp,
-            onClick = {
-                turnBack()
-            },
-            modifier = Modifier
-                .padding(start = 15.sdp)
-        )
-
-        Text(
-            text = text,
-            color = whiteColor,
-            style = typography.titleLarge,
-            modifier = Modifier
-                .padding(start = 8.sdp)
-        )
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .padding(end = 17.sdp)
-                .width(38.sdp)
-                .fillMaxHeight(0.8f)
-                .clip(RoundedCornerShape(7.sdp))
-                .clickable { reset() }
-        ){
-            Text(
-                text = "Reset",
-                color = whiteColor,
-                fontSize = 15.ssp,
-                fontWeight = FontWeight.W500,
-                modifier = Modifier
-                    .padding(top = 5.sdp)
-            )
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.S)
-@Composable
-fun FiltersTopBar(
-    turnBack: () -> Unit,
-    reset: () -> Unit,
-    text: String,
-) {
-    val typography = typography()
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(45.sdp)
     ) {
         TurnBackButton(
             iconColor = whiteColor,
