@@ -29,14 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.View.Components.Cards.UnifiedCard
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.View.states.rememberForeverScrollState
-import com.example.jetfilms.ViewModels.SearchHistoryViewModel
 import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.typography
 import com.example.jetfilms.ui.theme.whiteColor
@@ -44,7 +43,8 @@ import com.example.jetfilms.ui.theme.whiteColor
 @Composable
 fun FavoriteMainScreen(
     navController: NavController,
-    searchHistoryViewModel: SearchHistoryViewModel,
+    searchedHistoryFlow: List<UnifiedMedia>,
+    searchedHistoryInDb: List<SearchedMedia>,
     selectMedia: (unifiedMedia: UnifiedMedia) -> Unit
 ) {
     val typography = typography()
@@ -54,9 +54,6 @@ fun FavoriteMainScreen(
         "Download",
         "Favorite Movies and Series",
     )
-
-    val searchedUnifiedMedia = searchHistoryViewModel.searchedUnifiedMedia.collectAsStateWithLifecycle()
-    val searchedHistory = searchHistoryViewModel.searchedHistoryMedia.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = primaryColor,
@@ -113,7 +110,7 @@ fun FavoriteMainScreen(
                 )
             }
 
-            if(searchedHistory.value.isNotEmpty()){
+            if(searchedHistoryFlow.isNotEmpty()){
                 LazyRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.sdp),
@@ -123,12 +120,11 @@ fun FavoriteMainScreen(
                 ) {
                     item{ Spacer(modifier = Modifier.width(2.sdp)) }
 
-                    itemsIndexed(searchedHistory.value.sortedByDescending { it.viewedDateMillis }
-                        .take(10)) { index, searchedMedia ->
-                        val unifiedMedia =
-                            searchedUnifiedMedia.value.find { it.id == searchedMedia.mediaId }
+                    itemsIndexed(searchedHistoryFlow) { index, unifiedMedia ->
 
-                        unifiedMedia?.run {
+                        val searchedMediaInDb = searchedHistoryInDb.find { it.id == "${unifiedMedia.id}${unifiedMedia.mediaType.format}"}
+
+                        searchedMediaInDb?.run {
                             Column(
 
                             ) {
@@ -143,7 +139,7 @@ fun FavoriteMainScreen(
 
                                 Text(
                                     text = "View ${
-                                        DateFormats.getDateFromMillis(searchedMedia.viewedDateMillis)
+                                        DateFormats.getDateFromMillis(searchedMediaInDb.viewedDateMillis)
                                             .replace("/", ".")
                                     }",
                                     style = typography().bodySmall,
