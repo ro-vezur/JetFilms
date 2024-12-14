@@ -19,7 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.example.jetfilms.extensions.sdp
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun TurnBackButton(
     onClick:() -> Unit,
@@ -35,9 +34,7 @@ fun TurnBackButton(
         modifier = modifier
             .size(size)
             .clip(shape)
-          //  .legacyBackgroundBlur(radius = 1f, downsample = 0.3f)
             .background(background)
-           // .noise(0.01f)
             .clickable { onClick() }
     ){
 
@@ -54,7 +51,6 @@ fun TurnBackButton(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Preview(
 )
 @Composable

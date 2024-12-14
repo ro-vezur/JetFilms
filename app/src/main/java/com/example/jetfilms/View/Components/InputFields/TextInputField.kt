@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -49,16 +50,17 @@ import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.errorColor
 import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.secondaryColor
+import com.example.jetfilms.ui.theme.typography
 
 @Composable
 fun TextInputField(
-    width:Dp = BASE_BUTTON_WIDTH.sdp,
-    height:Dp = (BASE_BUTTON_HEIGHT).sdp,
+    width: Dp = BASE_BUTTON_WIDTH.sdp,
+    height: Dp = (BASE_BUTTON_HEIGHT).sdp,
     shape: RoundedCornerShape = RoundedCornerShape(20.sdp),
-    colors: TextFieldColors = TextFieldDefaults.colors(),
     singleLine: Boolean = true,
     readOnly: Boolean = false,
     text: String,
+    textStyle: TextStyle = typography().bodySmall,
     isError: Boolean = false,
     onTextChange: (value: String) -> Unit,
     unfocusedBorder: BorderStroke = BorderStroke(1.sdp, Color.LightGray.copy(0.6f)),
@@ -70,12 +72,13 @@ fun TextInputField(
     errorBorder: BorderStroke = BorderStroke(1.sdp, errorColor),
     leadingIcon: ImageVector? = null,
     placeHolder: String = "",
-    trailingIcon: @Composable ((modifier:Modifier) -> Unit)? = null,
+    trailingIcon: @Composable ((modifier: Modifier) -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val typography = MaterialTheme.typography
+    typography.bodySmall
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val focusRequester = remember { FocusRequester() }
@@ -125,10 +128,10 @@ fun TextInputField(
                 }
             ),
             cursorBrush = SolidColor(Color.White),
-            textStyle = typography.bodySmall.copy(
+            textStyle = textStyle.copy(
                 fontWeight = FontWeight.Normal,
                 color = textColor,
-                fontSize = typography.bodySmall.fontSize * if(visualTransformation == PasswordVisualTransformation()) (1.18f) else(1f) ,
+                fontSize = textStyle.fontSize * if(visualTransformation == PasswordVisualTransformation()) (1.18f) else(1f) ,
                 letterSpacing = if(visualTransformation == PasswordVisualTransformation()) 1.6f.ssp else 0.ssp
             ),
             decorationBox = { innerTextField ->
@@ -184,26 +187,7 @@ fun TextInputField(
 private fun afsa(
 ) {
     TextInputField(
-        colors = BaseTextFieldColors(),
         text = "asf",
         onTextChange = {}
-    )
-}
-
-@Composable
-fun BaseTextFieldColors():TextFieldColors {
-    val colors = MaterialTheme.colorScheme
-
-    return TextFieldDefaults.colors(
-        unfocusedContainerColor = Color.Transparent,
-        focusedContainerColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent,
-        unfocusedLabelColor = Color.Transparent,
-        focusedIndicatorColor = Color.Transparent,
-        cursorColor = Color.White,
-        unfocusedPlaceholderColor = Color.LightGray.copy(0.82f),
-        focusedPlaceholderColor = Color.White,
-        unfocusedTextColor = Color.LightGray.copy(0.82f),
-        focusedTextColor = Color.White,
     )
 }

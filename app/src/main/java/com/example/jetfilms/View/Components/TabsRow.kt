@@ -32,7 +32,7 @@ import com.example.jetfilms.ui.theme.primaryColor
 import kotlinx.coroutines.launch
 
 @Composable
-fun MediaInfoTabRow(
+fun TabRow(
     tabs: List<String>,
     pagerState: PagerState,
     modifier: Modifier = Modifier
