@@ -19,7 +19,6 @@ import com.example.jetfilms.extensions.popBackStackOrIgnore
 fun NavGraphBuilder.filterNavGraph(
     navController: NavController,
     filterViewModel: FilterViewModel,
-   // ssharedFilterConfigurationViewModel: SharedFilterConfigurationViewModel,
 ) {
     navigation<ExploreScreen.FilterConfiguration>(
         startDestination = ExploreScreen.FilterConfiguration.AcceptFilters
@@ -33,11 +32,8 @@ fun NavGraphBuilder.filterNavGraph(
             filterViewModel.setFilteredGenres(BASE_MEDIA_GENRES)
             filterViewModel.setFilteredCategories(MediaFormats.entries.toList())
             filterViewModel.setFilteredCountries(getCountryList())
-
-            filterViewModel.setSelectedSort(null)
-            filterViewModel.setFilteredGenres(BASE_MEDIA_GENRES)
-            filterViewModel.setFilteredCategories(MediaFormats.entries.toList())
-            filterViewModel.setFilteredCountries(getCountryList())
+            filterViewModel.setFilteredYears(0)
+            filterViewModel.setFilteredYearsRange(1888,DateFormats.getCurrentYear())
         }
 
         composable<ExploreScreen.FilterConfiguration.AcceptFilters> {
@@ -48,6 +44,7 @@ fun NavGraphBuilder.filterNavGraph(
             val yearFilterToSet by filterViewModel.filteredYears.collectAsStateWithLifecycle()
             val yearFilterFrom by filterViewModel.filterFromYear.collectAsStateWithLifecycle()
             val yearFilterTo by filterViewModel.filterToYear.collectAsStateWithLifecycle()
+
             val yearsRangeMap = mapOf(
                 "fromYear" to yearFilterFrom,
                 "toYear" to yearFilterTo
@@ -63,11 +60,9 @@ fun NavGraphBuilder.filterNavGraph(
                 categoriesToSelect = categoriesToSelect,
                 countriesToSelect = countriesToSelect,
                 yearsFilterToSelect = yearFilterToSet,
-                yearsFilterRange = mapOf(
-                    "fromYear" to yearFilterFrom,
-                    "toYear" to yearFilterTo
-                ),
+                yearsFilterRange = yearsRangeMap,
             ) {
+
                 navController.navigate(ExploreScreen.FilteredResults)
 
                 filterViewModel.setSelectedSort(selectedSort)
@@ -81,10 +76,7 @@ fun NavGraphBuilder.filterNavGraph(
                     countries = countriesToSelect,
                     genres = genresToSelect,
                     year = yearFilterToSet,
-                    yearRange = mapOf(
-                        "fromYear" to yearFilterFrom,
-                        "toYear" to yearFilterTo
-                    )
+                    yearRange = yearsRangeMap
                 )
             }
         }
@@ -144,9 +136,7 @@ fun NavGraphBuilder.filterNavGraph(
                 usedYearsFilter = yearToSelect,
                 usedYearRangeFilter = yearRangeMap,
                 acceptNewYearsFilter = { year, yearRange ->
-                    Log.d("year range",yearRange.toString())
-
-                    Log.d("fromYear",yearRange["fromYear"].toString())
+                    Log.d("year",year.toString())
 
                     filterViewModel.setFilteredYears(year)
                     filterViewModel.setFilteredYearsRange(

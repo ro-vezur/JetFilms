@@ -1,4 +1,4 @@
-package com.example.jetfilms.View.Screens.SearchScreen.FilterUI
+package com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfiguration
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,59 +7,61 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Cards.SortSelectedCard
-import com.example.jetfilms.Models.DTOs.Filters.Filter
 import com.example.jetfilms.Models.DTOs.Filters.SortTypes
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.Helpers.ListToString.StringListToString
 import com.example.jetfilms.Helpers.Countries.getCountryList
+import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.ListToString.IntListToString
+import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
+import com.example.jetfilms.View.Screens.ExploreScreen
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
-import com.example.jetfilms.ViewModels.UnifiedMediaViewModel
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.View.states.rememberForeverScrollState
+import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.typography
 import com.example.jetfilms.ui.theme.whiteColor
 import java.util.Locale
 
 @Composable
 fun AcceptFiltersScreen(
-    turnBack: () -> Unit,
     navController: NavController,
-    unifiedMediaViewModel: UnifiedMediaViewModel,
+    selectedSortType: SortTypes?,
     genresToSelect: List<MediaGenres>,
     categoriesToSelect: List<MediaFormats>,
     countriesToSelect: List<String>,
-    acceptNewFilters: (sortToSelect: SortTypes?) -> Unit,
+    yearsFilterToSelect: Int,
+    yearsFilterRange: Map<String, String>,
+    turnBack: () -> Unit,
+    resetFilters: () -> Unit,
+    selectSortType: (sortType: SortTypes?) -> Unit,
+    acceptNewFilters: () -> Unit,
     ) {
     val typography = typography()
 
-    val selectedSort = unifiedMediaViewModel.selectedSort.collectAsStateWithLifecycle()
-
-    var sortToSelect by remember { mutableStateOf(selectedSort.value) }
+    val horizontalPadding = 12.sdp
 
     val selectedGenresTextList =
         if (genresToSelect.sorted() == BASE_MEDIA_GENRES) "All"
@@ -88,104 +90,125 @@ fun AcceptFiltersScreen(
                 ""
             }
         }
+    val yearFilterText = if(yearsFilterToSelect == 0) {
+        "From ${DateFormats.getYear(yearsFilterRange["fromYear"].toString())} " +
+                "To ${DateFormats.getYear(yearsFilterRange["toYear"].toString())}"
+    }
+    else yearsFilterToSelect.toString()
 
     val filters = listOf(
-        Filter("Categories",selectedCategoriesTextList),
-        Filter("Genres",selectedGenresTextList),
-        Filter("Country",selectedCountriesTextList),
-        Filter("Year",""),
+        Filter("Categories",selectedCategoriesTextList,ExploreScreen.FilterConfiguration.FilterCategories),
+        Filter("Genres",selectedGenresTextList,ExploreScreen.FilterConfiguration.FilterGenres),
+        Filter("Country",selectedCountriesTextList,ExploreScreen.FilterConfiguration.FilterCountries),
+        Filter("Year",yearFilterText,ExploreScreen.FilterConfiguration.FilterYears),
     )
 
     val scrollState = rememberForeverScrollState(key = "filter categories")
-      
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .padding(horizontal = 12.sdp)
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(11.sdp),
-            modifier = Modifier
-                .padding(top = (FILTER_TOP_BAR_HEIGHT + 15).sdp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = "Sorting",
-                style = typography.bodyMedium,
-                color = Color.Gray,
-                modifier = Modifier
-            )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.sdp),
+    Scaffold(
+        containerColor = primaryColor,
+        topBar = {
+            FiltersTopBar(
                 modifier = Modifier
-                    .padding(start = 0.sdp)
+                    .fillMaxWidth()
+                    .height(FILTER_TOP_BAR_HEIGHT.sdp),
+                turnBack = {turnBack() },
+                reset = resetFilters,
+                text = "Filters",
+                )
+        }
+    ){ innerPadding ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .padding(
+                    start = horizontalPadding,
+                    end = horizontalPadding,
+                    top = innerPadding.calculateTopPadding()
+                )
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(11.sdp),
+                modifier = Modifier
+                    .padding(top = 15.sdp)
+                    .fillMaxWidth()
             ) {
-                SortTypes.entries.forEach { type ->
-                    SortSelectedCard(
-                        text = type.title,
-                        lengthMultiplayer = 9,
-                        selected = sortToSelect == type,
-                        onClick = { sortToSelect = type }
+                Text(
+                    text = "Sorting",
+                    style = typography.bodyMedium,
+                    color = Color.Gray,
+                    modifier = Modifier
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.sdp),
+                    modifier = Modifier
+                        .padding(start = 0.sdp)
+                ) {
+                    SortTypes.entries.forEach { type ->
+                        SortSelectedCard(
+                            text = type.title,
+                            lengthMultiplayer = 9,
+                            selected = selectedSortType == type,
+                            onClick = { selectSortType(type) }
+                        )
+                    }
+                }
+            }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(3.sdp),
+                modifier = Modifier
+                    .padding(top = 22.sdp, bottom = 8.sdp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Filters",
+                    style = typography.bodyMedium,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .padding(bottom = 3.sdp)
+                )
+
+                filters.forEach { filter ->
+                    FilterNavigationButton(
+                        filter = filter,
+                        onClick = {
+                            navController.navigate(filter.route)
+                        }
                     )
                 }
             }
-        }
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(3.sdp),
-            modifier = Modifier
-                .padding(top = 22.sdp, bottom = 8.sdp)
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = "Filters",
-                style = typography.bodyMedium,
-                color = Color.Gray,
+            Spacer(modifier = Modifier.weight(1f))
+
+            TextButton(
+                onClick = {
+
+                    acceptNewFilters()
+
+                    turnBack()
+                },
+                textStyle = typography.bodyMedium.copy(color = whiteColor),
+                gradient = blueHorizontalGradient,
+                text = "Accept Filters",
                 modifier = Modifier
-                    .padding(bottom = 3.sdp)
+                    .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 9).sdp)
             )
-
-            filters.forEach { filter ->
-               FilterCard(
-                   filter = filter,
-                   onClick = {
-                       navController.navigate(filter.name)
-                   }
-               )
-            }
         }
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        TextButton(
-            onClick = {
-                val sortBy = sortToSelect?.requestQuery.toString()
-
-                unifiedMediaViewModel.showFilteredData(true)
-                unifiedMediaViewModel.setSelectedSort(sortToSelect)
-                unifiedMediaViewModel.setFilteredGenres(genresToSelect)
-                unifiedMediaViewModel.setFilteredCategories(categoriesToSelect)
-                unifiedMediaViewModel.setFilteredCountries(countriesToSelect)
-
-                acceptNewFilters(sortToSelect)
-
-                turnBack() 
-                      },
-            textStyle = typography.bodyMedium.copy(color = whiteColor),
-            gradient = blueHorizontalGradient,
-            text = "Accept Filters",
-            modifier = Modifier
-                .padding(bottom = (BOTTOM_NAVIGATION_BAR_HEIGHT + 9).sdp)
-        )
     }
 }
 
+data class Filter(
+    val name: String,
+    val value: String,
+    val route: Any
+)
 
 @Composable
-private fun FilterCard(filter: Filter, onClick: () -> Unit) {
+private fun FilterNavigationButton(filter: Filter, onClick: () -> Unit) {
     Column(
         verticalArrangement = Arrangement.spacedBy(15.sdp),
         modifier = Modifier

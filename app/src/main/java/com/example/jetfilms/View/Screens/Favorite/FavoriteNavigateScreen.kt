@@ -6,37 +6,34 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
-import com.example.jetfilms.ViewModels.MoviesViewModel
-import com.example.jetfilms.ViewModels.SearchHistoryViewModel
-import com.example.jetfilms.ViewModels.SeriesViewModel
-import com.example.jetfilms.ViewModels.UnifiedMediaViewModel
-import com.example.jetfilms.ViewModels.UserViewModel
+import com.example.jetfilms.Models.DTOs.UserDTOs.User
+import com.example.jetfilms.ViewModels.FavoriteMediaViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
 import com.example.jetfilms.ui.theme.primaryColor
-import dev.chrisbanes.haze.HazeState
 
-@RequiresApi(Build.VERSION_CODES.S)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun FavoriteNavigateScreen(
-    searchHistoryViewModel: SearchHistoryViewModel,
-    unifiedMediaViewModel: UnifiedMediaViewModel,
-    selectMedia: (unifiedMedia: UnifiedMedia) -> Unit
+    searchedHistoryFlow: List<UnifiedMedia>,
+    searchedHistoryInDb: List<SearchedMedia>,
+    selectMedia: (unifiedMedia: UnifiedMedia) -> Unit,
+    user: User,
 ) {
+    val favoriteMediaViewModel = hiltViewModel<FavoriteMediaViewModel,FavoriteMediaViewModel.FavoriteMediaViewModelFactory> { factory ->
+        factory.create(user)
+    }
 
     val navController = rememberNavController()
-
-    val favoriteMediaList = unifiedMediaViewModel.favoriteMediaList.collectAsStateWithLifecycle()
-
-    Log.d("favorite media list in work",favoriteMediaList.value.toString())
 
     val turnBack = {
         navController.popBackStackOrIgnore()
@@ -53,18 +50,29 @@ fun FavoriteNavigateScreen(
             composable("MainScreen") {
                 FavoriteMainScreen(
                     navController = navController,
-                    searchHistoryViewModel = searchHistoryViewModel,
+                    searchedHistoryFlow = searchedHistoryFlow,
+                    searchedHistoryInDb = searchedHistoryInDb,
                     selectMedia = selectMedia
                 )
             }
 
             composable("Favorite Movies and Series") {
+
+
+                val favoriteMediaList by favoriteMediaViewModel.favoriteMediaList.collectAsStateWithLifecycle()
+
+                Log.d("user media list size",user.favoriteMediaList.size.toString())
+
+
+                LaunchedEffect(null){ favoriteMediaViewModel.setFavoriteMedia(user.favoriteMediaList) }
+
                 FavoriteMediaListScreen(
                     turnBack = turnBack,
                     selectMedia = selectMedia,
-                    data = favoriteMediaList.value
+                    favoriteMediaList = favoriteMediaList
                 )
             }
+
 
             composable("Download") {
 

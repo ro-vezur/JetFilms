@@ -122,8 +122,8 @@ fun FilterYearsScreen(
                     acceptNewYearsFilter(
                         if(pagerState.currentPage == 0) yearsFilterToSet.toInt() else 0,
                         mapOf(
-                            "fromYear" to if(pagerState.currentPage == 0) filterFromYearToSet else "0",
-                            "toYear" to if(pagerState.currentPage == 0) filterToYearToSet else "0"
+                            "fromYear" to if(pagerState.currentPage == 1) filterFromYearToSet else "0",
+                            "toYear" to if(pagerState.currentPage == 1) filterToYearToSet else "0"
                         )
                     )
                 },

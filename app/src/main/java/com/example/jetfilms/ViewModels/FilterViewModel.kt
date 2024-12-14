@@ -1,5 +1,6 @@
 package com.example.jetfilms.ViewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -105,6 +106,7 @@ class FilterViewModel @Inject constructor(
     }
 
     fun setFilteredYearsRange(fromYear: Int, toYear: Int) = viewModelScope.launch {
+        Log.d("is 0?",(fromYear == 0 || toYear == 0).toString())
         if(fromYear == 0 || toYear == 0) {
             _filterFromYear.emit("0")
             _filterToYear.emit("0")

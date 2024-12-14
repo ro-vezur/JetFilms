@@ -13,6 +13,7 @@ import com.example.jetfilms.whiteGradientColors
 fun AcceptFiltersButton(
     isEmpty: Boolean,
     isDataSameAsBefore: Boolean,
+    additionalText: String = "Select at Least 1",
     onClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -35,11 +36,10 @@ fun AcceptFiltersButton(
                 "Accept Filters"
             }
         else {
-            "Select at Least 1"
+            additionalText
         },
-        textStyle = typography.bodyMedium.copy(
-            color = if(haveChanges) whiteColor else Color.Black
-        ),
+        textStyle = typography.bodyMedium,
+        textColor = if(haveChanges) whiteColor else Color.Black,
         modifier = modifier
     )
 }
