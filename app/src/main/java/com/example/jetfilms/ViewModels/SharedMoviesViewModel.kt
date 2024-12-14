@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MoviesViewModel @Inject constructor(
+class SharedMoviesViewModel @Inject constructor(
     private val moviesRepository: MoviesRepository
 ): ViewModel() {
     private val _popularMovies: MutableStateFlow<List<SimplifiedMovieDataClass>> = MutableStateFlow(emptyList())
@@ -27,17 +27,11 @@ class MoviesViewModel @Inject constructor(
     private val _topRatedMovies = MutableStateFlow<List<SimplifiedMovieDataClass>>(listOf())
     val topRatedMovies = _topRatedMovies.asStateFlow()
 
-    private val _similarMovies = MutableStateFlow<MoviesResponse?>(null)
-    val similarMovies = _similarMovies.asStateFlow()
-
     private val _moreMoviesView: MutableStateFlow<PagingData<SimplifiedMovieDataClass>> = MutableStateFlow(PagingData.empty())
     val moreMoviesView = _moreMoviesView.asStateFlow()
 
     private val _selectedMovie = MutableStateFlow<DetailedMovieResponse?>(null)
     val selectedMovie = _selectedMovie.asStateFlow()
-
-    private val _searchedMovies = MutableStateFlow<MoviesResponse?>(null)
-    val searchedMovies = _searchedMovies.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -55,15 +49,7 @@ class MoviesViewModel @Inject constructor(
     fun setSelectedMovie(movieId:Int){
         viewModelScope.launch {
             withContext(Dispatchers.IO){
-                _selectedMovie.emit(moviesRepository.getMovie(movieId).body())
-            }
-        }
-    }
-
-    fun setSimilarMovies(movieId: Int){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                _similarMovies.emit(moviesRepository.getSimilarMovies(movieId))
+                _selectedMovie.emit(moviesRepository.getMovie(movieId))
             }
         }
     }
@@ -90,29 +76,10 @@ class MoviesViewModel @Inject constructor(
         }
     }
 
-    fun setSearchedMovies(query: String?){
-        viewModelScope.launch{
-            withContext(Dispatchers.IO){
-                    _searchedMovies.emit(
-                        if(query.isNullOrBlank()) null
-                        else moviesRepository.searchMovies(query.toString(), 1)
-                    )
-            }
-        }
-    }
-
-    suspend fun getMovie(movieId: Int): DetailedMovieResponse? = moviesRepository.getMovie(movieId).body()
-
-    suspend fun searchMovies(query: String, page: Int) = moviesRepository.searchMovies(query,page)
-
-
-    suspend fun discoverMovies(page: Int,sortBy: String,genres: List<Int>,countries:List<String>) = moviesRepository.discoverMovies(
-        page = page,
-        sortBy = sortBy,
-        genres = genres,
-        countries = countries,
-    )
+    suspend fun getMovie(movieId: Int): DetailedMovieResponse = moviesRepository.getMovie(movieId)
 
     suspend fun getPopularMovies(page: Int) = moviesRepository.getPopularMovies(page)
+
+    suspend fun searchMovies(query: String,page: Int) = moviesRepository.searchMovies(query, page)
 
 }
