@@ -1,9 +1,5 @@
 package com.example.jetfilms.View.Screens.DetailedMediaScreens.MovieDetailsPackage
 
-import android.app.Activity
-import android.content.pm.ActivityInfo
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,8 +38,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -56,51 +52,53 @@ import com.example.jetfilms.Models.DTOs.MoviePackage.MovieDisplay
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
-import com.example.jetfilms.Helpers.DTOsConverters.DetailedMovieDataToFavoriteMedia
+import com.example.jetfilms.Helpers.DTOsConverters.ToFavoriteMedia.MovieDataToFavoriteMedia
 import com.example.jetfilms.View.Components.Cards.PropertyCard
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
-import com.example.jetfilms.View.Components.MediaInfoTabRow
+import com.example.jetfilms.View.Components.TabRow
 import com.example.jetfilms.View.Components.TabsContent.MovieAboutTab
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
-import com.example.jetfilms.Models.DTOs.UserDTOs.User
+import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
-import com.example.jetfilms.ViewModels.UserViewModel
+import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedMovieViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.infoTabs
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MovieDetailsScreen(
     navController: NavController,
-    movieDisplay: MovieDisplay,
+    movieResponse: DetailedMovieResponse,
     selectMovie: (id: Int) -> Unit,
     selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit,
     addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit,
     isFavoriteUnit: (favoriteMedia: FavoriteMedia) -> Boolean,
 ) {
+    val detailedMovieViewModel = hiltViewModel<DetailedMovieViewModel,DetailedMovieViewModel.DetailedMovieViewModelFactory> {factory ->
+        factory.create(movieResponse.id)
+    }
+
+    val movieCast = detailedMovieViewModel.movieCast.collectAsStateWithLifecycle()
+    val movieImages = detailedMovieViewModel.movieImages.collectAsStateWithLifecycle()
+    val similarMovies = detailedMovieViewModel.similarMovies.collectAsStateWithLifecycle()
+    val movieTrailers = detailedMovieViewModel.movieTrailers.collectAsStateWithLifecycle()
+
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
-
-    val movieResponse = movieDisplay.response
 
     val scrollState = rememberScrollState()
     val tabPagerState = rememberPagerState(pageCount = { infoTabs.size})
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val context = LocalContext.current
-
-    val activity = context as Activity
 
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
-
     var isFavorite by remember { mutableStateOf(false) }
 
     LaunchedEffect(null) {
-        isFavorite = isFavoriteUnit(DetailedMovieDataToFavoriteMedia(movieResponse))
+        isFavorite = isFavoriteUnit(MovieDataToFavoriteMedia(movieResponse))
     }
 
     LaunchedEffect(currentBackStackEntry) {
@@ -249,7 +247,7 @@ fun MovieDetailsScreen(
                                     .clickable {
                                         isFavorite = !isFavorite
                                         addToFavorite(
-                                            DetailedMovieDataToFavoriteMedia(
+                                            MovieDataToFavoriteMedia(
                                                 movieResponse
                                             )
                                         )
@@ -301,32 +299,38 @@ fun MovieDetailsScreen(
                     )
                 }
 
-                MediaInfoTabRow(
+                TabRow(
                     tabs = infoTabs,
                     pagerState = tabPagerState,
                     modifier = Modifier
                         .padding(top = 12.sdp, start = 6.sdp,end = 6.sdp)
                 )
 
-                MovieAboutTab(
-                    pagerState = tabPagerState,
-                    movieDisplay = movieDisplay,
-                    selectMovie = selectMovie,
-                    navigateToSelectedParticipant = selectParticipant,
-                    selectTrailer = { trailer ->
-                        selectedTrailerKey = trailer.key
-                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                                    },
-                    modifier = Modifier
-                        .padding(top = 18.sdp, bottom = 0.sdp),
-                )
+                if(movieCast.value != null && movieImages.value != null && similarMovies.value != null && movieTrailers.value != null){
+                    MovieAboutTab(
+                        pagerState = tabPagerState,
+                        movieDisplay = MovieDisplay(
+                            response = movieResponse,
+                            movieCast = movieCast.value!!,
+                            movieImages = movieImages.value!!,
+                            similarMovies = similarMovies.value!!,
+                            movieTrailers = movieTrailers.value!!,
+                        ),
+                        selectMovie = selectMovie,
+                        navigateToSelectedParticipant = selectParticipant,
+                        selectTrailer = { trailer ->
+                            selectedTrailerKey = trailer.key
+                        },
+                        modifier = Modifier
+                            .padding(top = 18.sdp, bottom = 0.sdp),
+                    )
+                }
 
                 if(selectedTrailerKey != null) {
                     TrailerScreen(
                         trailerKey = selectedTrailerKey!!,
                         onDismiss = {
                             selectedTrailerKey = null
-                            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         }
                     )
                 }

@@ -15,6 +15,8 @@ import javax.inject.Singleton
 @Singleton
 class MoviesRepository @Inject constructor(private val apiService: ApiInterface){
 
+    suspend fun getMovie(id: Int) = apiService.movie(id)
+
     fun getPaginatedMovies(getResponse: suspend (page: Int) -> MoviesResponse, pagesLimit: Int = Int.MAX_VALUE) =
         Pager(
             config = PagingConfig(
@@ -28,27 +30,13 @@ class MoviesRepository @Inject constructor(private val apiService: ApiInterface)
 
     suspend fun getTopRatedMovies() = apiService.topRatedMovies(1)
 
-    suspend fun getMovie(id: Int) = apiService.movie(id)
-
     suspend fun getSimilarMovies(movieId: Int) = apiService.similarMovies(movieId)
 
-    suspend fun searchMovies(query: String,page: Int) = apiService.searchMovies(query,page)
+    suspend fun getMovieCredits(movieId:Int) = apiService.movieCredits(movieId)
 
-    suspend fun discoverMovies(page: Int,sortBy: String,genres: List<Int>,countries:List<String>): MoviesResponse {
-        return if(genres == BASE_MEDIA_GENRES.map { it.genreId }) {
-            apiService.discoverMovies(
-                page = page,
-                sortBy = sortBy,
-                countries = CountryListToString(countries),
-            )
-        }
-        else {
-            apiService.filteredGenresDiscoverMovies(
-                page = page,
-                sortBy = sortBy,
-                genres = IntListToString(genres),
-                countries = CountryListToString(countries),
-            )
-        }
-    }
+    suspend fun getMovieImages(movieId: Int) = apiService.imagesFromMovie(movieId)
+
+    suspend fun getMovieTrailers(movieId: Int) = apiService.movieTrailers(movieId)
+
+    suspend fun searchMovies(query: String,page: Int) = apiService.searchMovies(query,page)
 }

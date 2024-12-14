@@ -33,7 +33,7 @@ import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetfilms.View.Components.Cards.MovieCard
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
-import com.example.jetfilms.ViewModels.MoviesViewModel
+import com.example.jetfilms.ViewModels.SharedMoviesViewModel
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.extensions.sdp
@@ -45,13 +45,12 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MoreMoviesScreen(
     turnBack: () -> Unit,
     selectMovie: (id: Int) -> Unit,
     category: String,
-    moviesViewModel: MoviesViewModel,
+    moviesViewModel: SharedMoviesViewModel,
 ) {
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colorScheme

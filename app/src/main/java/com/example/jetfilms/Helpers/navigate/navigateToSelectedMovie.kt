@@ -1,5 +1,6 @@
 package com.example.jetfilms.Helpers.navigate
 
+import android.util.Log
 import androidx.navigation.NavController
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.Helpers.encodes.encodeStringWithSpecialCharacter
@@ -13,9 +14,10 @@ fun navigateToSelectedMovie(navController: NavController, selectedMovie: Detaile
             title = encodeStringWithSpecialCharacter(selectedMovie.title),
             overview = encodeStringWithSpecialCharacter(selectedMovie.overview),
             tagline = encodeStringWithSpecialCharacter(selectedMovie.tagline),
-            posterUrl = encodeStringWithSpecialCharacter(selectedMovie.posterUrl.toString()),
+            posterUrl = encodeStringWithSpecialCharacter(selectedMovie.posterUrl),
             )
     )
-
-    navController.navigate("movie_details/$jsonMovie")
+    if(navController.currentDestination?.route.toString() != "movie_details/{movie}") {
+        navController.navigate("movie_details/$jsonMovie")
+    }
 }

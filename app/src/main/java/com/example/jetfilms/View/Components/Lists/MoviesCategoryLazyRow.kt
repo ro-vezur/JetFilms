@@ -36,7 +36,6 @@ fun MoviesCategoryList(
     category: String,
     selectMovie: (id: Int) -> Unit,
     moviesList: List<SimplifiedMovieDataClass>,
-    navController: NavController,
     onSeeAllClick: () -> Unit,
     topPadding: Dp = 0.sdp,
     bottomPadding: Dp = 0.sdp,
@@ -77,7 +76,6 @@ fun MoviesCategoryList(
                             .clip(RoundedCornerShape(8.sdp))
                             .clickable {
                                 onSeeAllClick()
-                                navController.navigate(MoreMoviesScreenRoute(category))
                             }
                     ) {
                         Text(
