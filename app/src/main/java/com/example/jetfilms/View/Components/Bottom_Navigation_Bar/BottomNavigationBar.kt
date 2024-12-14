@@ -57,9 +57,14 @@ fun BottomNavBar(
     LaunchedEffect(currentBackStackEntry) {
         val currentRoute = currentBackStackEntry?.destination?.route.toString()
 
+        Log.d("current route",currentRoute)
+
         BottomNavItems.entries.forEach { item ->
-            if(item.route.toString().replace("$",".").contains(currentRoute)) {
+            if(currentRoute.contains(item.title)) {
                 selected = item
+            }
+            if(item.route.toString().replace("$",".").contains(currentRoute)) {
+
             }
         }
     }

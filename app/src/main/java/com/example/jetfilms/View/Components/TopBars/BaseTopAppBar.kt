@@ -27,7 +27,6 @@ import com.example.jetfilms.ui.theme.whiteColor
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun BaseTopAppBar(
     headerText: String,
