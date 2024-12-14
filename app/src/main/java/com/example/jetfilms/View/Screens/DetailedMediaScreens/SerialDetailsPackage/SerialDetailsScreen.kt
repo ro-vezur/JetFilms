@@ -1,11 +1,8 @@
 package com.example.jetfilms.Screens.MovieDetailsPackage
 
-import android.app.Activity
-import android.content.pm.ActivityInfo
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +46,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
@@ -61,17 +60,20 @@ import com.example.jetfilms.View.Components.Gradient.animatedGradient
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SerialSeasonResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.Helpers.DTOsConverters.ToFavoriteMedia.SeriesDataToFavoriteMedia
 import com.example.jetfilms.View.Components.Cards.PropertyCard
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
-import com.example.jetfilms.View.Components.MediaInfoTabRow
+import com.example.jetfilms.View.Components.TabRow
 import com.example.jetfilms.View.Components.TabsContent.SeriesAboutTab
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SerialDisplay
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Models.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
+import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesDisplay
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
+import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedSeriesViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.infoTabs
@@ -80,22 +82,30 @@ import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun SerialDetailsScreen(
     navController: NavController,
-    serialDisplay: SerialDisplay,
+    seriesResponse: DetailedSerialResponse,
     selectSeason: suspend (serialId: Int,seasonNumber: Int) -> SerialSeasonResponse?,
     selectSerial: (id: Int) -> Unit,
     selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit,
-    addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit
+    addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit,
+    isFavoriteUnit: (favoriteMedia: FavoriteMedia) -> Boolean,
 ) {
+    val detailedSeriesViewModel = hiltViewModel<DetailedSeriesViewModel,DetailedSeriesViewModel.DetailedSeriesViewModelFactory> { factory ->
+        factory.create(seriesResponse.id)
+    }
+
+    val seriesCast = detailedSeriesViewModel.seriesCast.collectAsStateWithLifecycle()
+    val seriesImages = detailedSeriesViewModel.seriesImages.collectAsStateWithLifecycle()
+    val similarSeries = detailedSeriesViewModel.similarSeries.collectAsStateWithLifecycle()
+    val seriesTrailers = detailedSeriesViewModel.seriesTrailers.collectAsStateWithLifecycle()
+
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
-    val serialResponse = serialDisplay.response
 
-    val seasonTabs = serialResponse.seasons
+    val seasonTabs = seriesResponse.seasons
 
     val seasonsPagerState = rememberPagerState(pageCount = {seasonTabs.size})
     val currentSeasonPage = seasonsPagerState.currentPage
@@ -104,20 +114,24 @@ fun SerialDetailsScreen(
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val context = LocalContext.current
 
-    val activity = context as Activity
-
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     val scope = rememberCoroutineScope()
 
     var selectedSeason by remember { mutableStateOf<SerialSeasonResponse?>(null) }
     var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
 
+    var isFavorite by remember { mutableStateOf(false) }
+
+    LaunchedEffect(null) {
+        isFavorite = isFavoriteUnit(SeriesDataToFavoriteMedia(seriesResponse))
+    }
+
     LaunchedEffect(currentSeasonPage) {
         selectedSeason =
            try {
-               selectSeason(serialResponse.id,currentSeasonPage)
+               selectSeason(seriesResponse.id,currentSeasonPage)
            } catch (e:Exception){
-               selectSeason(serialResponse.id,currentSeasonPage+1)
+               selectSeason(seriesResponse.id,currentSeasonPage+1)
            }
     }
 
@@ -149,7 +163,7 @@ fun SerialDetailsScreen(
                     AsyncImage(
                         model = "$BASE_IMAGE_API_URL${
                             decodeStringWithSpecialCharacter(
-                                serialResponse.poster.toString()
+                                seriesResponse.poster.toString()
                             )
                         }",
                         contentDescription = "",
@@ -177,10 +191,10 @@ fun SerialDetailsScreen(
                             .align(Alignment.BottomStart)
                             .padding(start = 15.sdp)
                     ) {
-                        DisplayRating(serialResponse.rating)
+                        DisplayRating(seriesResponse.rating)
 
                         Text(
-                            text = decodeStringWithSpecialCharacter(serialResponse.name),
+                            text = decodeStringWithSpecialCharacter(seriesResponse.name),
                             style = typography.titleLarge,
                             fontSize = 26f.ssp,
                         )
@@ -190,24 +204,24 @@ fun SerialDetailsScreen(
                             horizontalArrangement = Arrangement.spacedBy(14.sdp),
                             modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
                         ) {
-                            if (serialResponse.releaseDate.isNotBlank()) {
+                            if (seriesResponse.releaseDate.isNotBlank()) {
                                 PropertyCard(
-                                    text = DateFormats.getYear(serialResponse.releaseDate)
+                                    text = DateFormats.getYear(seriesResponse.releaseDate)
                                         .toString(),
                                     lengthMultiplayer = 13
                                 )
                             }
 
-                            if (serialResponse.genres.isNotEmpty()) {
+                            if (seriesResponse.genres.isNotEmpty()) {
                                 PropertyCard(
-                                    text = serialResponse.genres.first().name,
+                                    text = seriesResponse.genres.first().name,
                                     lengthMultiplayer = 8
                                 )
                             }
 
-                            if (serialResponse.originCountries.isNotEmpty()) {
+                            if (seriesResponse.originCountries.isNotEmpty()) {
                                 PropertyCard(
-                                    text = serialResponse.originCountries.first(),
+                                    text = seriesResponse.originCountries.first(),
                                     lengthMultiplayer = 21
                                 )
                             }
@@ -267,11 +281,15 @@ fun SerialDetailsScreen(
                                     .size(32.sdp)
                                     .clip(CircleShape)
                                     .background(
-                                        if (false) colors.secondary.copy(.85f)
+                                        if (isFavorite) colors.secondary.copy(.85f)
                                         else colors.secondary.copy(.92f)
                                     )
+                                    .clickable {
+                                        isFavorite = !isFavorite
+                                        addToFavorite(SeriesDataToFavoriteMedia(seriesResponse))
+                                    }
                             ) {
-                                if (false) {
+                                if (isFavorite) {
                                     GradientIcon(
                                         icon = Icons.Filled.Bookmarks,
                                         contentDescription = "favorite",
@@ -302,13 +320,13 @@ fun SerialDetailsScreen(
                         .padding(start = 14.sdp, end = 14.sdp, top = 16.sdp)
                 ) {
                     Text(
-                        text = "${serialResponse.seasons.size} Season" + if (serialResponse.seasons.size == 1) "" else "s",
+                        text = "${seriesResponse.seasons.size} Season" + if (seriesResponse.seasons.size == 1) "" else "s",
                         fontSize = 16.ssp,
                         fontWeight = FontWeight.W500
                     )
 
                     Text(
-                        text = decodeStringWithSpecialCharacter(serialResponse.overview),
+                        text = decodeStringWithSpecialCharacter(seriesResponse.overview),
                         fontSize = 13.ssp,
                         color = Color.LightGray.copy(0.9f),
                         fontWeight = FontWeight.W400,
@@ -373,7 +391,7 @@ fun SerialDetailsScreen(
                                 text = {
                                     Text(
                                         text = "Season ${
-                                            if (serialResponse.seasons.first().seasonNumber == 0) season.seasonNumber + 1
+                                            if (seriesResponse.seasons.first().seasonNumber == 0) season.seasonNumber + 1
                                             else season.seasonNumber
                                         }",
                                         style = TextStyle(
@@ -421,7 +439,7 @@ fun SerialDetailsScreen(
             }
 
             item{
-                MediaInfoTabRow(
+                TabRow(
                     tabs = infoTabs,
                     pagerState = infoPagerState,
                     modifier = Modifier
@@ -430,18 +448,25 @@ fun SerialDetailsScreen(
             }
 
             item{
-                SeriesAboutTab(
-                    pagerState = infoPagerState,
-                    navigateToSelectedParticipant = selectParticipant,
-                    selectSeries = selectSerial,
-                    seriesDisplay = serialDisplay,
-                    selectTrailer = {trailer ->
-                        selectedTrailerKey = trailer.key
-                        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                                    },
-                    modifier = Modifier
-                        .padding(top = 18.sdp, bottom = 0.sdp),
-                )
+                if(seriesCast.value != null && seriesImages.value != null && similarSeries.value != null && seriesTrailers.value != null){
+                    SeriesAboutTab(
+                        pagerState = infoPagerState,
+                        navigateToSelectedParticipant = selectParticipant,
+                        selectSeries = selectSerial,
+                        seriesDisplay = SeriesDisplay(
+                            response = seriesResponse,
+                            seriesCast = seriesCast.value!!,
+                            seriesImages = seriesImages.value!!,
+                            similarSeries = similarSeries.value!!,
+                            seriesTrailers = seriesTrailers.value!!
+                        ),
+                        selectTrailer = { trailer ->
+                            selectedTrailerKey = trailer.key
+                        },
+                        modifier = Modifier
+                            .padding(top = 18.sdp, bottom = 0.sdp),
+                    )
+                }
             }
         }
 
@@ -460,7 +485,6 @@ fun SerialDetailsScreen(
                 trailerKey = selectedTrailerKey!!,
                 onDismiss = {
                     selectedTrailerKey = null
-                    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                 }
             )
         }

@@ -1,16 +1,12 @@
 package com.example.jetfilms.Helpers.Pagination
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.jetfilms.Models.API.ApiInterface
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 
 class SerialsPagingSource(
-    val getResponse: suspend (page: Int) -> SimplifiedSerialsResponse,
+    val getResponse: suspend (page: Int) -> SeriesResponse,
     val pageLimit: Int = Int.MAX_VALUE
 ) : PagingSource<Int, SimplifiedSerialObject>() {
     override fun getRefreshKey(state: PagingState<Int, SimplifiedSerialObject>): Int? {

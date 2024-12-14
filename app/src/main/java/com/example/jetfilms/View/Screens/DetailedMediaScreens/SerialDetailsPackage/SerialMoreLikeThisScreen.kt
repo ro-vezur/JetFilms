@@ -12,12 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.example.jetfilms.View.Components.Cards.SerialCard
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 import com.example.jetfilms.extensions.sdp
 
 @Composable
 fun SerialMoreLikeThisScreen(
-    similarSeries: SimplifiedSerialsResponse,
+    similarSeries: SeriesResponse,
     selectSerial: (id: Int) -> Unit
 ) {
     LazyRow(

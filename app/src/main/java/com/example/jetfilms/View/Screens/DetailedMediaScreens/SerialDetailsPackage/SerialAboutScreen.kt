@@ -22,7 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.View.Components.Cards.MovieParticipantCard
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SerialDisplay
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesDisplay
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.extensions.sdp
@@ -30,7 +30,7 @@ import java.util.Locale
 
 @Composable
 fun SerialAboutScreen(
-    seriesDisplay: SerialDisplay,
+    seriesDisplay: SeriesDisplay,
     navigateToSelectedParticipant: (participant: SimplifiedParticipantResponse) -> Unit
 ) {
     val typography = MaterialTheme.typography
@@ -128,7 +128,7 @@ fun SerialAboutScreen(
             }
         }
 
-        if(seriesDisplay.serialCast.cast.isNotEmpty()){
+        if(seriesDisplay.seriesCast.cast.isNotEmpty()){
             Column(
                 verticalArrangement = Arrangement.spacedBy(9.sdp),
                 modifier = Modifier
@@ -148,7 +148,7 @@ fun SerialAboutScreen(
                 ) {
                     item {}
 
-                    items(seriesDisplay.serialCast.cast.take(14)) { participant ->
+                    items(seriesDisplay.seriesCast.cast.take(14)) { participant ->
                         MovieParticipantCard(
                             movieParticipant = participant,
                             modifier = Modifier
@@ -167,7 +167,7 @@ fun SerialAboutScreen(
             }
         }
 
-        if(seriesDisplay.serialImages.backdrops.isNotEmpty()){
+        if(seriesDisplay.seriesImages.backdrops.isNotEmpty()){
             Column(
                 verticalArrangement = Arrangement.spacedBy(9.sdp),
                 modifier = Modifier
@@ -186,7 +186,7 @@ fun SerialAboutScreen(
                 ) {
                     item {}
 
-                    items(seriesDisplay.serialImages.backdrops.filter { it.iso_639_1 == null }
+                    items(seriesDisplay.seriesImages.backdrops.filter { it.iso_639_1 == null }
                         .take(3)) { image ->
                         AsyncImage(
                             model = BASE_IMAGE_API_URL + image.file_path,

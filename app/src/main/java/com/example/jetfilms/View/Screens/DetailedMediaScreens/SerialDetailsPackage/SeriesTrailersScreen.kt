@@ -8,14 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.jetfilms.View.Components.Cards.TrailerCard
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SerialDisplay
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesDisplay
 import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailerObject
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.extensions.sdp
 
 @Composable
 fun SeriesTrailersScreen(
-    seriesDisplay: SerialDisplay,
+    seriesDisplay: SeriesDisplay,
     selectTrailer: (trailer: TrailerObject) -> Unit,
 ) {
     Column {

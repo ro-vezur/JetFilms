@@ -36,7 +36,7 @@ import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.View.Components.Cards.SerialCard
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
-import com.example.jetfilms.ViewModels.SeriesViewModel
+import com.example.jetfilms.ViewModels.SharedSeriesViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.View.states.rememberForeverLazyGridState
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
@@ -46,13 +46,12 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun MoreSerialsScreen(
     selectSeries: (id: Int) -> Unit,
     navController: NavController,
     category: String,
-    seriesViewModel: SeriesViewModel
+    seriesViewModel: SharedSeriesViewModel
 ) {
     val typography = MaterialTheme.typography
     val colors = MaterialTheme.colorScheme

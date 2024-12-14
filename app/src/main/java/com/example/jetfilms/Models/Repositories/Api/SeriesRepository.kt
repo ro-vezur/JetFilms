@@ -3,10 +3,7 @@ package com.example.jetfilms.Models.Repositories.Api
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.jetfilms.Models.API.ApiInterface
-import com.example.jetfilms.BASE_MEDIA_GENRES
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialsResponse
-import com.example.jetfilms.Helpers.ListToString.CountryListToString
-import com.example.jetfilms.Helpers.ListToString.IntListToString
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 import com.example.jetfilms.Helpers.Pagination.SerialsPagingSource
 import com.example.jetfilms.PAGE_SIZE
 import javax.inject.Inject
@@ -22,9 +19,8 @@ class SeriesRepository @Inject constructor(private val apiService: ApiInterface)
 
     suspend fun getPopularSerials(page: Int) = apiService.popularSerials(page)
 
-    suspend fun searchSerials(query: String,page: Int) = apiService.searchSerials(query,page)
 
-    fun getPaginatedSerials(getResponse: suspend (page: Int) -> SimplifiedSerialsResponse, pagesLimit: Int = Int.MAX_VALUE) =
+    fun getPaginatedSerials(getResponse: suspend (page: Int) -> SeriesResponse, pagesLimit: Int = Int.MAX_VALUE) =
         Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
@@ -32,21 +28,11 @@ class SeriesRepository @Inject constructor(private val apiService: ApiInterface)
             pagingSourceFactory = { SerialsPagingSource(getResponse = {page -> getResponse(page) },pagesLimit) }
         ).flow
 
-    suspend fun discoverSerials(page: Int,sortBy: String,genres: List<Int>,countries: List<String>): SimplifiedSerialsResponse {
-        return if(genres == BASE_MEDIA_GENRES.map { it.genreId }) {
-            apiService.discoverSerials(
-                page = page,
-                sortBy = sortBy,
-                countries = CountryListToString(countries),
-            )
-        }
-        else {
-            apiService.filteredGenresDiscoverSerials(
-                page = page,
-                sortBy = sortBy,
-                genres = IntListToString(genres),
-                countries = CountryListToString(countries),
-            )
-        }
-    }
+    suspend fun getSeriesCredits(serialId: Int) = apiService.serialCredits(serialId)
+
+    suspend fun getSeriesImages(serialId: Int) = apiService.imagesFromSerial(serialId)
+
+    suspend fun getSeriesTrailers(seriesId: Int) = apiService.seriesTrailers(seriesId)
+
+    suspend fun searchSeries(query: String, page: Int) = apiService.searchSerials(query,page)
 }

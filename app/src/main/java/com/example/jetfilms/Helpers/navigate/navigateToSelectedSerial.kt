@@ -16,5 +16,7 @@ fun navigateToSelectedSerial(navController: NavController, selectedSerial: Detai
         )
     )
 
-    navController.navigate("serial_details/$jsonSerial")
+    if(navController.currentDestination?.route.toString() != "serial_details/{serial}") {
+        navController.navigate("serial_details/$jsonSerial")
+    }
 }

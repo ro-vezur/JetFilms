@@ -35,7 +35,6 @@ fun SerialsCategoryList(
     category: String,
     selectSerial: (id: Int) -> Unit,
     serialsList: List<SimplifiedSerialObject>,
-    navController: NavController,
     onSeeAllClick: () -> Unit,
     topPadding: Dp = 0.sdp,
     bottomPadding: Dp = 0.sdp,
@@ -75,7 +74,6 @@ fun SerialsCategoryList(
                             .clip(RoundedCornerShape(8.sdp))
                             .clickable {
                                 onSeeAllClick()
-                                navController.navigate(MoreSerialsScreenRoute(category))
                             }
                     ) {
                         Text(
