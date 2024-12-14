@@ -2,8 +2,6 @@ package com.example.jetfilms.View.Screens.Start
 
 import com.example.jetfilms.View.Components.Text.Highlight
 import com.example.jetfilms.View.Components.Text.HighlightedText
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.jetfilms.View.Components.InputFields.BaseTextFieldColors
 import com.example.jetfilms.View.Components.InputFields.TextInputField
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
@@ -57,7 +54,6 @@ import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.errorColor
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun LogInScreen(
     stepsNavController: NavController,
@@ -120,7 +116,6 @@ fun LogInScreen(
                     .fillMaxWidth()
             ) {
                 TextInputField(
-                    colors = BaseTextFieldColors(),
                     text = emailText,
                     isError = emailError,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
@@ -148,7 +143,6 @@ fun LogInScreen(
                 )
 
                 TextInputField(
-                    colors = BaseTextFieldColors(),
                     text = passwordText,
                     isError = passwordError,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,

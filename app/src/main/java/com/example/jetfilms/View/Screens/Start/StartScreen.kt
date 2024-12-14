@@ -30,7 +30,6 @@ import com.example.jetfilms.View.Screens.Start.Select_genres.SelectMediaGenresSc
 import com.example.jetfilms.View.Screens.Start.Select_type.SelectMediaFormatScreen
 import com.example.jetfilms.ViewModels.UserViewModel
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun StartScreen(
     userViewModel: UserViewModel

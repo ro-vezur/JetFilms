@@ -46,7 +46,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.jetfilms.View.Components.InputFields.BaseTextFieldColors
 import com.example.jetfilms.View.Components.InputFields.TextInputField
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
@@ -65,8 +64,6 @@ import com.example.jetfilms.ui.theme.errorColor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun SignUpScreen(
     stepsNavController: NavController,
@@ -139,7 +136,6 @@ fun SignUpScreen(
                     .fillMaxWidth()
             ) {
                 TextInputField(
-                    colors = BaseTextFieldColors(),
                     text = firstName,
                     isError = usernameValidationResult.value != UsernameValidationResult.CORRECT &&
                             usernameValidationResult.value != UsernameValidationResult.NONE,
@@ -167,7 +163,6 @@ fun SignUpScreen(
                 )
 
                 TextInputField(
-                    colors = BaseTextFieldColors(),
                     text = lastName,
                     isError = usernameValidationResult.value != UsernameValidationResult.CORRECT &&
                             usernameValidationResult.value != UsernameValidationResult.NONE,
@@ -195,7 +190,6 @@ fun SignUpScreen(
                 )
 
                 TextInputField(
-                    colors = BaseTextFieldColors(),
                     text = emailText,
                     isError = emailValidationResult.value != EmailValidationResult.CORRECT &&
                     emailValidationResult.value != EmailValidationResult.NONE,
@@ -224,7 +218,6 @@ fun SignUpScreen(
                 )
 
                 TextInputField(
-                    colors = BaseTextFieldColors(),
                     text = passwordText,
                     isError = passwordError,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
@@ -269,7 +262,6 @@ fun SignUpScreen(
                 )
 
                 TextInputField(
-                    colors = BaseTextFieldColors(),
                     text = passwordConfirmText,
                     isError = passwordConfirmError,
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
