@@ -31,9 +31,8 @@ import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.Helpers.ListToString.StringListToString
 import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
-import com.example.jetfilms.Helpers.ListToString.IntListToString
 import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
-import com.example.jetfilms.View.Screens.ExploreScreen
+import com.example.jetfilms.View.Screens.ExploreNavigationHost
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
 import com.example.jetfilms.blueHorizontalGradient
@@ -97,10 +96,10 @@ fun AcceptFiltersScreen(
     else yearsFilterToSelect.toString()
 
     val filters = listOf(
-        Filter("Categories",selectedCategoriesTextList,ExploreScreen.FilterConfiguration.FilterCategories),
-        Filter("Genres",selectedGenresTextList,ExploreScreen.FilterConfiguration.FilterGenres),
-        Filter("Country",selectedCountriesTextList,ExploreScreen.FilterConfiguration.FilterCountries),
-        Filter("Year",yearFilterText,ExploreScreen.FilterConfiguration.FilterYears),
+        Filter("Categories",selectedCategoriesTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCategoriesScreenRoute),
+        Filter("Genres",selectedGenresTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterGenresScreenRoute),
+        Filter("Country",selectedCountriesTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCountriesScreenRoute),
+        Filter("Year",yearFilterText,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterYearsScreenRoute),
     )
 
     val scrollState = rememberForeverScrollState(key = "filter categories")
