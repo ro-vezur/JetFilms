@@ -1,4 +1,4 @@
-package com.example.jetfilms.Helpers.DTOsConverters
+package com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia
 
 import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject

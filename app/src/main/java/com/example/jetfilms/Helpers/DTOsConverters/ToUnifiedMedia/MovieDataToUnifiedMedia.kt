@@ -1,4 +1,4 @@
-package com.example.jetfilms.Helpers.DTOsConverters
+package com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia
 
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
@@ -21,7 +21,7 @@ fun MovieDataToUnifiedMedia(movie: DetailedMovieResponse): UnifiedMedia {
     return UnifiedMedia(
         id = movie.id,
         name = movie.title,
-        poster = movie.posterUrl.toString(),
+        poster = movie.posterUrl,
         mediaType = MediaFormats.MOVIE,
         popularity = movie.popularity,
         rating = movie.rating,
