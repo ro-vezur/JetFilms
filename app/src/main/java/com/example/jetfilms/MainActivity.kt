@@ -19,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.S)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -42,7 +42,6 @@ class MainActivity : ComponentActivity() {
 
 
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
