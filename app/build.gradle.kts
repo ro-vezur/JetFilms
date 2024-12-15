@@ -140,4 +140,12 @@ dependencies {
 
     //live data
     implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
+
+    //mock
+    testImplementation("io.mockk:mockk:1.13.5")
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation( "org.mockito.kotlin:mockito-kotlin:5.2.0")
+
+    //test coroutines
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 }
