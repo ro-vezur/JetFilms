@@ -31,7 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -41,15 +40,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.jetfilms.View.Components.InputFields.TextInputField
+import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
 import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
-import com.example.jetfilms.ViewModels.LogInValidationViewModel
+import com.example.jetfilms.ViewModels.ValidationViewModels.LogInValidationViewModel
+import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.errorColor
 import kotlinx.coroutines.launch
@@ -65,18 +64,15 @@ fun LogInScreen(
 
     val scope = rememberCoroutineScope()
 
-    val passwordValidationResult = logInValidationViewModel.passwordValidation.collectAsStateWithLifecycle()
-    val emailValidationResult = logInValidationViewModel.emailValidation.collectAsStateWithLifecycle()
-
-    val passwordError = passwordValidationResult.value != PasswordValidationResult.CORRECT &&
-            passwordValidationResult.value != PasswordValidationResult.NONE
-    val emailError = emailValidationResult.value != EmailValidationResult.CORRECT &&
-            emailValidationResult.value != EmailValidationResult.NONE
+    val passwordValidationResult by logInValidationViewModel.passwordValidation.collectAsStateWithLifecycle()
 
     var passwordText by remember{ mutableStateOf("") }
+    val passwordError = passwordValidationResult == PasswordValidationResult.ERROR
     var showPassword by remember{ mutableStateOf(false) }
 
+    val emailValidationResult by logInValidationViewModel.emailValidation.collectAsStateWithLifecycle()
     var emailText by remember{ mutableStateOf("") }
+    val emailError = emailValidationResult == EmailValidationResult.ERROR
 
     Box(
         modifier = Modifier
@@ -126,11 +122,11 @@ fun LogInScreen(
                     placeHolder = "Email",
                     leadingIcon = Icons.Filled.Email,
                     trailingIcon = {
-                        if(emailValidationResult.value != EmailValidationResult.NONE){
+                        if(emailValidationResult != EmailValidationResult.NONE){
                             Icon(
-                                imageVector = emailValidationResult.value.icon,
+                                imageVector = emailValidationResult.icon,
                                 contentDescription = "check icon",
-                                tint = emailValidationResult.value.tint,
+                                tint = emailValidationResult.tint,
                                 modifier = Modifier
                                     .padding(end = 11.sdp)
                                     .clip(CircleShape)
@@ -152,15 +148,15 @@ fun LogInScreen(
                     },
                     placeHolder = "Password",
                     leadingIcon = Icons.Filled.Lock,
-                    trailingIcon = { modifier ->
+                    trailingIcon = {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.sdp)
                         ){
-                            if(passwordValidationResult.value != PasswordValidationResult.NONE){
+                            if(passwordValidationResult != PasswordValidationResult.NONE){
                                 Icon(
-                                    imageVector = passwordValidationResult.value.icon,
+                                    imageVector = passwordValidationResult.icon,
                                     contentDescription = "check icon",
-                                    tint = passwordValidationResult.value.tint,
+                                    tint = passwordValidationResult.tint,
                                     modifier = Modifier
                                         .clip(CircleShape)
                                         .size(20.sdp)
@@ -210,9 +206,7 @@ fun LogInScreen(
                     },
                     text = "Log in",
                     corners = RoundedCornerShape(12.sdp),
-                    gradient = Brush.horizontalGradient(
-                        listOf(buttonsColor1, buttonsColor2)
-                    ),
+                    gradient = blueHorizontalGradient,
                 )
 
                 Text(
