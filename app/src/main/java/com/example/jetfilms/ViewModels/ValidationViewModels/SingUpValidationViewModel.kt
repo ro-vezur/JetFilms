@@ -1,15 +1,15 @@
-package com.example.jetfilms.ViewModels
+package com.example.jetfilms.ViewModels.ValidationViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
-import com.example.jetfilms.Helpers.Validators.Validators.Email.EmailValidator
+import com.example.jetfilms.Helpers.Validators.Validators.Registration.Email.EmailValidator
 import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
 import com.example.jetfilms.Helpers.Validators.Results.PasswordConfirmValidationResult
-import com.example.jetfilms.Helpers.Validators.Validators.PasswordConfirm.PasswordConfirmValidator
+import com.example.jetfilms.Helpers.Validators.Validators.Registration.PasswordConfirm.PasswordConfirmValidator
 import com.example.jetfilms.Helpers.Validators.Results.UsernameValidationResult
-import com.example.jetfilms.Helpers.Validators.Validators.Password.PasswordValidator
-import com.example.jetfilms.Helpers.Validators.Validators.Username.UsernameValidator
+import com.example.jetfilms.Helpers.Validators.Validators.Registration.Password.PasswordValidator
+import com.example.jetfilms.Helpers.Validators.Validators.Registration.Username.UsernameValidator
 import com.example.jetfilms.Models.Repositories.Firebase.UsersCollectionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,12 +49,21 @@ class SingUpValidationViewModel @Inject constructor(
         password: String,
         passwordConfirm: String,
     ): Boolean {
-        val passwordValidator = PasswordValidator().invoke(password)
-        val emailValidator = EmailValidator().invoke(email, additionalValidators = {
-            !checkIfEmailIsRegistered(email)
-        })
-        val usernameValidator = UsernameValidator().invoke(name)
-        val passwordConfirmValidator = PasswordConfirmValidator().invoke(password,passwordConfirm)
+        val passwordValidator = PasswordValidator().invoke(
+            password = password,
+            checkIfPasswordNotMatches = false
+        )
+        val emailValidator = EmailValidator().invoke(
+            email = email,
+            checkIfEmailAlreadyRegistered = !checkIfEmailIsRegistered(email)
+        )
+        val usernameValidator = UsernameValidator().invoke(
+            username = name
+        )
+        val passwordConfirmValidator = PasswordConfirmValidator().invoke(
+            password = password,
+            passwordConfirm = passwordConfirm
+        )
 
         viewModelScope.launch {
             _passwordValidation.emit(passwordValidator)
@@ -63,12 +72,10 @@ class SingUpValidationViewModel @Inject constructor(
             _passwordConfirmValidation.emit(passwordConfirmValidator)
         }
 
-        val valid = passwordValidator == PasswordValidationResult.CORRECT &&
+        return passwordValidator == PasswordValidationResult.CORRECT &&
                 emailValidator == EmailValidationResult.CORRECT &&
                 usernameValidator == UsernameValidationResult.CORRECT &&
                 passwordConfirmValidator == PasswordConfirmValidationResult.CORRECT
-
-        return valid
     }
 
     fun setEmailValidationResult(result: EmailValidationResult) = viewModelScope.launch {
@@ -87,7 +94,7 @@ class SingUpValidationViewModel @Inject constructor(
         _passwordConfirmValidation.emit(result)
     }
 
-    suspend fun checkIfEmailIsRegistered(emailToCheck: String): Boolean {
+    private suspend fun checkIfEmailIsRegistered(emailToCheck: String): Boolean {
         return usersCollectionRepository.checkIfEmailIsRegistered(emailToCheck)
     }
 }
