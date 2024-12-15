@@ -1,11 +1,9 @@
 package com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfiguration
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,7 +26,7 @@ import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.View.Components.Buttons.AcceptFiltersButton
-import com.example.jetfilms.View.Components.InputFields.TextInputField
+import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
 import com.example.jetfilms.View.Components.TabRow
 import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
 import com.example.jetfilms.extensions.sdp

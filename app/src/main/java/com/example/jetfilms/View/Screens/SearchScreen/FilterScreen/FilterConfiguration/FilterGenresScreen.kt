@@ -28,12 +28,17 @@ import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.View.Components.Buttons.AcceptFiltersButton
 import com.example.jetfilms.View.Components.Cards.MediaGenreCard
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
+import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.View.states.rememberForeverLazyGridState
+import com.example.jetfilms.ui.theme.hazeStateBlurBackground
+import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import com.example.jetfilms.ui.theme.primaryColor
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun FilterGenresScreen(
@@ -47,6 +52,7 @@ fun FilterGenresScreen(
     val itemsSpacing = 5
 
     val selectedGenres = remember{ mutableStateListOf<MediaGenres>() }
+    val hazeState = remember { HazeState() }
 
     LaunchedEffect(null) {
         selectedGenres.clear()
@@ -59,7 +65,8 @@ fun FilterGenresScreen(
             FiltersTopBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(FILTER_TOP_BAR_HEIGHT.sdp),
+                    .height(FILTER_TOP_BAR_HEIGHT.sdp)
+                    .hazeChild(hazeState),
                 turnBack = {turnBack() },
                 reset = resetFilters,
                 text = "Genres",
@@ -68,8 +75,14 @@ fun FilterGenresScreen(
     ){ innerPadding ->
         Box(
             modifier = Modifier
-                .padding(innerPadding)
+              //  .padding(innerPadding)
                 .fillMaxSize()
+                .haze(
+                    hazeState,
+                    backgroundColor = hazeStateBlurBackground,
+                    tint = hazeStateBlurTint,
+                    blurRadius = HAZE_STATE_BLUR.sdp,
+                )
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
