@@ -1,36 +1,56 @@
 package com.example.jetfilms.View.Screens.Account
 
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
+import com.example.jetfilms.View.Screens.Account.Screens.AccountMainInfoScreen
+import com.example.jetfilms.View.Screens.Account.Screens.ContactFormScreen
+import com.example.jetfilms.View.Screens.Account.Screens.ReChooseInterests.reChooseInterestsNavHost
+import com.example.jetfilms.View.Screens.AccountScreenNavigationHostRoute
 import com.example.jetfilms.ViewModels.UserViewModel
-import com.example.jetfilms.ui.theme.primaryColor
+import com.example.jetfilms.extensions.popBackStackOrIgnore
 
-@Composable
-fun NavigateAccountScreen(
+fun NavGraphBuilder.accountNavigationHost(
+    navController: NavController,
     userViewModel: UserViewModel
 ) {
-    val navController = rememberNavController()
+    val turnBack = { navController.popBackStackOrIgnore() }
 
-    Scaffold(
-        containerColor = primaryColor,
-        modifier = Modifier
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = AccountScreensRoutes.MAIN_INFO_SCREEN.name
-        ){
+    navigation<AccountScreenNavigationHostRoute>(
+        startDestination = AccountScreenNavigationHostRoute.AccountInfoScreenRoute
+    ) {
+        composable<AccountScreenNavigationHostRoute.AccountInfoScreenRoute> {
+            AccountMainInfoScreen(
+                navController = navController,
+                userViewModel = userViewModel
+            )
+        }
 
-            composable(
-                route = AccountScreensRoutes.MAIN_INFO_SCREEN.name
-            ) {
-                AccountMainInfoScreen(
-                    userViewModel = userViewModel
+        composable<AccountScreenNavigationHostRoute.EditAccountScreenRoute> {
+
+        }
+
+        reChooseInterestsNavHost(
+            navController = navController
+        )
+
+        composable<AccountScreenNavigationHostRoute.ContactFormScreenRoute> {
+            val user by userViewModel.user.collectAsStateWithLifecycle()
+
+            user?.let { checkedUser ->
+                ContactFormScreen(
+                    user = checkedUser,
+                    turnBack = turnBack
                 )
             }
         }
+
+        composable<AccountScreenNavigationHostRoute.AboutAppScreenRoute> {
+            
+        }
+
     }
 }

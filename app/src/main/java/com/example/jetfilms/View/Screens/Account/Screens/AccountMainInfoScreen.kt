@@ -44,7 +44,7 @@ import coil.compose.AsyncImage
 import com.example.jetfilms.BASE_BUTTON_WIDTH
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
-import com.example.jetfilms.View.Screens.AccountScreen
+import com.example.jetfilms.View.Screens.AccountScreenNavigationHostRoute
 import com.example.jetfilms.ViewModels.UserViewModel
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
@@ -219,10 +219,10 @@ private fun NavigationButtonCard(data: NavigationButtonClass, onClick: () -> Uni
 }
 
 private enum class NavigationButtonClass(val text: String, val icon: ImageVector, val color: Color,val route: Any) {
-    EDIT_PROFILE("Edit Profile",Icons.Default.Person,Color.Blue,AccountScreen.EditAccountScreen),
-    SETTINGS("Re-Choose Interest",Icons.Default.Interests,Color.Orange,AccountScreen.ReChooseInterest),
-    CONTACT("Contact JetFilms Support",Icons.Default.SupportAgent, purpleColor,AccountScreen.ContactForm),
-    ABOUT("About JetFilms", Icons.Default.Info, darkerGreenColor,AccountScreen.AboutApp)
+    EDIT_PROFILE("Edit Profile",Icons.Default.Person,Color.Blue,AccountScreenNavigationHostRoute.EditAccountScreenRoute),
+    SETTINGS("Re-Choose Interest",Icons.Default.Interests,Color.Orange,AccountScreenNavigationHostRoute.ReChooseInterestNavHost),
+    CONTACT("Contact JetFilms Support",Icons.Default.SupportAgent, purpleColor,AccountScreenNavigationHostRoute.ContactFormScreenRoute),
+    ABOUT("About JetFilms", Icons.Default.Info, darkerGreenColor,AccountScreenNavigationHostRoute.AboutAppScreenRoute)
 }
 
 @Preview
