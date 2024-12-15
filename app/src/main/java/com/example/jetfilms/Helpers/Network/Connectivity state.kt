@@ -8,7 +8,6 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@RequiresApi(Build.VERSION_CODES.S)
 @ExperimentalCoroutinesApi
 @Composable
 fun connectivityState(): State<ConnectionState> {
