@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -39,7 +40,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
@@ -58,7 +61,6 @@ import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun ParticipantDetailsScreen(
     navController: NavController,
@@ -80,6 +82,10 @@ fun ParticipantDetailsScreen(
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val filmographyColumns = 3f
+
     val scope = rememberCoroutineScope()
 
     Box(
@@ -87,8 +93,7 @@ fun ParticipantDetailsScreen(
             .fillMaxSize()
     ) {
         LazyColumn(
-           // columns = GridCells.Fixed(3),
-          //  horizontalArrangement = Arrangement.spacedBy(7.sdp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(7.sdp),
             contentPadding = PaddingValues(horizontal = 0.sdp),
             userScrollEnabled = true,
@@ -228,18 +233,17 @@ fun ParticipantDetailsScreen(
             if(tabPagerState.currentPage == 0){
                 items(participantDisplay.filmography.cast.sortedByDescending { it.popularity }.chunked(3)){ chunk ->
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.sdp),
                         modifier = Modifier
-                            .padding(horizontal = 7.sdp)
                             .fillMaxWidth()
                     ) {
                         chunk.forEach { movie ->
                             MovieCard(
                                 movie = movie,
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(8.sdp))
+                                    .padding(horizontal = 2.sdp)
+                                    .width(screenWidth / filmographyColumns)
                                     .height(155.sdp)
-                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.sdp))
                                     .clickable { selectMovie(movie.id) }
                             )
                         }

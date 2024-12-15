@@ -39,9 +39,9 @@ fun BiographyScreen(participantDisplay: DetailedParticipantDisplay) {
         modifier = Modifier
             .fillMaxSize()
     ){
-        Spacer(modifier = Modifier.height(16.sdp))
 
-        ExpandableText(
+        if(participantResponse.biography.isNotBlank()){
+            ExpandableText(
                 text = decodeStringWithSpecialCharacter(participantResponse.biography),
                 minimizedMaxLines = 8,
                 textStyle = TextStyle(
@@ -57,7 +57,8 @@ fun BiographyScreen(participantDisplay: DetailedParticipantDisplay) {
                 ),
                 modifier = Modifier
                     .padding(horizontal = 14.sdp)
-        )
+            )
+        }
 
 
         if(participantDisplay.images.profiles.isNotEmpty()) {
