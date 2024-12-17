@@ -28,8 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
-import com.example.jetfilms.Helpers.Validators.Results.FeedbackValidationResult
-import com.example.jetfilms.Helpers.Validators.Results.UsernameValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.TEXT_FIELD_MAX_LENGTH
 import com.example.jetfilms.View.Components.Buttons.TextButton
@@ -49,14 +48,14 @@ fun ContactFormScreen(
 ) {
     val usernameValidationResult by submitContactFormValidationViewModel.usernameValidation.collectAsStateWithLifecycle()
     var username by remember { mutableStateOf("${user.firstName} ${user.lastName}") }
-    val userError = usernameValidationResult == UsernameValidationResult.ERROR
+    val userError = usernameValidationResult == ValidationResult.ERROR
 
     var email by remember { mutableStateOf(user.email) }
     val emailError by remember{ mutableStateOf(false) }
 
     val feedbackValidationResult by submitContactFormValidationViewModel.feedBackValidation.collectAsStateWithLifecycle()
     var feedback by remember { mutableStateOf("") }
-    val feedbackError = feedbackValidationResult == FeedbackValidationResult.ERROR
+    val feedbackError = feedbackValidationResult == ValidationResult.ERROR
 
     Scaffold(
         containerColor = primaryColor,
@@ -85,12 +84,12 @@ fun ContactFormScreen(
                     height = (BASE_BUTTON_HEIGHT + 4).sdp,
                     onTextChange = { value ->
                         username = value
-                        submitContactFormValidationViewModel.setUsernameValidationResult(UsernameValidationResult.NONE)
+                        submitContactFormValidationViewModel.setUsernameValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "User name",
                     leadingIcon = Icons.Filled.Person,
                     trailingIcon = {
-                        if(usernameValidationResult != UsernameValidationResult.NONE){
+                        if(usernameValidationResult != ValidationResult.NONE){
                             Icon(
                                 imageVector = usernameValidationResult.icon,
                                 contentDescription = "check icon",
@@ -124,9 +123,9 @@ fun ContactFormScreen(
                     text = feedback,
                     onTextChange = { value ->
                         feedback = value
-                        submitContactFormValidationViewModel.setFeedbackValidationResult(FeedbackValidationResult.NONE)
+                        submitContactFormValidationViewModel.setFeedbackValidationResult(ValidationResult.NONE)
                         if(value.length > TEXT_FIELD_MAX_LENGTH) {
-                            submitContactFormValidationViewModel.setFeedbackValidationResult(FeedbackValidationResult.ERROR)
+                            submitContactFormValidationViewModel.setFeedbackValidationResult(ValidationResult.ERROR)
                         }
                     },
                     height = (BASE_BUTTON_HEIGHT + 4).sdp,
@@ -140,7 +139,7 @@ fun ContactFormScreen(
                     singleLine = false,
                     placeHolder = "Provide Feedback",
                     trailingIcon = {
-                        if(feedbackValidationResult != FeedbackValidationResult.NONE){
+                        if(feedbackValidationResult != ValidationResult.NONE){
                             Icon(
                                 imageVector = feedbackValidationResult.icon,
                                 contentDescription = "check icon",
