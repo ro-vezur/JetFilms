@@ -2,7 +2,7 @@ package com.example.jetfilms.View.Screens.Start.Select_genres
 
 enum class MediaGenres(val genre:String, val imageUrl:String, val genreId: Int) {
     ALL("All","https://s.studiobinder.com/wp-content/uploads/2022/11/Movie-Genres-Types-of-Movies-List-of-Genres-and-Categories-Featured.jpg",0),
-    ACTION("Action","https://www.arthipo.com/image/cache/catalog/poster/movie/1555-2059/pfilm1840-john-wick-2-743x1100.webp",28),
+    ACTION("Action","https://i.ytimg.com/vi/8nUIlVdcM5c/maxresdefault.jpg",28),
     ADVENTURE("Adventure","https://preview.redd.it/the-secret-life-of-walter-mitty-was-released-in-theaters-on-v0-p5unz4zfs88c1.jpeg?width=1080&crop=smart&auto=webp&s=37db1970344878997990adb1d4ffc9d103c1b129",12),
     COMEDY("Comedy","https://i0.wp.com/www.arrobanerd.com.br/wp-content/uploads/2021/06/freeguy-poster2-dest.jpeg?fit=800%2C450&ssl=1",35),
     CRIME("Crime","https://i0.wp.com/detectiveclub.com.ua/wp-content/uploads/gostry-kozyrky-mini-4.jpg?fit=928%2C523&ssl=1&resize=1280%2C720",80),

@@ -78,9 +78,7 @@ fun MediaGenreCard(
                 .align(Alignment.Center)
                 .width((mediaGenre.genre.length * 8).sdp)
                 .height(23.sdp)
-                .clip(RoundedCornerShape(9.sdp))
-                .background(Color.Gray.copy(0.4f))
-
+                .background(Color.DarkGray.copy(0.2f), CircleShape)
         ){
             Text(
                 text = mediaGenre.genre,

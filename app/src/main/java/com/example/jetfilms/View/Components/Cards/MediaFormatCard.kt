@@ -18,28 +18,31 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
+import com.example.jetfilms.ui.theme.hazeStateBlurBackground
+import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import com.primex.core.ExperimentalToolkitApi
-import com.primex.core.blur.legacyBackgroundBlur
-import com.primex.core.noise
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 
 @OptIn(ExperimentalToolkitApi::class)
 @Composable
-fun MediaFormatCard(mediaFormat: MediaFormats, selected: Boolean, onClick: () -> Unit) {
+fun MediaFormatCard(mediaFormat: MediaCategories, selected: Boolean, onClick: () -> Unit) {
     val typography = MaterialTheme.typography
+
 
     Box(
         modifier = Modifier
@@ -69,8 +72,7 @@ fun MediaFormatCard(mediaFormat: MediaFormats, selected: Boolean, onClick: () ->
                 .align(Alignment.Center)
                 .width((mediaFormat.format.length * 11).sdp)
                 .height(24.sdp)
-                .clip(RoundedCornerShape(9.sdp))
-                .background(Color.White.copy(0.4f))
+                .background(Color.Gray.copy(0.2f), CircleShape)
         ){
             Text(
                 text = mediaFormat.format,
