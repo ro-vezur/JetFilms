@@ -1,7 +1,5 @@
 package com.example.jetfilms.View.Screens.ParticipantDetailsPackage
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,9 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -43,8 +39,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.View.Components.Cards.NeonCard
@@ -54,6 +51,8 @@ import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.View.Components.Cards.MovieCard
 import com.example.jetfilms.Models.DTOs.animatedGradientTypes
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantResponse
+import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedParticipantViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -64,9 +63,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun ParticipantDetailsScreen(
     navController: NavController,
-    participantDisplay: DetailedParticipantDisplay,
+    participantResponse: DetailedParticipantResponse,
     selectMovie: (id: Int) -> Unit
 ) {
+    val detailedParticipantViewModel = hiltViewModel<DetailedParticipantViewModel,DetailedParticipantViewModel.DetailedParticipantViewModelFactory> { factory ->
+        factory.create(participantResponse.id)
+    }
+
+    val participantFilmography by detailedParticipantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
+    val participantImages by detailedParticipantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
+
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
@@ -75,12 +81,7 @@ fun ParticipantDetailsScreen(
         "Biography",
     )
 
-    val participantResponse = participantDisplay.participantResponse
-
-    val scrollState = rememberScrollState()
     val tabPagerState = rememberPagerState(pageCount = {tabs.size})
-
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
@@ -190,8 +191,6 @@ fun ParticipantDetailsScreen(
                         var selectedColor1 by remember { mutableStateOf(buttonsColor1) }
                         var selectedColor2 by remember { mutableStateOf(buttonsColor2) }
 
-                        var unselectedColor by remember { mutableStateOf(Color.DarkGray) }
-
                         if (selected) {
                             selectedColor1 = buttonsColor1
                             selectedColor2 = buttonsColor2
@@ -231,7 +230,7 @@ fun ParticipantDetailsScreen(
             }
 
             if(tabPagerState.currentPage == 0){
-                items(participantDisplay.filmography.cast.sortedByDescending { it.popularity }.chunked(3)){ chunk ->
+                items(participantFilmography.cast.sortedByDescending { movie -> movie.popularity }.chunked(3)){ chunk ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -249,12 +248,18 @@ fun ParticipantDetailsScreen(
                         }
                     }
                 }
+
             }
 
             item {
-
                 AnimatedVisibility(visible = tabPagerState.currentPage == 1) {
-                    BiographyScreen(participantDisplay = participantDisplay)
+                    BiographyScreen(
+                        participantDisplay = DetailedParticipantDisplay(
+                            participantResponse = participantResponse,
+                            filmography = participantFilmography,
+                            images = participantImages,
+                        )
+                    )
                 }
             }
         }
@@ -270,34 +275,5 @@ fun ParticipantDetailsScreen(
             modifier = Modifier
                 .padding(start = 8.sdp, top = 34.sdp)
         )
-    }
-}
-
-@Composable
-private fun TabContent(
-    modifier: Modifier = Modifier,
-    pagerState: PagerState,
-    participantDisplay: DetailedParticipantDisplay,
-    selectMovie: (id: Int) -> Unit,
-) {
-    val participantResponse = participantDisplay.participantResponse
-
-    HorizontalPager(
-        state = pagerState,
-        modifier = modifier,
-        userScrollEnabled = false
-    ) { index ->
-        when (index) {
-            0 -> {
-                FilmographyScreen(
-                    participantDisplay = participantDisplay,
-                    selectMovie = selectMovie
-                )
-            }
-
-            1 -> {
-                BiographyScreen(participantDisplay = participantDisplay)
-            }
-        }
     }
 }

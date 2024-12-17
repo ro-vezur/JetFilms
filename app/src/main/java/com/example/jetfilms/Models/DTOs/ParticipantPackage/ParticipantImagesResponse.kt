@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ParticipantImagesResponse(
-    val id: Int,
-    val profiles: List<ParticipantImage>
+    val id: Int = 0,
+    val profiles: List<ParticipantImage> = listOf()
 )
 
 @Serializable
