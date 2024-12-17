@@ -1,11 +1,9 @@
 package com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfiguration
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import com.example.jetfilms.View.Components.Cards.MediaFormatCard
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
-import com.example.jetfilms.View.Components.Buttons.AcceptFiltersButton
+import com.example.jetfilms.View.Components.Buttons.AcceptMultipleSelectionButton
 import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.primaryColor
@@ -32,13 +30,13 @@ import com.example.jetfilms.ui.theme.primaryColor
 fun FilterCategoriesScreen(
     turnBack: () -> Unit,
     resetFilters: () -> Unit,
-    usedCategories: List<MediaFormats>,
-    acceptNewCategories: (genres:List<MediaFormats>) -> Unit,
+    usedCategories: List<MediaCategories>,
+    acceptNewCategories: (genres:List<MediaCategories>) -> Unit,
 ) {
 
     val itemsSpacing = 15
 
-    val selectedCategories = remember{ mutableStateListOf<MediaFormats>() }
+    val selectedCategories = remember{ mutableStateListOf<MediaCategories>() }
 
     LaunchedEffect(null) {
         selectedCategories.clear()
@@ -71,7 +69,7 @@ fun FilterCategoriesScreen(
                     .padding(bottom = 90.sdp)
             ) {
 
-                items(MediaFormats.entries) { format ->
+                items(MediaCategories.entries) { format ->
                     val selected = selectedCategories.contains(format)
                     MediaFormatCard(
                         mediaFormat = format,
@@ -89,7 +87,7 @@ fun FilterCategoriesScreen(
                 }
             }
 
-            AcceptFiltersButton(
+            AcceptMultipleSelectionButton(
                 isEmpty = selectedCategories.isEmpty(),
                 isDataSameAsBefore = selectedCategories.toList().sorted() == usedCategories,
                 onClick = {

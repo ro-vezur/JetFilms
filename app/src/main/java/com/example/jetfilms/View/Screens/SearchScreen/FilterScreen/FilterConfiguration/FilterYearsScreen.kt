@@ -25,7 +25,7 @@ import com.example.jetfilms.BASE_BUTTON_WIDTH
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
-import com.example.jetfilms.View.Components.Buttons.AcceptFiltersButton
+import com.example.jetfilms.View.Components.Buttons.AcceptMultipleSelectionButton
 import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
 import com.example.jetfilms.View.Components.TabRow
 import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
@@ -108,7 +108,7 @@ fun FilterYearsScreen(
 
 
 
-            AcceptFiltersButton(
+            AcceptMultipleSelectionButton(
                 isEmpty = if(pagerState.currentPage == 0) yearsFilterToSet.isBlank()
                 else filterFromYearToSet.isBlank() || filterToYearToSet.isBlank(),
                 isDataSameAsBefore = if(pagerState.currentPage == 0) yearsFilterToSet == usedYearsFilter.toString()

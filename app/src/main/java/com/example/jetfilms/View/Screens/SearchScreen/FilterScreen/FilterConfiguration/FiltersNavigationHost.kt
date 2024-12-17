@@ -2,6 +2,8 @@ package com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfig
 
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -11,32 +13,29 @@ import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.View.Screens.ExploreNavigationHost
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.ViewModels.FilterViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
 
 
 fun NavGraphBuilder.filterNavGraph(
     navController: NavController,
-    filterViewModel: FilterViewModel,
 ) {
     navigation<ExploreNavigationHost.FilterConfigurationNavigationHost>(
-        startDestination = ExploreNavigationHost.FilterConfigurationNavigationHost.AcceptFiltersScreenRoute
+        startDestination = ExploreNavigationHost.FilterConfigurationNavigationHost.AcceptFiltersRoute
     ){
         val turnBack = {
             navController.popBackStackOrIgnore()
         }
 
-        fun resetFilter() {
-            filterViewModel.setSelectedSort(null)
-            filterViewModel.setFilteredGenres(BASE_MEDIA_GENRES)
-            filterViewModel.setFilteredCategories(MediaFormats.entries.toList())
-            filterViewModel.setFilteredCountries(getCountryList())
-            filterViewModel.setFilteredYears(0)
-            filterViewModel.setFilteredYearsRange(1888,DateFormats.getCurrentYear())
-        }
 
-        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.AcceptFiltersScreenRoute> {
+        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.AcceptFiltersRoute> { backstackEntry ->
+            val parentEntry = remember(backstackEntry) {
+                navController.getBackStackEntry(ExploreNavigationHost)
+            }
+
+            val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
+
             val selectedSort by filterViewModel.selectedSort.collectAsStateWithLifecycle()
             val genresToSelect by filterViewModel.genresFilter.collectAsStateWithLifecycle()
             val categoriesToSelect by filterViewModel.categoriesFilter.collectAsStateWithLifecycle()
@@ -52,7 +51,7 @@ fun NavGraphBuilder.filterNavGraph(
 
             AcceptFiltersScreen(
                 turnBack = turnBack,
-                resetFilters = { resetFilter() },
+                resetFilters = { filterViewModel.resetFilters() },
                 selectSortType = { newSortType -> filterViewModel.setSelectedSort(newSortType)},
                 navController = navController,
                 selectedSortType = selectedSort,
@@ -63,7 +62,7 @@ fun NavGraphBuilder.filterNavGraph(
                 yearsFilterRange = yearsRangeMap,
             ) {
 
-                navController.navigate(ExploreNavigationHost.FilteredResultsScreenRoute)
+                navController.navigate(ExploreNavigationHost.FilteredResultsRoute)
 
                 filterViewModel.setSelectedSort(selectedSort)
                 filterViewModel.setFilteredGenres(genresToSelect)
@@ -81,12 +80,17 @@ fun NavGraphBuilder.filterNavGraph(
             }
         }
 
-        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.FilterGenresScreenRoute> {
+        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.FilterGenresRoute> { backstackEntry ->
+            val parentEntry = remember(backstackEntry) {
+                navController.getBackStackEntry(ExploreNavigationHost)
+            }
+
+            val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
             val genresToSelect by filterViewModel.genresFilter.collectAsStateWithLifecycle()
 
             FilterGenresScreen(
                 turnBack = turnBack,
-                resetFilters = { resetFilter() },
+                resetFilters = { filterViewModel.resetFilters() },
                 usedGenres = genresToSelect,
                 acceptNewGenres = { genres ->
                     filterViewModel.setFilteredGenres(genres)
@@ -94,12 +98,17 @@ fun NavGraphBuilder.filterNavGraph(
             )
         }
 
-        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCategoriesScreenRoute> {
+        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCategoriesRoute> { backstackEntry ->
+            val parentEntry = remember(backstackEntry) {
+                navController.getBackStackEntry(ExploreNavigationHost)
+            }
+
+            val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
             val categoriesToSelect by filterViewModel.categoriesFilter.collectAsStateWithLifecycle()
 
             FilterCategoriesScreen(
                 turnBack = turnBack,
-                resetFilters = { resetFilter() },
+                resetFilters = { filterViewModel.resetFilters() },
                 usedCategories = categoriesToSelect,
                 acceptNewCategories = { categories ->
                     filterViewModel.setFilteredCategories(categories)
@@ -107,12 +116,17 @@ fun NavGraphBuilder.filterNavGraph(
             )
         }
 
-        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCountriesScreenRoute> {
+        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCountriesRoute> { backstackEntry ->
+            val parentEntry = remember(backstackEntry) {
+                navController.getBackStackEntry(ExploreNavigationHost)
+            }
+
+            val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
             val countriesToSelect by filterViewModel.filteredCountries.collectAsStateWithLifecycle()
 
             FilterCountriesScreen(
                 turnBack = turnBack,
-                resetFilters = {resetFilter()},
+                resetFilters = {filterViewModel.resetFilters()},
                 usedCountries = countriesToSelect,
                 acceptNewCountries = { countries ->
                     filterViewModel.setFilteredCountries(countries)
@@ -120,7 +134,12 @@ fun NavGraphBuilder.filterNavGraph(
             )
         }
 
-        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.FilterYearsScreenRoute> {
+        composable<ExploreNavigationHost.FilterConfigurationNavigationHost.FilterYearsRoute> { backstackEntry ->
+            val parentEntry = remember(backstackEntry) {
+                navController.getBackStackEntry(ExploreNavigationHost)
+            }
+
+            val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
             val yearToSelect by filterViewModel.filteredYears.collectAsStateWithLifecycle()
             val filterFromYear by filterViewModel.filterFromYear.collectAsStateWithLifecycle()
             val filterToYear by filterViewModel.filterToYear.collectAsStateWithLifecycle()
@@ -132,11 +151,10 @@ fun NavGraphBuilder.filterNavGraph(
 
             FilterYearsScreen(
                 turnBack = turnBack,
-                resetFilters = { resetFilter() },
+                resetFilters = { filterViewModel.resetFilters() },
                 usedYearsFilter = yearToSelect,
                 usedYearRangeFilter = yearRangeMap,
                 acceptNewYearsFilter = { year, yearRange ->
-                    Log.d("year",year.toString())
 
                     filterViewModel.setFilteredYears(year)
                     filterViewModel.setFilteredYearsRange(
@@ -149,9 +167,3 @@ fun NavGraphBuilder.filterNavGraph(
 
     }
 }
-/*
-val yearRangeMap = mapOf(
-                "fromYear" to filterFromYear,
-                "toYear" to filterToYear,
-            )
- */

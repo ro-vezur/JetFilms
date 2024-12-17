@@ -1,7 +1,5 @@
 package com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfiguration
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +38,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
-import com.example.jetfilms.View.Components.Buttons.AcceptFiltersButton
+import com.example.jetfilms.View.Components.Buttons.AcceptMultipleSelectionButton
 import com.example.jetfilms.View.Components.Gradient.animatedGradient
 import com.example.jetfilms.View.Components.InputFields.SearchField
 import com.example.jetfilms.Models.DTOs.animatedGradientTypes
@@ -177,7 +175,7 @@ fun FilterCountriesScreen(
                 }
             }
 
-            AcceptFiltersButton(
+            AcceptMultipleSelectionButton(
                 isEmpty = selectedCountries.isEmpty(),
                 isDataSameAsBefore = selectedCountries.toList().sorted() == usedCountries,
                 onClick = {

@@ -34,7 +34,7 @@ import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
 import com.example.jetfilms.View.Screens.ExploreNavigationHost
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
@@ -49,7 +49,7 @@ fun AcceptFiltersScreen(
     navController: NavController,
     selectedSortType: SortTypes?,
     genresToSelect: List<MediaGenres>,
-    categoriesToSelect: List<MediaFormats>,
+    categoriesToSelect: List<MediaCategories>,
     countriesToSelect: List<String>,
     yearsFilterToSelect: Int,
     yearsFilterRange: Map<String, String>,
@@ -96,10 +96,10 @@ fun AcceptFiltersScreen(
     else yearsFilterToSelect.toString()
 
     val filters = listOf(
-        Filter("Categories",selectedCategoriesTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCategoriesScreenRoute),
-        Filter("Genres",selectedGenresTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterGenresScreenRoute),
-        Filter("Country",selectedCountriesTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCountriesScreenRoute),
-        Filter("Year",yearFilterText,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterYearsScreenRoute),
+        Filter("Categories",selectedCategoriesTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCategoriesRoute),
+        Filter("Genres",selectedGenresTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterGenresRoute),
+        Filter("Country",selectedCountriesTextList,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterCountriesRoute),
+        Filter("Year",yearFilterText,ExploreNavigationHost.FilterConfigurationNavigationHost.FilterYearsRoute),
     )
 
     val scrollState = rememberForeverScrollState(key = "filter categories")

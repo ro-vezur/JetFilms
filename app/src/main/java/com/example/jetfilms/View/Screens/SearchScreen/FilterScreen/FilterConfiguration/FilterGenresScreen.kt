@@ -1,7 +1,5 @@
 package com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfiguration
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,7 +23,7 @@ import androidx.compose.ui.Modifier
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
-import com.example.jetfilms.View.Components.Buttons.AcceptFiltersButton
+import com.example.jetfilms.View.Components.Buttons.AcceptMultipleSelectionButton
 import com.example.jetfilms.View.Components.Cards.MediaGenreCard
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
@@ -138,7 +136,7 @@ fun FilterGenresScreen(
                 }
             }
 
-            AcceptFiltersButton(
+            AcceptMultipleSelectionButton(
                 isEmpty = selectedGenres.isEmpty(),
                 isDataSameAsBefore = selectedGenres.toList().sorted() == usedGenres,
                 onClick = {

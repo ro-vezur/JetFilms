@@ -12,7 +12,7 @@ import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.Models.Repositories.Api.FilterRepository
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +27,7 @@ class FilterViewModel @Inject constructor(
     private val filterRepository: FilterRepository,
 ): ViewModel() {
 
-    private val _categoriesFilter = MutableStateFlow(MediaFormats.entries.toList())
+    private val _categoriesFilter = MutableStateFlow(MediaCategories.entries.toList())
     val categoriesFilter = _categoriesFilter.asStateFlow()
 
     private val _genresFilter = MutableStateFlow(BASE_MEDIA_GENRES)
@@ -58,7 +58,7 @@ class FilterViewModel @Inject constructor(
 
     fun setFilteredMedia(
         sortType: SortTypes?,
-        categories: List<MediaFormats>,
+        categories: List<MediaCategories>,
         countries: List<String>,
         genres: List<MediaGenres>,
         year: Int,
@@ -93,7 +93,7 @@ class FilterViewModel @Inject constructor(
         _genresFilter.emit(genres)
     }
 
-    fun setFilteredCategories(categories:List<MediaFormats>) = viewModelScope.launch {
+    fun setFilteredCategories(categories:List<MediaCategories>) = viewModelScope.launch {
         _categoriesFilter.emit(categories)
     }
 
@@ -114,5 +114,14 @@ class FilterViewModel @Inject constructor(
             _filterFromYear.emit("$fromYear-01-01")
             _filterToYear.emit("$toYear-12-31")
         }
+    }
+
+    fun resetFilters() = viewModelScope.launch {
+        setSelectedSort(null)
+        setFilteredGenres(BASE_MEDIA_GENRES)
+        setFilteredCategories(MediaCategories.entries.toList())
+        setFilteredCountries(getCountryList())
+        setFilteredYears(0)
+        setFilteredYearsRange(1888,DateFormats.getCurrentYear())
     }
 }

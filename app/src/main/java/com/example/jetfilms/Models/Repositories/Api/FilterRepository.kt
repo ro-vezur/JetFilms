@@ -13,7 +13,7 @@ import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 import com.example.jetfilms.Helpers.Pagination.UnifiedPagingSource
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +23,7 @@ class FilterRepository @Inject constructor(
 ) {
     fun getPaginatedFilteredMedia(
         sortType: SortTypes?,
-        categories: List<MediaFormats>,
+        categories: List<MediaCategories>,
         countries: List<String>,
         genres: List<MediaGenres>,
         year: Int,
