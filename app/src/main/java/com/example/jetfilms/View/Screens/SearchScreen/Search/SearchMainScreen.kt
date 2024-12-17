@@ -1,7 +1,5 @@
 package com.example.jetfilms.View.Screens.SearchScreen.Search
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.fadeIn
@@ -47,7 +45,7 @@ import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.View.Components.LazyComponents.LazyGrid.UnifiedMediaVerticalLazyGrid
 import com.example.jetfilms.View.Screens.SearchScreen.SearchScreenComponents.FilterButton
 import com.example.jetfilms.View.Screens.SearchScreen.SearchScreenComponents.SearchSuggestionsLazyColumn
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.ViewModels.SearchHistoryViewModel
 import com.example.jetfilms.ViewModels.SearchViewModel
 import com.example.jetfilms.extensions.sdp
@@ -61,8 +59,8 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SearchScreen(
-    selectMedia: (id: Int, type: MediaFormats) -> Unit,
-    seeAllMedia: (type: MediaFormats, query: String) -> Unit,
+    selectMedia: (id: Int, type: MediaCategories) -> Unit,
+    seeAllMedia: (type: MediaCategories, query: String) -> Unit,
     onFilterButtonClick: () -> Unit,
     searchHistoryViewModel: SearchHistoryViewModel,
     searchViewModel: SearchViewModel = hiltViewModel(),
@@ -168,12 +166,12 @@ fun SearchScreen(
 
                                                 searchHistoryViewModel.insertSearchedMediaToDb(searchedMedia )
                                                 searchHistoryViewModel.addMovieToFlow(id)
-                                                selectMedia(id,MediaFormats.MOVIE)
+                                                selectMedia(id,MediaCategories.MOVIE)
                                             }
                                         }
                                     },
                                     moviesList = it.results,
-                                    onSeeAllClick = { seeAllMedia(MediaFormats.MOVIE,searchText) },
+                                    onSeeAllClick = { seeAllMedia(MediaCategories.MOVIE,searchText) },
                                     showSeeAllButton = it.totalResults > PAGE_SIZE,
                                     imageModifier = Modifier
                                         .clip(RoundedCornerShape(6.sdp))
@@ -192,11 +190,11 @@ fun SearchScreen(
 
                                             searchHistoryViewModel.insertSearchedMediaToDb(searchedMedia)
                                             searchHistoryViewModel.addSeriesToFlow(id)
-                                            selectMedia(id,MediaFormats.SERIES)
+                                            selectMedia(id,MediaCategories.SERIES)
                                         }
                                     },
                                     serialsList = it.results,
-                                    onSeeAllClick = { seeAllMedia(MediaFormats.SERIES,searchText) },
+                                    onSeeAllClick = { seeAllMedia(MediaCategories.SERIES,searchText) },
                                     showSeeAllButton = it.totalResults > PAGE_SIZE,
                                     imageModifier = Modifier
                                         .clip(RoundedCornerShape(6.sdp))

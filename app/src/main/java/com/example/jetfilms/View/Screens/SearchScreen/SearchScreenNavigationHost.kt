@@ -1,34 +1,36 @@
 package com.example.jetfilms.View.Screens.SearchScreen
 
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.jetfilms.BASE_MEDIA_GENRES
-import com.example.jetfilms.Helpers.Countries.getCountryList
-import com.example.jetfilms.View.Screens.ExploreScreen
+import com.example.jetfilms.View.Screens.ExploreNavigationHost
 import com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfiguration.filterNavGraph
 import com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterResults.FilteredResultsScreen
 import com.example.jetfilms.View.Screens.SearchScreen.Search.SearchScreen
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.ViewModels.FilterViewModel
 import com.example.jetfilms.ViewModels.SearchHistoryViewModel
-import com.example.jetfilms.ViewModels.SharedFilterConfigurationViewModel
 
 fun NavGraphBuilder.exploreScreen(
-    screensNavController: NavController,
+    navController: NavController,
     showBottomBar: (show: Boolean) -> Unit,
-    selectMedia: (id: Int, type: MediaFormats) -> Unit,
-    seeAllMedia: (type: MediaFormats, query: String) -> Unit,
-    filterViewModel: FilterViewModel,
+    selectMedia: (id: Int, type: MediaCategories) -> Unit,
+    seeAllMedia: (type: MediaCategories, query: String) -> Unit,
     searchHistoryViewModel: SearchHistoryViewModel,
-    sharedFilterConfigurationViewModel: SharedFilterConfigurationViewModel,
 ) {
-    navigation<ExploreScreen>(
-        startDestination = ExploreScreen.SearchScreen,
+    navigation<ExploreNavigationHost>(
+        startDestination = ExploreNavigationHost.SearchRoute,
     ) {
-        composable<ExploreScreen.SearchScreen> {
+        composable<ExploreNavigationHost.SearchRoute> { backstackEntry ->
+            val parentEntry = remember(backstackEntry) {
+                navController.getBackStackEntry(ExploreNavigationHost)
+            }
+
+            val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
             val filteredResults = filterViewModel.filteredResults.collectAsLazyPagingItems()
 
             showBottomBar(true)
@@ -38,47 +40,41 @@ fun NavGraphBuilder.exploreScreen(
                 seeAllMedia = seeAllMedia,
                 onFilterButtonClick = {
                     if (filteredResults.itemCount != 0) {
-                        screensNavController.navigate(ExploreScreen.FilteredResults)
+                        navController.navigate(ExploreNavigationHost.FilteredResultsRoute)
                     } else {
-                        screensNavController.navigate(ExploreScreen.FilterConfiguration)
+                        navController.navigate(ExploreNavigationHost.FilterConfigurationNavigationHost)
                     }
                 },
-                searchHistoryViewModel =searchHistoryViewModel
+                searchHistoryViewModel = searchHistoryViewModel
             )
         }
 
-        composable<ExploreScreen.FilteredResults> {
+        composable<ExploreNavigationHost.FilteredResultsRoute> { backstackEntry ->
+            val parentEntry = remember(backstackEntry) {
+                navController.getBackStackEntry(ExploreNavigationHost)
+            }
+
+            val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
             val filteredResults = filterViewModel.filteredResults.collectAsLazyPagingItems()
 
             showBottomBar(true)
 
             FilteredResultsScreen(
                 filteredResults = filteredResults,
-                turnBack = { screensNavController.navigate(ExploreScreen.SearchScreen) },
+                turnBack = { navController.navigate(ExploreNavigationHost.SearchRoute) },
                 reset = {
-                    sharedFilterConfigurationViewModel.setSortType(null)
-                    sharedFilterConfigurationViewModel.setGenres(BASE_MEDIA_GENRES)
-                    sharedFilterConfigurationViewModel.setCategories(MediaFormats.entries.toList())
-                    sharedFilterConfigurationViewModel.setCountries(getCountryList())
-
-                    filterViewModel.setSelectedSort(null)
-                    filterViewModel.setFilteredGenres(BASE_MEDIA_GENRES)
-                    filterViewModel.setFilteredCategories(MediaFormats.entries.toList())
-                    filterViewModel.setFilteredCountries(getCountryList())
-
-                    screensNavController.navigate(ExploreScreen.FilterConfiguration)
+                    filterViewModel.resetFilters()
+                    navController.navigate(ExploreNavigationHost.FilterConfigurationNavigationHost)
                 },
                 selectMedia = selectMedia,
                 onFilterButtonClick = {
-                    screensNavController.navigate(ExploreScreen.FilterConfiguration)
+                    navController.navigate(ExploreNavigationHost.FilterConfigurationNavigationHost)
                 }
             )
         }
 
         filterNavGraph(
-            navController = screensNavController,
-            filterViewModel = filterViewModel,
-         //   sharedFilterConfigurationViewModel = sharedFilterConfigurationViewModel
+            navController = navController,
         )
     }
 }
