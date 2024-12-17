@@ -25,6 +25,7 @@ import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import com.example.jetfilms.ui.theme.primaryColor
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
+import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun FavoriteMediaListScreen(
@@ -41,9 +42,10 @@ fun FavoriteMediaListScreen(
         containerColor = primaryColor,
         topBar = {
             BaseTopAppBar(
+                modifier = Modifier
+                    .hazeChild(hazeState),
                 headerText = "Favorite Media",
                 turnBack = turnBack,
-                hazeState = hazeState
             )
         }
     ) { innerPadding ->

@@ -11,7 +11,7 @@ import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
 import com.example.jetfilms.Models.Repositories.Api.SeriesRepository
 import com.example.jetfilms.Models.Repositories.Firebase.UsersCollectionRepository
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -49,7 +49,7 @@ class FavoriteMediaViewModel @AssistedInject constructor(
 
         _favoriteMediaList.emit(
             newFavoriteMediaList.sortedByDescending { it.addedDateMillis }.map { favoriteMedia ->
-                if(favoriteMedia.mediaFormat == MediaFormats.MOVIE) {
+                if(favoriteMedia.mediaFormat == MediaCategories.MOVIE) {
                     convertFavoriteMovieToUnifiedMedia(favoriteMedia)
                 } else {
                     convertFavoriteSeriesToUnifiedMedia(favoriteMedia)
