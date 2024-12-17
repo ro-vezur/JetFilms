@@ -3,18 +3,18 @@ package com.example.jetfilms.Helpers.Pagination
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialsResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 import com.example.jetfilms.Models.DTOs.Filters.SortTypes
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.MovieDataToUnifiedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.SeriesDataToUnifiedMedia
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.MovieDataToUnifiedMedia
+import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.SeriesDataToUnifiedMedia
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 
 class UnifiedPagingSource(
     val getMoviesResponse: suspend (page: Int) -> MoviesResponse,
-    val getSerialsResponse: suspend (page: Int) -> SimplifiedSerialsResponse,
+    val getSerialsResponse: suspend (page: Int) -> SeriesResponse,
     val sortType: SortTypes?,
-    val categories: List<MediaFormats>,
+    val categories: List<MediaCategories>,
     val pagesLimit: Int = Int.MAX_VALUE
 ) : PagingSource<Int, UnifiedMedia>() {
     override fun getRefreshKey(state: PagingState<Int, UnifiedMedia>): Int? {
@@ -33,14 +33,14 @@ class UnifiedPagingSource(
             val serialsResponse = getSerialsResponse(page)
             val unifiedMediaList = mutableListOf<UnifiedMedia>()
 
-            if(categories.contains(MediaFormats.MOVIE)) {
+            if(categories.contains(MediaCategories.MOVIE)) {
                 unifiedMediaList.addAll(moviesResponse.results.map {
                     MovieDataToUnifiedMedia(it)
                 }
                 )
             }
 
-            if(categories.contains(MediaFormats.SERIES)) {
+            if(categories.contains(MediaCategories.SERIES)) {
                 unifiedMediaList.addAll(serialsResponse.results.map {
                     SeriesDataToUnifiedMedia(it)
                 }

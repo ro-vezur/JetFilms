@@ -1,6 +1,6 @@
 package com.example.jetfilms.Models.DTOs.UnifiedDataPackage
 
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 
 data class UnifiedMedia(
     val id: Int,
@@ -9,5 +9,5 @@ data class UnifiedMedia(
     val releaseDate: String,
     val rating: Float,
     val popularity: Float,
-    val mediaType: MediaFormats
+    val mediaType: MediaCategories
 )
