@@ -20,10 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.TopBars.BaseTopAppBar
+import com.example.jetfilms.View.Screens.AccountScreenNavHost
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
@@ -36,15 +38,17 @@ import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 
 @Composable
-fun ReChooseInterestScreen(
+fun ChooseInterestToChangeScreen(
+    navController: NavController,
     turnBack: () -> Unit,
+    acceptChanges: () -> Unit
 ) {
     Scaffold(
         containerColor = primaryColor,
         topBar = {
             BaseTopAppBar(
                 modifier = Modifier,
-                headerText = "Re-Choose Interest",
+                headerText = "Re-Choose Interests",
                 turnBack = turnBack
             )
         }
@@ -64,7 +68,7 @@ fun ReChooseInterestScreen(
                     text = "Media Types",
                     imageUrl = "https://cdn.mos.cms.futurecdn.net/qrGysRQqahBfSdaHyAd2D7-1200-80.jpg",
                     onClick = {
-
+                        navController.navigate(AccountScreenNavHost.ReChooseInterestNavHost.MediaTypesRoute)
                     }
                 )
 
@@ -72,7 +76,7 @@ fun ReChooseInterestScreen(
                     text = "Media Genres",
                     imageUrl = MediaGenres.ALL.imageUrl,
                     onClick = {
-
+                        navController.navigate(AccountScreenNavHost.ReChooseInterestNavHost.MediaGenresRoute)
                     }
                 )
             }
@@ -81,9 +85,7 @@ fun ReChooseInterestScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = BOTTOM_NAVIGATION_BAR_HEIGHT.sdp + 20.sdp),
-                onClick = {
-
-                },
+                onClick = { acceptChanges() },
                 text = "Accept New Interests",
                 corners = RoundedCornerShape(12.sdp),
                 gradient = blueHorizontalGradient,
