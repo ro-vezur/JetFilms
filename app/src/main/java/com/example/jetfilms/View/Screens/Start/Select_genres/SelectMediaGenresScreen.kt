@@ -1,6 +1,7 @@
 package com.example.jetfilms.View.Screens.Start.Select_genres
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +42,6 @@ import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import dev.chrisbanes.haze.HazeState
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun SelectMediaGenresScreen(
     stepsNavController: NavController,

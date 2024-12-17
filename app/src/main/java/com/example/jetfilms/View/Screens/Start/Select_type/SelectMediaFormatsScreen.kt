@@ -1,8 +1,6 @@
 package com.example.jetfilms.View.Screens.Start.Select_type
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,21 +22,18 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.View.Screens.Start.SelectMediaGenresScreenRoute
-import com.example.jetfilms.View.Screens.Start.SignUpScreenRoute
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.View.Components.Cards.MediaFormatCard
-import com.example.jetfilms.ViewModels.UserViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 
-@RequiresApi(Build.VERSION_CODES.S)
+
 @Composable
 fun SelectMediaFormatScreen(
     stepsNavController: NavController,
@@ -47,7 +42,7 @@ fun SelectMediaFormatScreen(
 ) {
     val typography = MaterialTheme.typography
 
-    val selectedFormats = remember{ mutableStateListOf<MediaFormats>() }
+    val selectedFormats = remember{ mutableStateListOf<MediaCategories>() }
 
     LaunchedEffect(null) {
         Log.d("user",user.toString())
@@ -123,7 +118,7 @@ fun SelectMediaFormatScreen(
                     modifier = Modifier
                         .padding(bottom = 10.sdp)
                 ) {
-                    MediaFormats.entries.forEach { format ->
+                    MediaCategories.entries.forEach { format ->
                         val isSelected = selectedFormats.contains(format)
                         MediaFormatCard(
                             mediaFormat = format,
