@@ -6,6 +6,7 @@ import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailersResponse
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.ImagesFromUnifiedMediaResponse
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
+import com.example.jetfilms.Models.Repositories.Api.ParticipantRepository
 import com.example.jetfilms.Models.Repositories.Api.SeriesRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 class DetailedSeriesViewModel @AssistedInject constructor(
     @Assisted val seriesId: Int,
     private val seriesRepository: SeriesRepository,
+    private val participantRepository: ParticipantRepository
 ): ViewModel() {
 
     @AssistedFactory
@@ -62,4 +64,7 @@ class DetailedSeriesViewModel @AssistedInject constructor(
         _seriesTrailers.emit(seriesRepository.getSeriesTrailers(seriesId))
     }
 
+    suspend fun getSerialSeason(serialId: Int,seasonNumber: Int) = seriesRepository.getSerialSeason(serialId,seasonNumber)
+
+    suspend fun getParticipant(participantId: Int) = participantRepository.getParticipant(participantId)
 }

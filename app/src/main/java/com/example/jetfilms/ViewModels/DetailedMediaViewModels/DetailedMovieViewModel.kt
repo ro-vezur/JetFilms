@@ -7,6 +7,7 @@ import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailersResponse
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.ImagesFromUnifiedMediaResponse
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
 import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
+import com.example.jetfilms.Models.Repositories.Api.ParticipantRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -21,6 +22,7 @@ import javax.inject.Inject
 class DetailedMovieViewModel @AssistedInject constructor(
     @Assisted val movieId: Int,
     private val moviesRepository: MoviesRepository,
+    private val participantRepository: ParticipantRepository,
 ): ViewModel() {
 
     @AssistedFactory
@@ -62,6 +64,8 @@ class DetailedMovieViewModel @AssistedInject constructor(
     private fun setMovieTrailers() = viewModelScope.launch {
         _movieTrailers.emit(moviesRepository.getMovieTrailers(movieId))
     }
+
+    suspend fun getParticipant(participantId: Int) = participantRepository.getParticipant(participantId)
 
 }
 
