@@ -1,14 +1,11 @@
 package com.example.jetfilms
 
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.jetfilms.Helpers.Date_formats.DateFormats
-import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
-import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
-import com.example.jetfilms.Helpers.Validators.Results.UsernameValidationResult
-import com.example.jetfilms.Helpers.Validators.Validators.Email.EmailValidator
-import com.example.jetfilms.Helpers.Validators.Validators.Password.PasswordValidator
-import com.example.jetfilms.Helpers.Validators.Validators.Username.UsernameValidator
+import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
+import com.example.jetfilms.Helpers.Validators.Validators.Registration.Email.EmailValidator
+import com.example.jetfilms.Helpers.Validators.Validators.Registration.Password.PasswordValidator
+import com.example.jetfilms.Helpers.Validators.Validators.Registration.Username.UsernameValidator
 import kotlinx.coroutines.test.runTest
 
 import org.junit.Test
@@ -39,23 +36,23 @@ class ExampleInstrumentedTest {
     @Test
     fun isEmailValid() = runTest {
         assertTrue("is Email valid",
-            EmailValidator().invoke("romavzr3011@gmail.com") == EmailValidationResult.CORRECT)
+            EmailValidator().invoke("romavzr3011@gmail.com",false) == ValidationResult.CORRECT)
     }
 
     @Test
     fun isUsernameValid() = runTest {
-        assertTrue(UsernameValidator().invoke("roma") == UsernameValidationResult.CORRECT)
+        assertTrue(UsernameValidator().invoke("roma") == ValidationResult.CORRECT)
     }
 
     @Test
     fun isPasswordNotValid() = runTest {
         assertFalse("is Password not valid",
-            PasswordValidator().invoke("aa2") == PasswordValidationResult.CORRECT)
+            PasswordValidator().invoke("aa2",false) == ValidationResult.CORRECT)
     }
 
     @Test
     fun isPasswordValid() = runTest {
         assertTrue("is Password valid",
-            PasswordValidator().invoke("roMapoma2") == PasswordValidationResult.CORRECT)
+            PasswordValidator().invoke("roMapoma2",false) == ValidationResult.CORRECT)
     }
 }
