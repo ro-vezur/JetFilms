@@ -81,7 +81,6 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
 ) {
 
-
     val colors = MaterialTheme.colorScheme
     val typography = MaterialTheme.typography
 
