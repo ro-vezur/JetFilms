@@ -29,17 +29,17 @@ import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun BaseTopAppBar(
+    modifier: Modifier = Modifier,
     headerText: String,
-    hazeState: HazeState,
     turnBack: () -> Unit
 ) {
     val typography = typography()
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(FILTER_TOP_BAR_HEIGHT.sdp)
-            .hazeChild(hazeState)
+
     ) {
         TurnBackButton(
             iconColor = whiteColor,
