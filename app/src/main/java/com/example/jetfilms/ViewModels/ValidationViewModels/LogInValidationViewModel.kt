@@ -2,8 +2,7 @@ package com.example.jetfilms.ViewModels.ValidationViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
-import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 import com.example.jetfilms.Helpers.Validators.Validators.Registration.Email.EmailValidator
 import com.example.jetfilms.Helpers.Validators.Validators.Registration.Password.PasswordValidator
 import com.example.jetfilms.Models.Repositories.Firebase.UsersCollectionRepository
@@ -19,15 +18,15 @@ class LogInValidationViewModel @Inject constructor(
     private val usersCollectionRepository: UsersCollectionRepository,
 ): ViewModel() {
 
-    private val _emailValidation: MutableStateFlow<EmailValidationResult> = MutableStateFlow(
-        EmailValidationResult.NONE
+    private val _emailValidation: MutableStateFlow<ValidationResult> = MutableStateFlow(
+        ValidationResult.NONE
     )
-    val emailValidation: StateFlow<EmailValidationResult> = _emailValidation.asStateFlow()
+    val emailValidation: StateFlow<ValidationResult> = _emailValidation.asStateFlow()
 
-    private val _passwordValidation: MutableStateFlow<PasswordValidationResult> = MutableStateFlow(
-        PasswordValidationResult.NONE
+    private val _passwordValidation: MutableStateFlow<ValidationResult> = MutableStateFlow(
+        ValidationResult.NONE
     )
-    val passwordValidation: StateFlow<PasswordValidationResult> = _passwordValidation.asStateFlow()
+    val passwordValidation: StateFlow<ValidationResult> = _passwordValidation.asStateFlow()
 
 
     suspend fun validation(
@@ -40,7 +39,7 @@ class LogInValidationViewModel @Inject constructor(
         )
         val emailValidator = EmailValidator().invoke(
             email = email,
-            checkIfEmailAlreadyRegistered = checkIfEmailIsRegistered(email)
+            checkIfEmailAlreadyRegistered = !checkIfEmailIsRegistered(email)
         )
 
         viewModelScope.launch {
@@ -48,15 +47,15 @@ class LogInValidationViewModel @Inject constructor(
             _emailValidation.emit(emailValidator)
         }
 
-        return passwordValidator == PasswordValidationResult.CORRECT &&
-                emailValidator == EmailValidationResult.CORRECT
+        return passwordValidator == ValidationResult.CORRECT &&
+                emailValidator == ValidationResult.CORRECT
     }
 
-    fun setEmailValidationResult(result: EmailValidationResult) = viewModelScope.launch {
+    fun setEmailValidationResult(result: ValidationResult) = viewModelScope.launch {
         _emailValidation.emit(result)
     }
 
-    fun setPasswordValidationResult(result: PasswordValidationResult) = viewModelScope.launch {
+    fun setPasswordValidationResult(result: ValidationResult) = viewModelScope.launch {
         _passwordValidation.emit(result)
     }
 

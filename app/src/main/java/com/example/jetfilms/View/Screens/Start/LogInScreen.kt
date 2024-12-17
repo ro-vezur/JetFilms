@@ -44,8 +44,7 @@ import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInput
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
-import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
-import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 import com.example.jetfilms.ViewModels.ValidationViewModels.LogInValidationViewModel
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
@@ -67,12 +66,12 @@ fun LogInScreen(
     val passwordValidationResult by logInValidationViewModel.passwordValidation.collectAsStateWithLifecycle()
 
     var passwordText by remember{ mutableStateOf("") }
-    val passwordError = passwordValidationResult == PasswordValidationResult.ERROR
+    val passwordError = passwordValidationResult == ValidationResult.ERROR
     var showPassword by remember{ mutableStateOf(false) }
 
     val emailValidationResult by logInValidationViewModel.emailValidation.collectAsStateWithLifecycle()
     var emailText by remember{ mutableStateOf("") }
-    val emailError = emailValidationResult == EmailValidationResult.ERROR
+    val emailError = emailValidationResult == ValidationResult.ERROR
 
     Box(
         modifier = Modifier
@@ -117,12 +116,12 @@ fun LogInScreen(
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         emailText = value
-                        logInValidationViewModel.setEmailValidationResult(EmailValidationResult.NONE)
+                        logInValidationViewModel.setEmailValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "Email",
                     leadingIcon = Icons.Filled.Email,
                     trailingIcon = {
-                        if(emailValidationResult != EmailValidationResult.NONE){
+                        if(emailValidationResult != ValidationResult.NONE){
                             Icon(
                                 imageVector = emailValidationResult.icon,
                                 contentDescription = "check icon",
@@ -144,7 +143,7 @@ fun LogInScreen(
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         passwordText = value
-                        logInValidationViewModel.setPasswordValidationResult(PasswordValidationResult.NONE)
+                        logInValidationViewModel.setPasswordValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "Password",
                     leadingIcon = Icons.Filled.Lock,
@@ -152,7 +151,7 @@ fun LogInScreen(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.sdp)
                         ){
-                            if(passwordValidationResult != PasswordValidationResult.NONE){
+                            if(passwordValidationResult != ValidationResult.NONE){
                                 Icon(
                                     imageVector = passwordValidationResult.icon,
                                     contentDescription = "check icon",

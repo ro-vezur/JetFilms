@@ -47,10 +47,7 @@ import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInput
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
-import com.example.jetfilms.Helpers.Validators.Results.EmailValidationResult
-import com.example.jetfilms.Helpers.Validators.Results.PasswordValidationResult
-import com.example.jetfilms.Helpers.Validators.Results.PasswordConfirmValidationResult
-import com.example.jetfilms.Helpers.Validators.Results.UsernameValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.ViewModels.ValidationViewModels.SingUpValidationViewModel
 import com.example.jetfilms.ViewModels.UserViewModel
@@ -75,19 +72,19 @@ fun SignUpScreen(
     val usernameValidationResult by signUpValidationViewModel.usernameValidation.collectAsStateWithLifecycle()
     var firstName by remember{ mutableStateOf(user.value?.firstName?:"") }
     var lastName by remember{ mutableStateOf(user.value?.lastName?:"") }
-    val usernameError = usernameValidationResult == UsernameValidationResult.ERROR
+    val usernameError = usernameValidationResult == ValidationResult.ERROR
 
     val emailValidationResult by signUpValidationViewModel.emailValidation.collectAsStateWithLifecycle()
     var emailText by remember{ mutableStateOf(user.value?.email?:"") }
-    val emailError = emailValidationResult == EmailValidationResult.ERROR
+    val emailError = emailValidationResult == ValidationResult.ERROR
 
     val passwordValidationResult by signUpValidationViewModel.passwordValidation.collectAsStateWithLifecycle()
     var passwordText by remember{ mutableStateOf(user.value?.password?:"") }
-    val passwordError = passwordValidationResult == PasswordValidationResult.ERROR
+    val passwordError = passwordValidationResult == ValidationResult.ERROR
 
     val passwordConfirmValidationResult by signUpValidationViewModel.passwordConfirmValidation.collectAsStateWithLifecycle()
     var passwordConfirmText by remember{ mutableStateOf(user.value?.password?:"") }
-    val passwordConfirmError = passwordConfirmValidationResult == PasswordConfirmValidationResult.ERROR
+    val passwordConfirmError = passwordConfirmValidationResult == ValidationResult.ERROR
 
     var showPassword by remember{ mutableStateOf(false) }
 
@@ -136,12 +133,12 @@ fun SignUpScreen(
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         firstName = value
-                        signUpValidationViewModel.setUsernameValidationResult(UsernameValidationResult.NONE)
+                        signUpValidationViewModel.setUsernameValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "First Name",
                     leadingIcon = Icons.Filled.Person,
                     trailingIcon = {
-                        if(usernameValidationResult != UsernameValidationResult.NONE){
+                        if(usernameValidationResult != ValidationResult.NONE){
                             Icon(
                                 imageVector = usernameValidationResult.icon,
                                 contentDescription = "check icon",
@@ -162,12 +159,12 @@ fun SignUpScreen(
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         lastName = value
-                        signUpValidationViewModel.setUsernameValidationResult(UsernameValidationResult.NONE)
+                        signUpValidationViewModel.setUsernameValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "Last Name",
                     leadingIcon = Icons.Filled.Person,
                     trailingIcon = {
-                        if(usernameValidationResult != UsernameValidationResult.NONE){
+                        if(usernameValidationResult != ValidationResult.NONE){
                             Icon(
                                 imageVector = usernameValidationResult.icon,
                                 contentDescription = "check icon",
@@ -188,12 +185,12 @@ fun SignUpScreen(
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         emailText = value
-                        signUpValidationViewModel.setEmailValidationResult(EmailValidationResult.NONE)
+                        signUpValidationViewModel.setEmailValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "Email",
                     leadingIcon = Icons.Filled.Email,
                     trailingIcon = {
-                        if(emailValidationResult != EmailValidationResult.NONE){
+                        if(emailValidationResult != ValidationResult.NONE){
                             Icon(
                                 imageVector = emailValidationResult.icon,
                                 contentDescription = "check icon",
@@ -215,7 +212,7 @@ fun SignUpScreen(
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         passwordText = value
-                        signUpValidationViewModel.setPasswordValidationResult(PasswordValidationResult.NONE)
+                        signUpValidationViewModel.setPasswordValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "Password",
                     leadingIcon = Icons.Filled.Lock,
@@ -223,7 +220,7 @@ fun SignUpScreen(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.sdp)
                         ){
-                            if(passwordValidationResult != PasswordValidationResult.NONE){
+                            if(passwordValidationResult != ValidationResult.NONE){
                                 Icon(
                                     imageVector = passwordValidationResult.icon,
                                     contentDescription = "check icon",
@@ -259,7 +256,7 @@ fun SignUpScreen(
                     height = (BASE_BUTTON_HEIGHT + 1).sdp,
                     onTextChange = { value ->
                         passwordConfirmText = value
-                        signUpValidationViewModel.setPasswordConfirmValidationResult(PasswordConfirmValidationResult.NONE)
+                        signUpValidationViewModel.setPasswordConfirmValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "Password Confirm",
                     leadingIcon = Icons.Filled.Lock,
@@ -267,7 +264,7 @@ fun SignUpScreen(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.sdp)
                         ){
-                            if(passwordConfirmValidationResult != PasswordConfirmValidationResult.NONE){
+                            if(passwordConfirmValidationResult != ValidationResult.NONE){
                                 Icon(
                                     imageVector = passwordConfirmValidationResult.icon,
                                     contentDescription = "check icon",
