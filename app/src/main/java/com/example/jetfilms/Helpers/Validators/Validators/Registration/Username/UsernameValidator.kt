@@ -1,14 +1,14 @@
 package com.example.jetfilms.Helpers.Validators.Validators.Registration.Username
 
-import com.example.jetfilms.Helpers.Validators.Results.UsernameValidationResult
+import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 
 class UsernameValidator {
-    operator fun invoke(username: String): UsernameValidationResult {
+    operator fun invoke(username: String): ValidationResult {
         return when {
-            username.isBlank() -> UsernameValidationResult.ERROR
-            username.length < 3 -> UsernameValidationResult.ERROR
-            username.length > 20 -> UsernameValidationResult.ERROR
-            else -> UsernameValidationResult.CORRECT
+            username.isBlank() -> ValidationResult.ERROR
+            username.length < 3 -> ValidationResult.ERROR
+            username.length > 20 -> ValidationResult.ERROR
+            else -> ValidationResult.CORRECT
         }
     }
 }
