@@ -3,7 +3,7 @@ package com.example.jetfilms.Models.DTOs.UserDTOs
 import android.os.Parcelable
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -15,9 +15,12 @@ data class User (
     val lastName: String,
     val email: String,
     val password: String,
-    val recommendedMediaFormats: MutableList<MediaFormats> = mutableListOf(),
+    val recommendedMediaFormats: MutableList<MediaCategories> = mutableListOf(),
     val recommendedMediaGenres: MutableList<MediaGenres> = mutableListOf(),
     val favoriteMediaList: MutableList<FavoriteMedia> = mutableListOf(),
 ): Parcelable {
     constructor(): this("","","","","")
+
+    constructor(firstName: String,lastName: String,email: String,password: String):
+            this("",firstName, lastName, email, password)
 }

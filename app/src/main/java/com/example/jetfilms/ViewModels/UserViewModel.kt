@@ -9,6 +9,9 @@ import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.Models.Firebase.AuthService
 import com.example.jetfilms.Models.Firebase.Resource
 import com.example.jetfilms.Models.Repositories.Firebase.UsersCollectionRepository
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthCredential
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,8 +40,10 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun setUser(newUser: User?) = viewModelScope.launch {
-        _user.emit(newUser)
+    fun setUser(newUser: User?) {
+        viewModelScope.launch {
+            _user.emit(newUser)
+        }
     }
 
     fun addOrUpdateUser(newUser: User) {
@@ -52,9 +57,7 @@ class UserViewModel @Inject constructor(
     fun addFavoriteMedia(media: FavoriteMedia) = viewModelScope.launch {
         _user.value?.let { checkedUser ->
             val favoriteMediaList = checkedUser.favoriteMediaList
-            Log.d("checked user",checkedUser.toString())
-            Log.d("favorite media list",favoriteMediaList.toString())
-            Log.d("media in list",(favoriteMediaList.find { it.id == media.id }).toString())
+
             if(favoriteMediaList.find { it.id == media.id } != null) {
                 favoriteMediaList.removeAll { it.id == media.id }
                 setUser(checkedUser.copy(favoriteMediaList = favoriteMediaList))
@@ -64,9 +67,7 @@ class UserViewModel @Inject constructor(
                 setUser(checkedUser.copy(favoriteMediaList = favoriteMediaList))
                 usersCollectionRepository.addFavoriteMedia(checkedUser.id,favoriteMediaList)
             }
-
         }
-
     }
 
     fun signUp(user: User, onSuccess: (userId: String) -> Unit) = viewModelScope.launch{
@@ -100,5 +101,14 @@ class UserViewModel @Inject constructor(
     fun logOut() = viewModelScope.launch {
         auth.signOut()
         _firebaseUser.emit(null)
+    }
+
+    fun updatePassword(email: String,oldPassword: String,newPassword: String) {
+        val credentials = EmailAuthProvider.getCredential(email,oldPassword)
+        _firebaseUser.value?.reauthenticate(credentials)?.addOnCompleteListener { task ->
+            if(task.isSuccessful) {
+                auth.currentUser!!.updatePassword(newPassword)
+            }
+        }
     }
 }
