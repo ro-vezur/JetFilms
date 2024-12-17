@@ -69,6 +69,7 @@ import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipant
 import com.example.jetfilms.Models.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
+import com.example.jetfilms.Helpers.navigate.navigateToSelectedParticipant
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesDisplay
@@ -86,9 +87,7 @@ import kotlinx.coroutines.launch
 fun SerialDetailsScreen(
     navController: NavController,
     seriesResponse: DetailedSerialResponse,
-    selectSeason: suspend (serialId: Int,seasonNumber: Int) -> SerialSeasonResponse?,
     selectSerial: (id: Int) -> Unit,
-    selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit,
     addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit,
     isFavoriteUnit: (favoriteMedia: FavoriteMedia) -> Boolean,
 ) {
@@ -122,6 +121,15 @@ fun SerialDetailsScreen(
 
     var isFavorite by remember { mutableStateOf(false) }
 
+    val selectParticipant = { participant: SimplifiedParticipantResponse ->
+        scope.launch {
+            navigateToSelectedParticipant(
+                navController = navController,
+                selectedParticipantResponse = detailedSeriesViewModel.getParticipant(participant.id)
+            )
+        }
+    }
+
     LaunchedEffect(null) {
         isFavorite = isFavoriteUnit(SeriesDataToFavoriteMedia(seriesResponse))
     }
@@ -129,9 +137,9 @@ fun SerialDetailsScreen(
     LaunchedEffect(currentSeasonPage) {
         selectedSeason =
            try {
-               selectSeason(seriesResponse.id,currentSeasonPage)
+               detailedSeriesViewModel.getSerialSeason(seriesResponse.id,currentSeasonPage)
            } catch (e:Exception){
-               selectSeason(seriesResponse.id,currentSeasonPage+1)
+               detailedSeriesViewModel.getSerialSeason(seriesResponse.id,currentSeasonPage + 1)
            }
     }
 
@@ -451,7 +459,7 @@ fun SerialDetailsScreen(
                 if(seriesCast.value != null && seriesImages.value != null && similarSeries.value != null && seriesTrailers.value != null){
                     SeriesAboutTab(
                         pagerState = infoPagerState,
-                        navigateToSelectedParticipant = selectParticipant,
+                        navigateToSelectedParticipant = { selectParticipant(it) },
                         selectSeries = selectSerial,
                         seriesDisplay = SeriesDisplay(
                             response = seriesResponse,
