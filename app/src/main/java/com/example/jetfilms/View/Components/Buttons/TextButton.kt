@@ -119,17 +119,3 @@ private fun TextButtonsContent(
         )
     }
 }
-
-@Preview
-@Composable
-private fun previ() {
-    Surface(modifier = Modifier.fillMaxSize()){
-        TextButton(
-            onClick = {},
-            text = "Sign up",
-            modifier = Modifier
-              //  .fillMaxWidth(0.8f)
-            //    .fillMaxHeight(0.1f)
-        )
-    }
-}
