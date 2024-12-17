@@ -1,7 +1,6 @@
 package com.example.jetfilms.View.Screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,24 +17,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
-import com.example.jetfilms.Helpers.navigate.navigateToSelectedParticipant
 import com.example.jetfilms.View.Components.Bottom_Navigation_Bar.BottomNavBar
 import com.example.jetfilms.extensions.CustomNavType.DetailedMovieNavType
 import com.example.jetfilms.extensions.CustomNavType.DetailedSerialNavType
 import com.example.jetfilms.extensions.CustomNavType.ParticipantNavType
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantResponse
-import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantDisplay
 import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.Helpers.Network.ConnectionState
 import com.example.jetfilms.Helpers.Network.connectivityState
@@ -48,11 +44,9 @@ import com.example.jetfilms.Screens.MovieDetailsPackage.SerialDetailsScreen
 import com.example.jetfilms.View.Screens.Account.accountNavigationHost
 import com.example.jetfilms.View.Screens.ParticipantDetailsPackage.ParticipantDetailsScreen
 import com.example.jetfilms.View.Screens.SearchScreen.exploreScreen
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaFormats
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.View.Screens.Start.StartScreen
-import com.example.jetfilms.ViewModels.FilterViewModel
 import com.example.jetfilms.ViewModels.SharedMoviesViewModel
-import com.example.jetfilms.ViewModels.ParticipantViewModel
 import com.example.jetfilms.ViewModels.SearchHistoryViewModel
 import com.example.jetfilms.ViewModels.SharedSeriesViewModel
 import com.example.jetfilms.ViewModels.UserViewModel
@@ -62,10 +56,8 @@ import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -76,7 +68,6 @@ fun MainScreen(
     val screensNavController = rememberNavController()
     var showBottomBar by remember{ mutableStateOf(false) }
     val hazeState = remember { HazeState() }
-    var homeDelay by remember{ mutableStateOf(0) }
 
     val connection by connectivityState()
     val isConnected = connection == ConnectionState.Available
@@ -91,16 +82,16 @@ fun MainScreen(
 
         if(firebaseUser.value != null) {
 
+            val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+                "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+            }
+
             val sharedMoviesViewModel: SharedMoviesViewModel = hiltViewModel()
             val sharedSeriesViewModel: SharedSeriesViewModel = hiltViewModel()
-            val participantViewModel: ParticipantViewModel = hiltViewModel()
 
             val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
-            val filterViewModel: FilterViewModel = hiltViewModel()
 
             val user = userViewModel.user.collectAsStateWithLifecycle()
-
-            val currentBackStackEntry by screensNavController.currentBackStackEntryAsState()
 
             val selectMovie: (movieId: Int) -> Unit = { id ->
                 try {
@@ -110,8 +101,7 @@ fun MainScreen(
                             sharedMoviesViewModel.getMovie(id)
                         )
                     }
-                } catch (e: Exception) {
-                    Log.e("error", e.message.toString())
+                } catch (_: Exception) {
                 }
             }
 
@@ -127,33 +117,17 @@ fun MainScreen(
                 }
             }
 
-            val selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit =
-                { participant ->
-                    scope.launch {
-                        navigateToSelectedParticipant(
-                            navController = screensNavController,
-                            participantViewModel.getParticipant(participant.id)
-                        )
-                    }
-                }
-
             LaunchedEffect(null) {
                 val searchedHistoryMediaIds = searchHistoryViewModel.getAllSearchHistory()
 
                 searchedHistoryMediaIds.forEach { searchedMedia: SearchedMedia ->
                     scope.launch {
-                        if (searchedMedia.mediaType == MediaFormats.MOVIE.format) {
+                        if (searchedMedia.mediaType == MediaCategories.MOVIE.format) {
                             searchHistoryViewModel.addMovieToFlow(searchedMedia.mediaId)
                         } else {
                             searchHistoryViewModel.addSeriesToFlow(searchedMedia.mediaId )
                         }
                     }
-                }
-            }
-
-            LaunchedEffect(user.value?.favoriteMediaList?.size) {
-                user.value?.let { checkedUser ->
-                  //  unifiedMediaViewModel.setFavoriteMedia(checkedUser.favoriteMediaList)
                 }
             }
 
@@ -169,7 +143,7 @@ fun MainScreen(
             ) {
                 NavHost(
                     navController = screensNavController,
-                    startDestination = HomeScreen,
+                    startDestination = HomeRoute,
                     modifier = Modifier
                         .fillMaxSize()
                         .haze(
@@ -180,32 +154,30 @@ fun MainScreen(
                         )
                 ) {
 
-                    composable<HomeScreen>(
+                    composable<HomeRoute>(
                         enterTransition = { fadeIn(tween(delayMillis = 350)) }
                     ) {
-                        homeDelay = 70
                         showBottomBar = true
 
                         HomeScreen(
                             selectMovie = selectMovie,
                             selectSeries = selectSeries,
                             navController = screensNavController,
-                            moviesViewModel = sharedMoviesViewModel,
-                            seriesViewModel = sharedSeriesViewModel,
                             addToFavorite = { favoriteMedia ->
                                 userViewModel.addFavoriteMedia(favoriteMedia)
                             },
                             isFavoriteUnit = { favoriteMedia ->
                                 user.value?.favoriteMediaList?.find { it.id == favoriteMedia.id } != null
-                            }
+                            },
+                            homeViewModel = hiltViewModel(viewModelStoreOwner)
                         )
                     }
 
                     exploreScreen(
-                        screensNavController = screensNavController,
+                        navController = screensNavController,
                         showBottomBar = { show -> showBottomBar = show},
                         seeAllMedia = { type, query ->
-                            if (type == MediaFormats.MOVIE) {
+                            if (type == MediaCategories.MOVIE) {
                                 screensNavController.navigate(MoreMoviesScreenRoute("Searched Movies"))
                                 sharedMoviesViewModel.setMoreMoviesView(
                                     response = { page -> sharedMoviesViewModel.searchMovies(query, page) }
@@ -218,17 +190,16 @@ fun MainScreen(
                             }
                         },
                         selectMedia = { id, type ->
-                            if (type == MediaFormats.MOVIE) {
+                            if (type == MediaCategories.MOVIE) {
                                 selectMovie(id)
                             } else {
                                 selectSeries(id)
                             }
                         },
-                        filterViewModel = filterViewModel,
                         searchHistoryViewModel = searchHistoryViewModel,
                     )
 
-                    composable<FavoriteScreen>() {
+                    composable<FavoriteRoute>() {
                         showBottomBar = true
 
                         val searchedUnifiedMedia by searchHistoryViewModel.searchedUnifiedMedia.collectAsStateWithLifecycle()
@@ -244,7 +215,7 @@ fun MainScreen(
                                 searchedHistoryInDb = searchedMediaInDb,
                                 user = checkedUser,
                                 selectMedia = { unifiedMedia ->
-                                    if (unifiedMedia.mediaType == MediaFormats.MOVIE) {
+                                    if (unifiedMedia.mediaType == MediaCategories.MOVIE) {
                                         selectMovie(unifiedMedia.id)
                                     } else {
                                         selectSeries(unifiedMedia.id)
@@ -256,15 +227,13 @@ fun MainScreen(
 
                     accountNavigationHost(
                         navController = screensNavController,
-                        userViewModel = userViewModel,
+                        showBottomBar = { show -> showBottomBar = show}
                     )
 
                     composable<MoreMoviesScreenRoute> {
-                        homeDelay = 70
                         showBottomBar = true
 
-                        val category =
-                            screensNavController.currentBackStackEntry?.arguments?.getString("category")
+                        val category = screensNavController.currentBackStackEntry?.arguments?.getString("category")
 
                         category?.let {
                             MoreMoviesScreen(
@@ -277,11 +246,9 @@ fun MainScreen(
                     }
 
                     composable<MoreSerialsScreenRoute> {
-                        homeDelay = 70
                         showBottomBar = true
 
-                        val category =
-                            screensNavController.currentBackStackEntry?.arguments?.getString("category")
+                        val category = screensNavController.currentBackStackEntry?.arguments?.getString("category")
 
                         category?.let {
                             MoreSerialsScreen(
@@ -297,7 +264,6 @@ fun MainScreen(
                         route = "movie_details/{movie}",
                         arguments = listOf(navArgument("movie") { type = DetailedMovieNavType() }),
                     ) { route ->
-                        homeDelay = 350
                         showBottomBar = false
 
                         val movieResponse =
@@ -307,7 +273,6 @@ fun MainScreen(
                                 navController = screensNavController,
                                 movieResponse = movieResponse,
                                 selectMovie = selectMovie,
-                                selectParticipant = selectParticipant,
                                 addToFavorite = { favoriteMedia ->
                                     userViewModel.addFavoriteMedia(favoriteMedia)
                                 },
@@ -325,7 +290,6 @@ fun MainScreen(
                         }),
                         enterTransition = { fadeIn(animationSpec = tween(75)) }
                     ) { route ->
-                        homeDelay = 350
                         showBottomBar = false
 
                         val seriesResponse = route.arguments?.getParcelable<DetailedSerialResponse>("serial")
@@ -333,18 +297,7 @@ fun MainScreen(
                             SerialDetailsScreen(
                                 navController = screensNavController,
                                 seriesResponse = seriesResponse,
-                                selectSeason = { serialId, seasonNumber ->
-                                    try {
-                                        sharedSeriesViewModel.getSerialSeason(serialId, seasonNumber)
-                                    } catch (e: Exception) {
-                                        sharedSeriesViewModel.getSerialSeason(
-                                            serialId,
-                                            seasonNumber + 1
-                                        )
-                                    }
-                                },
                                 selectSerial = selectSeries,
-                                selectParticipant = selectParticipant,
                                 addToFavorite = { favoriteMedia ->
                                     userViewModel.addFavoriteMedia(favoriteMedia)
                                 },
@@ -361,31 +314,16 @@ fun MainScreen(
                             type = ParticipantNavType()
                         }),
                     ) {
-                        val participantFilmography = participantViewModel.selectedParticipantFilmography.collectAsStateWithLifecycle()
-                        val participantImages = participantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
-
-                        homeDelay = 350
                         showBottomBar = false
 
-                        val participantResponse =
-                            it.arguments?.getParcelable<DetailedParticipantResponse>("participant")
-                        participantResponse?.let {
-                            LaunchedEffect(null) {
-                                participantViewModel.setParticipantFilmography(participantResponse.id)
-                                participantViewModel.setParticipantImages(participantResponse.id)
-                            }
+                        val participantResponse = it.arguments?.getParcelable<DetailedParticipantResponse>("participant")
 
-                            if (participantFilmography.value != null && participantImages.value != null) {
-                                ParticipantDetailsScreen(
-                                    navController = screensNavController,
-                                    participantDisplay = DetailedParticipantDisplay(
-                                        participantResponse = participantResponse,
-                                        filmography = participantFilmography.value!!,
-                                        images = participantImages.value!!,
-                                    ),
-                                    selectMovie = selectMovie
-                                )
-                            }
+                        participantResponse?.let {
+                            ParticipantDetailsScreen(
+                                navController = screensNavController,
+                                participantResponse = participantResponse,
+                                selectMovie = selectMovie
+                            )
                         }
                     }
                 }
