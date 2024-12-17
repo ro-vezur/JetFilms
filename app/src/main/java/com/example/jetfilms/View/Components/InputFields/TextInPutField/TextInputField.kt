@@ -39,6 +39,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.nativeKeyCode
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -64,7 +67,6 @@ fun TextInputField(
     maxHeight: Dp = height,
     statusPosition: TextInputFieldStatusPosition = TextInputFieldStatusPosition.IN,
     showTextLength: Boolean = false,
-    maxLength: Int = Int.MAX_VALUE,
     shape: RoundedCornerShape = RoundedCornerShape(20.sdp),
     singleLine: Boolean = true,
     readOnly: Boolean = false,
@@ -129,8 +131,15 @@ fun TextInputField(
             BasicTextField(
                 modifier = Modifier
                     .padding(textPadding)
-                    // .heightIn(height,maxHeight)
-                    .focusRequester(focusRequester),
+                    .focusRequester(focusRequester)
+                    .onKeyEvent { event ->
+                        if( event.key.nativeKeyCode == android.view.KeyEvent.KEYCODE_BACK) {
+                            focusManager.clearFocus()
+                            true
+                        } else {
+                            false
+                        }
+                    },
                 value = text,
                 onValueChange = onTextChange,
                 maxLines = maxLines,
@@ -142,7 +151,7 @@ fun TextInputField(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus()
-                        focusManager.moveFocus(FocusDirection.Up)
+                  //      focusManager.moveFocus(FocusDirection.Up)
                     }
                 ),
                 cursorBrush = SolidColor(Color.White),
@@ -196,31 +205,31 @@ fun TextInputField(
             )
         }
 
-        if(showTextLength || trailingIcon != null && statusPosition == TextInputFieldStatusPosition.OUT)
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(9.sdp),
-            modifier = Modifier
-                .padding(top = 6.sdp, start = 7.sdp)
-                .height(20.sdp)
-        ){
+        if(showTextLength || trailingIcon != null && statusPosition == TextInputFieldStatusPosition.OUT) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(9.sdp),
+                modifier = Modifier
+                    .padding(top = 6.sdp, start = 7.sdp)
+                    .height(20.sdp)
+            ) {
 
-            if(showTextLength) {
-                Text(
-                    text = "${text.length}/$TEXT_FIELD_MAX_LENGTH",
-                    style = typography.bodySmall.copy(
-                        fontWeight = FontWeight.Normal,
-                        color = textColor
-                    ),
-                    modifier = Modifier
-                )
-            }
+                if (showTextLength) {
+                    Text(
+                        text = "${text.length}/$TEXT_FIELD_MAX_LENGTH",
+                        style = typography.bodySmall.copy(
+                            fontWeight = FontWeight.Normal,
+                            color = textColor
+                        ),
+                        modifier = Modifier
+                    )
+                }
 
-            if (trailingIcon != null && statusPosition == TextInputFieldStatusPosition.OUT) {
-                trailingIcon()
+                if (trailingIcon != null && statusPosition == TextInputFieldStatusPosition.OUT) {
+                    trailingIcon()
+                }
             }
         }
-
     }
 }
 

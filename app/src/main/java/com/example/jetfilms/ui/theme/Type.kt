@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
@@ -18,7 +19,8 @@ fun typography():Typography {
 
         bodySmall = TextStyle(
             fontSize = (12).ssp,
-            fontWeight = FontWeight.W500
+            fontWeight = FontWeight.W500,
+            textAlign = TextAlign.Unspecified,
         ),
 
         bodyMedium = TextStyle(
