@@ -10,12 +10,13 @@ import com.example.jetfilms.ui.theme.whiteColor
 import com.example.jetfilms.whiteGradientColors
 
 @Composable
-fun AcceptFiltersButton(
+fun AcceptMultipleSelectionButton(
+    modifier: Modifier = Modifier,
     isEmpty: Boolean,
     isDataSameAsBefore: Boolean,
     additionalText: String = "Select at Least 1",
+    onAcceptText: String = "Accept Filters",
     onClick: () -> Unit,
-    modifier: Modifier
 ) {
     val typography = typography()
 

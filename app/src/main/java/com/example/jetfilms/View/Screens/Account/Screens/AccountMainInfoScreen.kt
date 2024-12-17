@@ -42,13 +42,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.jetfilms.BASE_BUTTON_WIDTH
+import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
-import com.example.jetfilms.View.Screens.AccountScreenNavigationHostRoute
+import com.example.jetfilms.View.Screens.AccountScreenNavHost
 import com.example.jetfilms.ViewModels.UserViewModel
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.darkerGreenColor
+import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.purpleColor
 import com.example.jetfilms.ui.theme.secondaryColor
 import com.example.jetfilms.ui.theme.typography
@@ -60,11 +62,10 @@ private val navigateButtonsDividerColor = Color(0xFF3e4b62)
 @Composable
 fun AccountMainInfoScreen(
     navController: NavController,
-    userViewModel: UserViewModel
+    user: User,
+    logOut: () -> Unit,
 ) {
     val typography = typography()
-
-    val userFlow by userViewModel.user.collectAsStateWithLifecycle()
 
     val userImageSize = 67
 
@@ -72,6 +73,7 @@ fun AccountMainInfoScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
+            .background(primaryColor)
     ) {
 
         Box(
@@ -93,14 +95,14 @@ fun AccountMainInfoScreen(
         }
 
         Text(
-            text = userFlow?.email?: "",
+            text = user.email,
             style = typography.bodyMedium.copy(color = whiteColor, fontSize = typography.bodyMedium.fontSize/1.08),
             modifier = Modifier
                 .padding(top = 11.sdp)
         )
 
         TextInputField(
-            text = "ID: ${userFlow?.id?: " None"}",
+            text = "ID: ${user.id}",
             onTextChange = {},
             readOnly = true,
             modifier = Modifier
@@ -116,7 +118,7 @@ fun AccountMainInfoScreen(
                 .background(secondaryColor)
         ) {
             Spacer(modifier = Modifier.height(5.sdp))
-            
+
             NavigationButtonClass.entries.forEach { data ->
                 Column(
                     verticalArrangement = Arrangement.spacedBy(5.sdp),
@@ -153,7 +155,7 @@ fun AccountMainInfoScreen(
 
         TextButton(
             onClick = {
-                userViewModel.logOut()
+                logOut()
             },
             text = "Log out",
             corners = RoundedCornerShape(12.sdp),
@@ -182,7 +184,7 @@ private fun NavigationButtonCard(data: NavigationButtonClass, onClick: () -> Uni
             .clip(RoundedCornerShape(8.sdp))
             .clickable { onClick() }
     ) {
-        Box (
+        Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .padding(start = 8.sdp)
@@ -219,17 +221,8 @@ private fun NavigationButtonCard(data: NavigationButtonClass, onClick: () -> Uni
 }
 
 private enum class NavigationButtonClass(val text: String, val icon: ImageVector, val color: Color,val route: Any) {
-    EDIT_PROFILE("Edit Profile",Icons.Default.Person,Color.Blue,AccountScreenNavigationHostRoute.EditAccountScreenRoute),
-    SETTINGS("Re-Choose Interest",Icons.Default.Interests,Color.Orange,AccountScreenNavigationHostRoute.ReChooseInterestNavHost),
-    CONTACT("Contact JetFilms Support",Icons.Default.SupportAgent, purpleColor,AccountScreenNavigationHostRoute.ContactFormScreenRoute),
-    ABOUT("About JetFilms", Icons.Default.Info, darkerGreenColor,AccountScreenNavigationHostRoute.AboutAppScreenRoute)
-}
-
-@Preview
-@Composable
-private fun prrrr() {
-    val navController = rememberNavController()
-    AccountMainInfoScreen(
-        navController = navController,
-        userViewModel = hiltViewModel())
+    EDIT_PROFILE("Edit Profile",Icons.Default.Person,Color.Blue,AccountScreenNavHost.EditAccountRoute),
+    SETTINGS("Re-Choose Interest",Icons.Default.Interests,Color.Orange,AccountScreenNavHost.ReChooseInterestNavHost),
+    CONTACT("Contact JetFilms Support",Icons.Default.SupportAgent, purpleColor,AccountScreenNavHost.ContactFormRoute),
+    ABOUT("About JetFilms", Icons.Default.Info, darkerGreenColor,AccountScreenNavHost.AboutAppRoute)
 }
