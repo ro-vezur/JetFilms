@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -59,6 +60,7 @@ import com.example.jetfilms.View.Components.TabRow
 import com.example.jetfilms.View.Components.TabsContent.MovieAboutTab
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
+import com.example.jetfilms.Helpers.navigate.navigateToSelectedParticipant
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
@@ -66,19 +68,21 @@ import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedMovieView
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.infoTabs
+import kotlinx.coroutines.launch
 
 @Composable
 fun MovieDetailsScreen(
     navController: NavController,
     movieResponse: DetailedMovieResponse,
     selectMovie: (id: Int) -> Unit,
-    selectParticipant: (participant: SimplifiedParticipantResponse) -> Unit,
     addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit,
     isFavoriteUnit: (favoriteMedia: FavoriteMedia) -> Boolean,
 ) {
     val detailedMovieViewModel = hiltViewModel<DetailedMovieViewModel,DetailedMovieViewModel.DetailedMovieViewModelFactory> {factory ->
         factory.create(movieResponse.id)
     }
+
+    val scope = rememberCoroutineScope()
 
     val movieCast = detailedMovieViewModel.movieCast.collectAsStateWithLifecycle()
     val movieImages = detailedMovieViewModel.movieImages.collectAsStateWithLifecycle()
@@ -96,6 +100,15 @@ fun MovieDetailsScreen(
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
+
+    val selectParticipant = { participant: SimplifiedParticipantResponse ->
+        scope.launch {
+            navigateToSelectedParticipant(
+                navController = navController,
+                selectedParticipantResponse = detailedMovieViewModel.getParticipant(participant.id)
+            )
+        }
+    }
 
     LaunchedEffect(null) {
         isFavorite = isFavoriteUnit(MovieDataToFavoriteMedia(movieResponse))
@@ -317,7 +330,7 @@ fun MovieDetailsScreen(
                             movieTrailers = movieTrailers.value!!,
                         ),
                         selectMovie = selectMovie,
-                        navigateToSelectedParticipant = selectParticipant,
+                        navigateToSelectedParticipant = { selectParticipant(it) },
                         selectTrailer = { trailer ->
                             selectedTrailerKey = trailer.key
                         },
