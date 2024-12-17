@@ -21,46 +21,9 @@ import javax.inject.Inject
 class SharedMoviesViewModel @Inject constructor(
     private val moviesRepository: MoviesRepository
 ): ViewModel() {
-    private val _popularMovies: MutableStateFlow<List<SimplifiedMovieDataClass>> = MutableStateFlow(emptyList())
-    val popularMovies = _popularMovies.asStateFlow()
-
-    private val _topRatedMovies = MutableStateFlow<List<SimplifiedMovieDataClass>>(listOf())
-    val topRatedMovies = _topRatedMovies.asStateFlow()
 
     private val _moreMoviesView: MutableStateFlow<PagingData<SimplifiedMovieDataClass>> = MutableStateFlow(PagingData.empty())
     val moreMoviesView = _moreMoviesView.asStateFlow()
-
-    private val _selectedMovie = MutableStateFlow<DetailedMovieResponse?>(null)
-    val selectedMovie = _selectedMovie.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                _topRatedMovies.emit(moviesRepository.getTopRatedMovies().results)
-                if (_topRatedMovies.value.isNotEmpty()) {
-                    setSelectedMovie(_topRatedMovies.value[0].id)
-                }
-                setPopularMovies()
-            }
-        }
-    }
-
-
-    fun setSelectedMovie(movieId:Int){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                _selectedMovie.emit(moviesRepository.getMovie(movieId))
-            }
-        }
-    }
-
-    fun setPopularMovies(){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                _popularMovies.emit(moviesRepository.getPopularMovies(1).results)
-            }
-        }
-    }
 
     fun setMoreMoviesView(response: suspend (page: Int) -> MoviesResponse, pageLimit: Int = Int.MAX_VALUE){
         viewModelScope.launch {
@@ -77,8 +40,6 @@ class SharedMoviesViewModel @Inject constructor(
     }
 
     suspend fun getMovie(movieId: Int): DetailedMovieResponse = moviesRepository.getMovie(movieId)
-
-    suspend fun getPopularMovies(page: Int) = moviesRepository.getPopularMovies(page)
 
     suspend fun searchMovies(query: String,page: Int) = moviesRepository.searchMovies(query, page)
 

@@ -25,19 +25,8 @@ class SharedSeriesViewModel @Inject constructor(
         PagingData.empty())
     val moreSerialsView = _moreSerialsView.asStateFlow()
 
-    private val _popularSerials = MutableStateFlow<List<SimplifiedSerialObject>>(listOf())
-    val  popularSerials = _popularSerials.asStateFlow()
-
-    init {
-        setPopularSerials()
-    }
-
     suspend fun getSerial(serialId: Int): DetailedSerialResponse = seriesRepository.getSerial(serialId)
 
-    suspend fun getSerialSeason(serialId: Int,seasonNumber: Int) = seriesRepository.getSerialSeason(serialId,seasonNumber)
-
-
-    suspend fun getPopularSerials(page: Int) = seriesRepository.getPopularSerials(page)
 
     fun setMoreSerialsView(response: suspend (page: Int) -> SeriesResponse, pageLimit: Int = Int.MAX_VALUE){
         viewModelScope.launch {
@@ -49,14 +38,6 @@ class SharedSeriesViewModel @Inject constructor(
                     .collect{
                         _moreSerialsView.emit(it)
                     }
-            }
-        }
-    }
-
-    fun setPopularSerials(){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                _popularSerials.emit(seriesRepository.getPopularSerials(1).results)
             }
         }
     }
