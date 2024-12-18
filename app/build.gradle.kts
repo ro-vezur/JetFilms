@@ -66,8 +66,11 @@ android {
 
 dependencies {
     implementation(libs.androidx.compose.material)
+
+
     val compose_version = "1.7.4"
-    val hilt = "2.51.1"
+    val hiltVersion = "2.51.1"
+    val credentialsVersion = "1.5.0-beta01"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -101,8 +104,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:$hilt")
-    kapt("com.google.dagger:hilt-compiler:$hilt")
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     //glass morphism effect
@@ -148,4 +151,13 @@ dependencies {
 
     //test coroutines
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
+    //google services
+    implementation(libs.googleid)
+    implementation(libs.play.services.auth)
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    // credential manager
+   // implementation("androidx.credentials:credentials:$credentialsVersion")
+  //  implementation("androidx.credentials:credentials-play-services-auth:$credentialsVersion")
 }
