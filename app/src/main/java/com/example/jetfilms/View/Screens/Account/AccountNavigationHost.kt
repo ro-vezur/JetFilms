@@ -14,12 +14,13 @@ import com.example.jetfilms.View.Screens.Account.Screens.ContactFormScreen
 import com.example.jetfilms.View.Screens.Account.Screens.EditProfileScreen.EditProfileScreen
 import com.example.jetfilms.View.Screens.Account.Screens.ReChooseInterests.reChooseInterestsNavHost
 import com.example.jetfilms.View.Screens.AccountScreenNavHost
-import com.example.jetfilms.ViewModels.UserViewModel
+import com.example.jetfilms.ViewModels.UserViewModel.UserViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
 
 fun NavGraphBuilder.accountNavigationHost(
     navController: NavController,
     showBottomBar: (show: Boolean) -> Unit,
+    logOut: () -> Unit,
 ) {
     val turnBack = { navController.popBackStackOrIgnore() }
 
@@ -39,7 +40,7 @@ fun NavGraphBuilder.accountNavigationHost(
                 AccountMainInfoScreen(
                     navController = navController,
                     user = checkedUser,
-                    logOut = { userViewModel.logOut() }
+                    logOut = logOut
                 )
             }
         }
