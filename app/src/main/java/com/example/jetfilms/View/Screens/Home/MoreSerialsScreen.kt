@@ -1,7 +1,6 @@
 package com.example.jetfilms.View.Screens.Home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,12 +30,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.View.Components.Cards.SerialCard
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
-import com.example.jetfilms.ViewModels.SharedSeriesViewModel
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.View.Components.TopBars.BaseTopAppBar
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.View.states.rememberForeverLazyGridState
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
@@ -46,21 +46,17 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MoreSerialsScreen(
+    turnBack: () -> Unit,
     selectSeries: (id: Int) -> Unit,
-    navController: NavController,
     category: String,
-    seriesViewModel: SharedSeriesViewModel
+    moreSeriesView: LazyPagingItems<SimplifiedSerialObject>
 ) {
-    val typography = MaterialTheme.typography
-    val colors = MaterialTheme.colorScheme
 
     val gridState = rememberForeverLazyGridState(category)
     val hazeState = remember{HazeState()}
-    val scope = rememberCoroutineScope()
-
-    val moreSerialsView = seriesViewModel.moreSerialsView.collectAsLazyPagingItems()
 
     val topBarHeight = 46
     val itemsGridSpacing = 9
@@ -68,42 +64,15 @@ fun MoreSerialsScreen(
     Scaffold(
         containerColor = primaryColor,
         topBar = {
-            Box(
+            BaseTopAppBar(
                 modifier = Modifier
-                    .height(topBarHeight.sdp)
-                    .hazeChild(state = hazeState)
-            ){
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(top = 6.sdp)
-                        .fillMaxWidth()
-
-                ) {
-                    TurnBackButton(
-                        onClick = {
-                            navController.navigateUp()
-                        },
-                        iconColor = Color.White,
-                        size = 29.sdp,
-                        modifier = Modifier
-                            .padding(start = 12.sdp)
-                    )
-
-                    Text(
-                        text = category,
-                        style = typography.headlineLarge,
-                        color = Color.White
-                    )
-
-                    Spacer(modifier = Modifier.size(29.sdp))
-                }
-            }
+                    .hazeChild(hazeState),
+                headerText = category,
+                turnBack = turnBack
+            )
         },
         modifier = Modifier
-    ) { innerPadding ->
+    ) {  _ ->
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,7 +88,7 @@ fun MoreSerialsScreen(
         ){
 
             when {
-                moreSerialsView.loadState.refresh is LoadState.Loading -> {
+                moreSeriesView.loadState.refresh is LoadState.Loading -> {
                     CircularProgressIndicator()
                 }
 
@@ -135,8 +104,8 @@ fun MoreSerialsScreen(
                     ) {
                     item(span = { GridItemSpan(maxLineSpan) }) { Spacer(modifier = Modifier.height((topBarHeight-itemsGridSpacing).sdp)) }
 
-                    items(moreSerialsView.itemCount) { index ->
-                        val serial = moreSerialsView[index]
+                    items(moreSeriesView.itemCount) { index ->
+                        val serial = moreSeriesView[index]
                         serial?.let {
                             SerialCard(
                                 serial = serial,

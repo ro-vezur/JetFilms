@@ -1,7 +1,6 @@
 package com.example.jetfilms.View.Screens.Home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,12 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import com.example.jetfilms.View.Components.Cards.MovieCard
 import com.example.jetfilms.View.Components.Buttons.TurnBackButton
-import com.example.jetfilms.ViewModels.SharedMoviesViewModel
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.View.Components.TopBars.BaseTopAppBar
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.View.states.rememberForeverLazyGridState
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
@@ -45,66 +45,36 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
 import dev.chrisbanes.haze.hazeChild
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MoreMoviesScreen(
     turnBack: () -> Unit,
     selectMovie: (id: Int) -> Unit,
     category: String,
-    moviesViewModel: SharedMoviesViewModel,
+    moreMoviesView: LazyPagingItems<SimplifiedMovieDataClass>,
 ) {
-    val typography = MaterialTheme.typography
-    val colors = MaterialTheme.colorScheme
 
-    val moreMoviesView = moviesViewModel.moreMoviesView.collectAsLazyPagingItems()
     val gridState = rememberForeverLazyGridState(category)
     val hazeState = remember{HazeState()}
-    val scope = rememberCoroutineScope()
 
     val topBarHeight = 52.sdp
 
     Scaffold(
         containerColor = primaryColor,
         topBar = {
-            Box(
+            BaseTopAppBar(
                 modifier = Modifier
-                    .height(topBarHeight)
-                    .fillMaxWidth()
-                    .hazeChild(state = hazeState)
-            ){
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(top = 6.sdp)
-                        .fillMaxWidth()
-
-                ) {
-                    TurnBackButton(
-                        onClick = { turnBack() },
-                        iconColor = Color.White,
-                        size = 29.sdp,
-                        modifier = Modifier
-                            .padding(start = 12.sdp)
-                    )
-
-                    Text(
-                        text = category,
-                        style = typography.headlineLarge,
-                        color = Color.White
-                    )
-
-                    Spacer(modifier = Modifier.size(29.sdp))
-                }
-            }
+                    .hazeChild(hazeState),
+                headerText = category,
+                turnBack = turnBack
+            )
         },
         modifier = Modifier
-    ) { innerPadding ->
+    ) { _ ->
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-              //  .padding(innerPadding)
                 .fillMaxSize()
                 .haze(
                     hazeState,
