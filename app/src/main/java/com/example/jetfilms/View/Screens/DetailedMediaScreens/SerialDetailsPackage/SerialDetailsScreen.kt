@@ -43,7 +43,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -81,6 +80,7 @@ import com.example.jetfilms.infoTabs
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
+import com.example.jetfilms.ui.theme.typography
 import kotlinx.coroutines.launch
 
 @Composable
@@ -101,8 +101,6 @@ fun SerialDetailsScreen(
     val seriesTrailers = detailedSeriesViewModel.seriesTrailers.collectAsStateWithLifecycle()
 
     val colors = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
-
 
     val seasonTabs = seriesResponse.seasons
 
@@ -111,7 +109,6 @@ fun SerialDetailsScreen(
 
     val infoPagerState = rememberPagerState(pageCount = {infoTabs.size})
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val context = LocalContext.current
 
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     val scope = rememberCoroutineScope()
@@ -203,7 +200,7 @@ fun SerialDetailsScreen(
 
                         Text(
                             text = decodeStringWithSpecialCharacter(seriesResponse.name),
-                            style = typography.titleLarge,
+                            style = typography().titleLarge,
                             fontSize = 26f.ssp,
                         )
 
@@ -241,9 +238,7 @@ fun SerialDetailsScreen(
                             modifier = Modifier.padding(top = 18.sdp, start = 3.sdp, bottom = 6.sdp)
                         ) {
                             TextButton(
-                                onClick = {
-
-                                },
+                                onClick = {},
                                 gradient = blueHorizontalGradient,
                                 width = 138.sdp,
                                 height = 36.sdp,
@@ -252,36 +247,6 @@ fun SerialDetailsScreen(
                                 text = "Watch Now",
                                 modifier = Modifier
                             )
-
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .padding(start = 6.sdp)
-                                    .size(32.sdp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (false) colors.secondary.copy(.85f)
-                                        else colors.secondary.copy(.92f)
-                                    )
-                            ) {
-                                if (false) {
-                                    GradientIcon(
-                                        icon = Icons.Filled.Download,
-                                        contentDescription = "download",
-                                        gradient = blueHorizontalGradient,
-                                        modifier = Modifier
-                                            .size(20.sdp)
-                                    )
-                                } else {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Download,
-                                        contentDescription = "download",
-                                        tint = Color.White,
-                                        modifier = Modifier
-                                            .size(24.sdp)
-                                    )
-                                }
-                            }
 
                             Box(
                                 contentAlignment = Alignment.Center,

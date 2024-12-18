@@ -122,243 +122,212 @@ fun MovieDetailsScreen(
         }
     }
 
-        Box(
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
+                .background(colors.primary)
+                .verticalScroll(scrollState)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .background(colors.primary)
-                    .verticalScroll(scrollState)
+                    .fillMaxWidth()
+                    .height(animateIntAsState(targetValue = imageHeight).value.sdp)
             ) {
+                AsyncImage(
+                    model = "$BASE_IMAGE_API_URL${decodeStringWithSpecialCharacter(movieResponse.posterUrl.toString())}",
+                    contentDescription = "",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                )
+
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(animateIntAsState(targetValue = imageHeight).value.sdp)
-                ) {
-                    AsyncImage(
-                        model = "$BASE_IMAGE_API_URL${decodeStringWithSpecialCharacter(movieResponse.posterUrl.toString())}",
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxSize()
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        Color.Transparent,
-                                        colors.primary.copy(0.64f),
-                                        colors.primary.copy(1f),
-                                    )
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color.Transparent,
+                                    colors.primary.copy(0.64f),
+                                    colors.primary.copy(1f),
                                 )
                             )
+                        )
+                )
+
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 15.sdp)
+                ) {
+                    DisplayRating(movieResponse.rating)
+
+                    Text(
+                        text = decodeStringWithSpecialCharacter(movieResponse.title),
+                        style = typography.titleLarge,
+                        fontSize = 26f.ssp,
                     )
 
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = 15.sdp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.sdp),
+                        modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
                     ) {
-                        DisplayRating(movieResponse.rating)
-
-                        Text(
-                            text = decodeStringWithSpecialCharacter(movieResponse.title),
-                            style = typography.titleLarge,
-                            fontSize = 26f.ssp,
-                        )
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(14.sdp),
-                            modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
-                        ) {
-                            if(movieResponse.releaseDate.isNotBlank()) {
-                                PropertyCard(
-                                    text = DateFormats.getYear(movieResponse.releaseDate).toString(),
-                                    lengthMultiplayer = 13
-                                )
-                            }
-
-                            if(movieResponse.genres.isNotEmpty()){
-                                PropertyCard(
-                                    text = movieResponse.genres.first().name,
-                                    lengthMultiplayer = 8
-                                )
-                            }
-
-                            if(movieResponse.originCountries.isNotEmpty()){
-                                PropertyCard(
-                                    text = movieResponse.originCountries.first(),
-                                    lengthMultiplayer = 21
-                                )
-                            }
+                        if(movieResponse.releaseDate.isNotBlank()) {
+                            PropertyCard(
+                                text = DateFormats.getYear(movieResponse.releaseDate).toString(),
+                                lengthMultiplayer = 13
+                            )
                         }
 
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(14.sdp),
-                            modifier = Modifier.padding(top = 18.sdp, start = 3.sdp, bottom = 6.sdp)
-                        ) {
-                            TextButton(
-                                onClick = {
-
-                                },
-                                gradient = blueHorizontalGradient,
-                                width = 138.sdp,
-                                height = 36.sdp,
-                                corners = RoundedCornerShape(18.sdp),
-                                textAlign = Alignment.Center,
-                                text = "Watch Now",
-                                modifier = Modifier
+                        if(movieResponse.genres.isNotEmpty()){
+                            PropertyCard(
+                                text = movieResponse.genres.first().name,
+                                lengthMultiplayer = 8
                             )
+                        }
 
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .padding(start = 6.sdp)
-                                    .size(32.sdp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (false) colors.secondary.copy(.85f)
-                                        else colors.secondary.copy(.92f)
-                                    )
-                            ) {
-                                if (false) {
-                                    GradientIcon(
-                                        icon = Icons.Filled.Download,
-                                        contentDescription = "download",
-                                        gradient = blueHorizontalGradient,
-                                        modifier = Modifier
-                                            .size(20.sdp)
-                                    )
-                                } else {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Download,
-                                        contentDescription = "download",
-                                        tint = Color.White,
-                                        modifier = Modifier
-                                            .size(24.sdp)
-                                    )
-                                }
-                            }
+                        if(movieResponse.originCountries.isNotEmpty()){
+                            PropertyCard(
+                                text = movieResponse.originCountries.first(),
+                                lengthMultiplayer = 21
+                            )
+                        }
+                    }
 
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .size(32.sdp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (isFavorite) colors.secondary.copy(.85f)
-                                        else colors.secondary.copy(.92f)
-                                    )
-                                    .clickable {
-                                        isFavorite = !isFavorite
-                                        addToFavorite(
-                                            MovieDataToFavoriteMedia(
-                                                movieResponse
-                                            )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(14.sdp),
+                        modifier = Modifier.padding(top = 18.sdp, start = 3.sdp, bottom = 6.sdp)
+                    ) {
+                        TextButton(
+                            onClick = {
+
+                            },
+                            gradient = blueHorizontalGradient,
+                            width = 138.sdp,
+                            height = 36.sdp,
+                            corners = RoundedCornerShape(18.sdp),
+                            textAlign = Alignment.Center,
+                            text = "Watch Now",
+                            modifier = Modifier
+                        )
+
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .size(32.sdp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (isFavorite) colors.secondary.copy(.85f)
+                                    else colors.secondary.copy(.92f)
+                                )
+                                .clickable {
+                                    isFavorite = !isFavorite
+                                    addToFavorite(
+                                        MovieDataToFavoriteMedia(
+                                            movieResponse
                                         )
-                                    }
-                            ) {
-                                if (isFavorite) {
-                                    GradientIcon(
-                                        icon = Icons.Filled.Bookmarks,
-                                        contentDescription = "favorite",
-                                        gradient = blueHorizontalGradient,
-                                        modifier = Modifier
-                                            .size(20.sdp)
-                                    )
-                                } else {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Bookmarks,
-                                        contentDescription = "unfavorable",
-                                        tint = Color.White,
-                                        modifier = Modifier
-                                            .size(20.sdp)
                                     )
                                 }
+                        ) {
+                            if (isFavorite) {
+                                GradientIcon(
+                                    icon = Icons.Filled.Bookmarks,
+                                    contentDescription = "favorite",
+                                    gradient = blueHorizontalGradient,
+                                    modifier = Modifier
+                                        .size(20.sdp)
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Outlined.Bookmarks,
+                                    contentDescription = "unfavorable",
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(20.sdp)
+                                )
                             }
                         }
                     }
                 }
-
-                Column(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(12.sdp),
-                    modifier = Modifier
-                        .padding(start = 14.sdp,end = 14.sdp,top = 16.sdp)
-                       // .fillMaxWidth()
-                ) {
-                    Text(
-                        text = fromMinutesToHours(movieResponse.runtime),
-                        fontSize = 15.ssp,
-                        fontWeight = FontWeight.W500,
-                        modifier = Modifier
-                    )
-
-                    Text(
-                        text = decodeStringWithSpecialCharacter(movieResponse.overview),
-                        fontSize = 13.ssp,
-                        color = Color.LightGray.copy(0.9f),
-                        fontWeight = FontWeight.W400,
-                        modifier = Modifier
-                            .padding(start = 2.sdp)
-                    )
-                }
-
-                TabRow(
-                    tabs = infoTabs,
-                    pagerState = tabPagerState,
-                    modifier = Modifier
-                        .padding(top = 12.sdp, start = 6.sdp,end = 6.sdp)
-                )
-
-                if(movieCast.value != null && movieImages.value != null && similarMovies.value != null && movieTrailers.value != null){
-                    MovieAboutTab(
-                        pagerState = tabPagerState,
-                        movieDisplay = MovieDisplay(
-                            response = movieResponse,
-                            movieCast = movieCast.value!!,
-                            movieImages = movieImages.value!!,
-                            similarMovies = similarMovies.value!!,
-                            movieTrailers = movieTrailers.value!!,
-                        ),
-                        selectMovie = selectMovie,
-                        navigateToSelectedParticipant = { selectParticipant(it) },
-                        selectTrailer = { trailer ->
-                            selectedTrailerKey = trailer.key
-                        },
-                        modifier = Modifier
-                            .padding(top = 18.sdp, bottom = 0.sdp),
-                    )
-                }
-
-                if(selectedTrailerKey != null) {
-                    TrailerScreen(
-                        trailerKey = selectedTrailerKey!!,
-                        onDismiss = {
-                            selectedTrailerKey = null
-                        }
-                    )
-                }
             }
 
-            TurnBackButton(
-                onClick = {
-                    navController.navigateUp()
-                          },
-                background = Color.LightGray.copy(0.6f),
-                iconColor = Color.White,
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(12.sdp),
                 modifier = Modifier
-                    .padding(start = 8.sdp, top = 34.sdp)
+                    .padding(start = 14.sdp,end = 14.sdp,top = 16.sdp)
+            ) {
+                Text(
+                    text = fromMinutesToHours(movieResponse.runtime),
+                    fontSize = 15.ssp,
+                    fontWeight = FontWeight.W500,
+                    modifier = Modifier
+                )
+
+                Text(
+                    text = decodeStringWithSpecialCharacter(movieResponse.overview),
+                    fontSize = 13.ssp,
+                    color = Color.LightGray.copy(0.9f),
+                    fontWeight = FontWeight.W400,
+                    modifier = Modifier
+                        .padding(start = 2.sdp)
+                )
+            }
+
+            TabRow(
+                tabs = infoTabs,
+                pagerState = tabPagerState,
+                modifier = Modifier
+                    .padding(top = 12.sdp, start = 6.sdp,end = 6.sdp)
             )
 
+            if(movieCast.value != null && movieImages.value != null && similarMovies.value != null && movieTrailers.value != null){
+                MovieAboutTab(
+                    pagerState = tabPagerState,
+                    movieDisplay = MovieDisplay(
+                        response = movieResponse,
+                        movieCast = movieCast.value!!,
+                        movieImages = movieImages.value!!,
+                        similarMovies = similarMovies.value!!,
+                        movieTrailers = movieTrailers.value!!,
+                    ),
+                    selectMovie = selectMovie,
+                    navigateToSelectedParticipant = { selectParticipant(it) },
+                    selectTrailer = { trailer ->
+                        selectedTrailerKey = trailer.key
+                    },
+                    modifier = Modifier
+                        .padding(top = 18.sdp, bottom = 0.sdp),
+                )
+            }
 
+            if(selectedTrailerKey != null) {
+                TrailerScreen(
+                    trailerKey = selectedTrailerKey!!,
+                    onDismiss = {
+                        selectedTrailerKey = null
+                    }
+                )
+            }
         }
+
+        TurnBackButton(
+            onClick = {
+                navController.navigateUp()
+            },
+            background = Color.LightGray.copy(0.6f),
+            iconColor = Color.White,
+            modifier = Modifier
+                .padding(start = 8.sdp, top = 34.sdp)
+        )
+
+
+    }
 }
