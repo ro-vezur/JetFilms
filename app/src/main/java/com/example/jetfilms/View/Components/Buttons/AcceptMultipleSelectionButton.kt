@@ -34,7 +34,7 @@ fun AcceptMultipleSelectionButton(
             if(isDataSameAsBefore){
                 "Back"
             } else {
-                "Accept Filters"
+                onAcceptText
             }
         else {
             additionalText
