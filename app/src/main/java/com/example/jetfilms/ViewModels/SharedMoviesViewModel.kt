@@ -43,4 +43,5 @@ class SharedMoviesViewModel @Inject constructor(
 
     suspend fun searchMovies(query: String,page: Int) = moviesRepository.searchMovies(query, page)
 
+    suspend fun getPopularMovies(page: Int = Int.MAX_VALUE) = moviesRepository.getPopularMovies(page)
 }

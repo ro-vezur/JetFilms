@@ -44,4 +44,6 @@ class SharedSeriesViewModel @Inject constructor(
 
     suspend fun searchSeries(query: String,page: Int) = seriesRepository.searchSeries(query, page)
 
+    suspend fun getPopularSeries(page: Int = Int.MAX_VALUE) = seriesRepository.getPopularSerials(page)
+
 }
