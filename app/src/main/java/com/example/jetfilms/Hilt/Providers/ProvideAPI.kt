@@ -1,4 +1,4 @@
-package com.example.jetfilms.Hilt
+package com.example.jetfilms.Hilt.Providers
 
 import com.example.jetfilms.API_KEY
 import com.example.jetfilms.BASE_API_URL

@@ -1,4 +1,4 @@
-package com.example.jetfilms.Hilt
+package com.example.jetfilms.Hilt.Providers
 
 import android.content.Context
 import com.example.jetfilms.Models.Repositories.Room.SearchedHistoryRepository
