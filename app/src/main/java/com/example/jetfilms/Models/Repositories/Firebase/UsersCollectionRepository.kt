@@ -3,10 +3,9 @@ package com.example.jetfilms.Models.Repositories.Firebase
 import android.util.Log
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
-import com.example.jetfilms.Models.Firebase.UsersCollectionService
+import com.example.jetfilms.Models.Firebase.Firestore.UsersCollectionService
 import com.example.jetfilms.USERS_COLLECTION
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.snapshots
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -26,9 +25,21 @@ class UsersCollectionRepository @Inject constructor(
         return document.toObject(User::class.java)
     }
 
+    override suspend fun isCustomProviderUsed(email: String): Boolean {
+        val users = fireStore.collection(USERS_COLLECTION).get().await()
+
+        return users.documents.find {
+            val user = it.toObject(User::class.java)
+            user?.email == email && user.customProviderUsed
+        } != null
+    }
+
     override suspend fun checkIfEmailIsRegistered(emailToCheck: String): Boolean {
         val users = fireStore.collection(USERS_COLLECTION).get().await()
-        return users.documents.find {it.toObject(User::class.java)?.email == emailToCheck} != null
+        return users.documents.find {
+            val user = it.toObject(User::class.java)
+            user?.email == emailToCheck
+        } != null
     }
 
     override suspend fun checkIfPasswordMatches(email: String, password: String): Boolean {

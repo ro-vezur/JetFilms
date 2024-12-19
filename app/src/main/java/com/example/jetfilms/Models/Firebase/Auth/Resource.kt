@@ -1,4 +1,4 @@
-package com.example.jetfilms.Models.Firebase
+package com.example.jetfilms.Models.Firebase.Auth
 
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T): Resource<T>(data)

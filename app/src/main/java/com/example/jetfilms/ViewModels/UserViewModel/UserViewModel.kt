@@ -1,16 +1,13 @@
-package com.example.jetfilms.ViewModels
+package com.example.jetfilms.ViewModels.UserViewModel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
-import com.example.jetfilms.Models.Firebase.AuthService
-import com.example.jetfilms.Models.Firebase.Resource
+import com.example.jetfilms.Models.Firebase.Auth.AuthService
+import com.example.jetfilms.Models.Firebase.Auth.Resource
 import com.example.jetfilms.Models.Repositories.Firebase.UsersCollectionRepository
-import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -22,12 +19,15 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private val TAG = "Google "
+
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val usersCollectionRepository: UsersCollectionRepository,
-    private val authRepository: AuthService
+    private val authRepository: AuthService,
 ): ViewModel() {
+
     private val _firebaseUser: MutableStateFlow<FirebaseUser?> = MutableStateFlow(auth.currentUser)
     val firebaseUser: StateFlow<FirebaseUser?> = _firebaseUser.asStateFlow()
 
@@ -36,7 +36,7 @@ class UserViewModel @Inject constructor(
 
     init {
         viewModelScope.launch{
-            _user.emit(getUser(_firebaseUser.value?.uid.toString()))
+            setUser(getUser(_firebaseUser.value?.uid.toString()))
         }
     }
 
@@ -48,6 +48,7 @@ class UserViewModel @Inject constructor(
 
     fun addOrUpdateUser(newUser: User) {
         usersCollectionRepository.addOrUpdateUser(newUser,{})
+        setUser(newUser)
     }
 
     suspend fun getUser(userId: String): User? {
@@ -89,11 +90,41 @@ class UserViewModel @Inject constructor(
         authRepository.loginUser(email, password).collectLatest { result ->
             when(result){
                 is Resource.Success -> {
-                    _firebaseUser.emit(auth.currentUser)
-                    setUser(getUser(auth.currentUser?.uid.toString()))
+                    _firebaseUser.emit(result.data?.user)
+                    setUser(getUser(result.data?.user?.uid.toString()))
                 }
                 is Resource.Loading -> {}
                 is Resource.Error -> {}
+            }
+        }
+    }
+
+    fun logInWithGoogle() = viewModelScope.launch {
+        authRepository.logInWithGoogle().collectLatest { result ->
+            when(result){
+                is Resource.Success -> {
+                    val userFromResult = result.data?.user
+
+                    _firebaseUser.emit(userFromResult)
+
+                    userFromResult?.run {
+                        val findUser = usersCollectionRepository.getUser(uid)
+
+                        if(findUser == null) {
+                            val newUser = User.noCustomSignInUser(userFromResult)
+                            usersCollectionRepository.addOrUpdateUser(newUser,{})
+                        } else {
+                            setUser(usersCollectionRepository.getUser(uid))
+                        }
+                    }
+
+                }
+                is Resource.Loading -> {
+                    Log.d("loading",result.message.toString())
+                }
+                is Resource.Error -> {
+                    Log.e("error",result.message.toString())
+                }
             }
         }
     }
