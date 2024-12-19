@@ -20,12 +20,12 @@ tasks{
 
 android {
     namespace = "com.example.jetfilms"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.jetfilms"
         minSdk = 27
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -67,10 +67,9 @@ android {
 dependencies {
     implementation(libs.androidx.compose.material)
 
-
     val compose_version = "1.7.4"
     val hiltVersion = "2.51.1"
-    val credentialsVersion = "1.5.0-beta01"
+    val credentialsVersion = "1.5.0-alpha05"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -96,9 +95,6 @@ dependencies {
 
     // material compose
     implementation ("androidx.compose.material:material-icons-extended:$compose_version")
-
-    // glass effect
-    implementation("com.github.prime-zs.toolkit:core-ktx:2.0.2-alpha")
 
     // Coil
     implementation("io.coil-kt:coil-compose:2.7.0")
@@ -158,6 +154,10 @@ dependencies {
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // credential manager
-   // implementation("androidx.credentials:credentials:$credentialsVersion")
-  //  implementation("androidx.credentials:credentials-play-services-auth:$credentialsVersion")
+    implementation("androidx.credentials:credentials:$credentialsVersion")
+    implementation("androidx.credentials:credentials-play-services-auth:$credentialsVersion")
+
+    //email
+    implementation("com.sun.mail:android-mail:1.6.0")
+    implementation("com.sun.mail:android-activation:1.6.0")
 }
