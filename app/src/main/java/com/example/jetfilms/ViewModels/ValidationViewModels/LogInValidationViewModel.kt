@@ -1,5 +1,6 @@
 package com.example.jetfilms.ViewModels.ValidationViewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
@@ -39,7 +40,7 @@ class LogInValidationViewModel @Inject constructor(
         )
         val emailValidator = EmailValidator().invoke(
             email = email,
-            checkIfEmailAlreadyRegistered = !checkIfEmailIsRegistered(email)
+            additionalValidators = !checkIfEmailIsRegistered(email) || !isCustomProviderUsed(email)
         )
 
         viewModelScope.launch {
@@ -65,5 +66,9 @@ class LogInValidationViewModel @Inject constructor(
 
     private suspend fun checkIfPasswordMatches(email: String, password: String): Boolean {
         return usersCollectionRepository.checkIfPasswordMatches(email, password)
+    }
+
+    private suspend fun isCustomProviderUsed(email: String): Boolean {
+        return usersCollectionRepository.isCustomProviderUsed(email)
     }
 }

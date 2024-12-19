@@ -49,7 +49,7 @@ class EditProfileValidationViewModel @Inject constructor(
 
         val emailValidator = EmailValidator().invoke(
             email = email,
-            checkIfEmailAlreadyRegistered = !checkIfEmailIsRegistered(email)
+            additionalValidators = !checkIfEmailIsRegistered(email)
         )
 
         setUsernameValidationResult(usernameValidator)
