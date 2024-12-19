@@ -30,27 +30,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.R
+import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
+import com.example.jetfilms.ui.theme.typography
+import com.example.jetfilms.ui.theme.whiteColor
 
 @Composable
 fun WelcomeScreen(
-    stepsNvController: NavController
+    navController: NavController,
+    logInWithGoogle: () -> Unit,
 ) {
 
     val colors = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
 
     val title = buildAnnotatedString {
-        withStyle(style = typography.titleLarge.copy(letterSpacing = 1.5f.ssp).toSpanStyle()) {
+        withStyle(style = typography().titleLarge.copy(letterSpacing = 1.ssp).toSpanStyle()) {
             append("Start Streaming Now with ")
         }
 
         withStyle(
-            style = typography.titleLarge.copy(
-                fontSize = (35f).ssp,
+            style = typography().titleLarge.copy(
+                fontSize = 26.ssp,
                 fontWeight = FontWeight.ExtraBold
             ).toSpanStyle()) {
             append("JetFilms")
@@ -68,7 +71,8 @@ fun WelcomeScreen(
             
             Text(
                 text = title,
-                style = typography.titleLarge,
+                style = typography().titleLarge,
+                color = whiteColor,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(bottom = 38.sdp)
@@ -85,16 +89,12 @@ fun WelcomeScreen(
 
                 TextButton(
                     onClick = {
-                        stepsNvController.navigate(LogInScreenRoute)
+                        navController.navigate(LogInScreenRoute)
                     },
                     text = "Log in",
                     corners = RoundedCornerShape(12.sdp),
                     background = colors.secondary,
-                    border = BorderStroke(
-                        1.45f.sdp, Brush.horizontalGradient(
-                            listOf(buttonsColor1, buttonsColor2)
-                        )
-                    ),
+                    border = BorderStroke(1.sdp, blueHorizontalGradient),
                 )
 
                 TextButton(
@@ -114,7 +114,7 @@ fun WelcomeScreen(
                                 modifier = Modifier
                                     .size(25.sdp)
                                     .clip(CircleShape)
-                                    .background(Color.White)
+                                    .background(whiteColor)
                             )
 
                             Image(
@@ -125,17 +125,11 @@ fun WelcomeScreen(
                             )
                         }
                     },
-                    border = BorderStroke(
-                        1.45f.sdp, Brush.horizontalGradient(
-                            listOf(buttonsColor1, buttonsColor2)
-                        )
-                    )
+                    border = BorderStroke(1.sdp, blueHorizontalGradient)
                 )
 
                 TextButton(
-                    onClick = {
-
-                    },
+                    onClick = { logInWithGoogle() },
                     text = "Log in via Google",
                     corners = RoundedCornerShape(12.sdp),
                     background = colors.secondary,
@@ -152,22 +146,16 @@ fun WelcomeScreen(
                             )
                         }
                     },
-                    border = BorderStroke(
-                        1.45f.sdp, Brush.horizontalGradient(
-                            listOf(buttonsColor1, buttonsColor2)
-                        )
-                    ),
+                    border = BorderStroke(1.sdp, blueHorizontalGradient),
                 )
 
                 TextButton(
                     onClick = {
-                        stepsNvController.navigate(SignUpScreenRoute)
+                        navController.navigate(SignUpScreenRoute)
                     },
                     text = "Sign up",
                     corners = RoundedCornerShape(12.sdp),
-                    gradient = Brush.horizontalGradient(
-                        listOf(buttonsColor1, buttonsColor2)
-                    ),
+                    gradient = blueHorizontalGradient,
                 )
             }
         }

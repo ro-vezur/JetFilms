@@ -1,7 +1,5 @@
 package com.example.jetfilms.View.Screens.Start
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -20,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -27,16 +26,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jetfilms.R
 import com.example.jetfilms.View.Screens.Start.Select_genres.SelectMediaGenresScreen
-import com.example.jetfilms.View.Screens.Start.Select_type.SelectMediaFormatScreen
-import com.example.jetfilms.ViewModels.UserViewModel
+import com.example.jetfilms.View.Screens.Start.Select_type.SelectMediaCategoriesScreen
+import com.example.jetfilms.ViewModels.UserViewModel.UserViewModel
 
 @Composable
 fun StartScreen(
     userViewModel: UserViewModel
 ) {
-    val stepsNavController = rememberNavController()
+    val navController = rememberNavController()
 
     val colors = MaterialTheme.colorScheme
+
+    val context = LocalContext.current
 
     var thirdShadowPoint by remember{ mutableStateOf(1f) }
     var fourthShadowPoint by remember{ mutableStateOf(.98f) }
@@ -45,8 +46,6 @@ fun StartScreen(
     var seventhShadowPoint by remember{ mutableStateOf(.5f) }
 
     val backgroundAnimationDelay = 20
-
-    val user = userViewModel.user.collectAsStateWithLifecycle()
 
     Box(
         modifier = Modifier
@@ -105,7 +104,7 @@ fun StartScreen(
         )
 
         NavHost(
-            navController = stepsNavController,
+            navController = navController,
             startDestination = WelcomeScreenRoute,
             modifier = Modifier
                 .fillMaxSize()
@@ -119,8 +118,16 @@ fun StartScreen(
 
                 userViewModel.setUser(null)
 
-                WelcomeScreen(stepsNavController)
+                WelcomeScreen(
+                    navController = navController,
+                    logInWithGoogle = {
+
+                          userViewModel.logInWithGoogle()
+
+                    }
+                )
             }
+
 
             composable<LogInScreenRoute> {
                 thirdShadowPoint = 1f
@@ -130,12 +137,14 @@ fun StartScreen(
                 seventhShadowPoint = 0.5f
 
                 LogInScreen(
-                    stepsNavController = stepsNavController,
+                    stepsNavController = navController,
                     logIn = { email, password ->  userViewModel.logIn(email, password)}
                 )
             }
 
             composable<SignUpScreenRoute>{
+                val user by userViewModel.user.collectAsStateWithLifecycle()
+
                 thirdShadowPoint = 1f
                 fourthShadowPoint = 1f
                 fifthShadowPoint = 1f
@@ -143,15 +152,18 @@ fun StartScreen(
                 seventhShadowPoint = 0.5f
 
                 SignUpScreen(
-                    stepsNavController = stepsNavController,
-                    userViewModel = userViewModel
+                    stepsNavController = navController,
+                    user = user,
+                    setUser = { newUser -> userViewModel.setUser(newUser) }
                 )
             }
 
             composable<SelectMediaFormatScreenRoute> {
+                val user = userViewModel.user.collectAsStateWithLifecycle()
+
                 user.value?.let{
-                    SelectMediaFormatScreen(
-                        stepsNavController = stepsNavController,
+                    SelectMediaCategoriesScreen(
+                        stepsNavController = navController,
                         user = it,
                         setUser = {newUser -> userViewModel.setUser(newUser)}
                     )
@@ -159,9 +171,11 @@ fun StartScreen(
             }
 
             composable<SelectMediaGenresScreenRoute> {
+                val user = userViewModel.user.collectAsStateWithLifecycle()
+
                 user.value?.let{
                     SelectMediaGenresScreen(
-                        stepsNavController = stepsNavController,
+                        stepsNavController = navController,
                         user = it,
                         setUser = { newUser -> userViewModel.setUser(newUser) },
                         signUp = { userToAdd ->

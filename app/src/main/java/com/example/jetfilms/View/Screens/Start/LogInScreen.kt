@@ -50,6 +50,8 @@ import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.errorColor
+import com.example.jetfilms.ui.theme.typography
+import com.example.jetfilms.ui.theme.whiteColor
 import kotlinx.coroutines.launch
 
 @Composable
@@ -58,9 +60,6 @@ fun LogInScreen(
     logIn: (email: String, password: String) -> Unit,
     logInValidationViewModel: LogInValidationViewModel = hiltViewModel(),
 ) {
-    val typography = MaterialTheme.typography
-    val colors = MaterialTheme.colorScheme
-
     val scope = rememberCoroutineScope()
 
     val passwordValidationResult by logInValidationViewModel.passwordValidation.collectAsStateWithLifecycle()
@@ -93,9 +92,10 @@ fun LogInScreen(
         ) {
             Text(
                 text = "Log in",
-                style = typography.titleLarge.copy(
-                    fontSize = typography.titleLarge.fontSize * 1.15,
-                    fontWeight = FontWeight.SemiBold
+                style = typography().titleLarge.copy(
+                    fontSize = typography().titleLarge.fontSize * 1.15,
+                    fontWeight = FontWeight.SemiBold,
+                    color = whiteColor
                 ),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -104,7 +104,7 @@ fun LogInScreen(
             )
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(17f.sdp),
+                verticalArrangement = Arrangement.spacedBy(12.sdp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(bottom = 38.sdp)
@@ -210,9 +210,10 @@ fun LogInScreen(
 
                 Text(
                     text = "Forgot the password?",
-                    style = typography.bodySmall.copy(
+                    style = typography().bodySmall.copy(
                         fontWeight = FontWeight.Normal,
-                        fontSize = typography.bodySmall.fontSize / 1.02
+                        fontSize = typography().bodySmall.fontSize / 1.02,
+                        color = whiteColor
                     )
                 )
             }
@@ -228,10 +229,10 @@ fun LogInScreen(
                         }
                     ),
                 ),
-                textStyle = typography.bodySmall.copy(color = Color.LightGray.copy(0.77f)),
-                highLightedTextStyle = typography.bodySmall.copy(
+                textStyle = typography().bodySmall.copy(color = Color.LightGray.copy(0.77f)),
+                highLightedTextStyle = typography().bodySmall.copy(
                     color = buttonsColor2,
-                    fontSize = (typography.bodySmall.fontSize * 1.1)
+                    fontSize = (typography().bodySmall.fontSize * 1.1)
                 ),
             )
         }

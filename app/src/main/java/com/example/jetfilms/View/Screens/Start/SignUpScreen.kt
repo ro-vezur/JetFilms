@@ -2,7 +2,6 @@ package com.example.jetfilms.View.Screens.Start
 
 import com.example.jetfilms.View.Components.Text.Highlight
 import com.example.jetfilms.View.Components.Text.HighlightedText
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,7 +49,7 @@ import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.ViewModels.ValidationViewModels.SingUpValidationViewModel
-import com.example.jetfilms.ViewModels.UserViewModel
+import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
@@ -60,35 +59,32 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpScreen(
     stepsNavController: NavController,
-    userViewModel: UserViewModel,
+    user: User?,
+    setUser: ( newUser: User ) -> Unit,
     signUpValidationViewModel: SingUpValidationViewModel = hiltViewModel(),
 ) {
     val typography = MaterialTheme.typography
 
     val scope = rememberCoroutineScope()
 
-    val user = userViewModel.user.collectAsStateWithLifecycle()
-
     val usernameValidationResult by signUpValidationViewModel.usernameValidation.collectAsStateWithLifecycle()
-    var firstName by remember{ mutableStateOf(user.value?.firstName?:"") }
-    var lastName by remember{ mutableStateOf(user.value?.lastName?:"") }
+    var firstName by remember{ mutableStateOf(user?.firstName?:"") }
+    var lastName by remember{ mutableStateOf(user?.lastName?:"") }
     val usernameError = usernameValidationResult == ValidationResult.ERROR
 
     val emailValidationResult by signUpValidationViewModel.emailValidation.collectAsStateWithLifecycle()
-    var emailText by remember{ mutableStateOf(user.value?.email?:"") }
+    var emailText by remember{ mutableStateOf(user?.email?:"") }
     val emailError = emailValidationResult == ValidationResult.ERROR
 
     val passwordValidationResult by signUpValidationViewModel.passwordValidation.collectAsStateWithLifecycle()
-    var passwordText by remember{ mutableStateOf(user.value?.password?:"") }
+    var passwordText by remember{ mutableStateOf(user?.password?:"") }
     val passwordError = passwordValidationResult == ValidationResult.ERROR
 
     val passwordConfirmValidationResult by signUpValidationViewModel.passwordConfirmValidation.collectAsStateWithLifecycle()
-    var passwordConfirmText by remember{ mutableStateOf(user.value?.password?:"") }
+    var passwordConfirmText by remember{ mutableStateOf(user?.password?:"") }
     val passwordConfirmError = passwordConfirmValidationResult == ValidationResult.ERROR
 
     var showPassword by remember{ mutableStateOf(false) }
-
-    Log.d("user",user.value.toString())
 
     Box(
         modifier = Modifier
@@ -121,7 +117,7 @@ fun SignUpScreen(
             )
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(17f.sdp),
+                verticalArrangement = Arrangement.spacedBy(12.sdp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(bottom = 38.sdp)
@@ -313,13 +309,14 @@ fun SignUpScreen(
                                 lastName = lastName,
                                 email = emailText,
                                 password = passwordText,
-                                recommendedMediaFormats = user.value?.recommendedMediaFormats
+                                customProviderUsed = true,
+                                recommendedMediaCategories = user?.recommendedMediaCategories
                                     ?: mutableListOf(),
-                                recommendedMediaGenres = user.value?.recommendedMediaGenres
+                                recommendedMediaGenres = user?.recommendedMediaGenres
                                     ?: mutableListOf(),
                             )
 
-                            userViewModel.setUser(newUser)
+                            setUser(newUser)
                             stepsNavController.navigate(SelectMediaFormatScreenRoute)
                         }
                     }
@@ -327,11 +324,9 @@ fun SignUpScreen(
                 },
                 text = "Sign up",
                 corners = RoundedCornerShape(12.sdp),
-                gradient = Brush.horizontalGradient(
-                    listOf(buttonsColor1, buttonsColor2)
-                ),
+                gradient = blueHorizontalGradient,
                 modifier = Modifier
-                    .padding(bottom = 87.sdp)
+                    .padding(bottom = 70.sdp)
             )
 
             HighlightedText(
