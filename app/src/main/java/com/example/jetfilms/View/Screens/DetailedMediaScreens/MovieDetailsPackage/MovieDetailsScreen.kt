@@ -19,9 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.outlined.Bookmarks
-import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -63,6 +61,7 @@ import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedParticipant
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
+import com.example.jetfilms.View.Components.DetailedMediaComponents.MediaTitle
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
 import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedMovieViewModel
 import com.example.jetfilms.extensions.sdp
@@ -90,7 +89,6 @@ fun MovieDetailsScreen(
     val movieTrailers = detailedMovieViewModel.movieTrailers.collectAsStateWithLifecycle()
 
     val colors = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
 
     val scrollState = rememberScrollState()
     val tabPagerState = rememberPagerState(pageCount = { infoTabs.size})
@@ -167,11 +165,7 @@ fun MovieDetailsScreen(
                 ) {
                     DisplayRating(movieResponse.rating)
 
-                    Text(
-                        text = decodeStringWithSpecialCharacter(movieResponse.title),
-                        style = typography.titleLarge,
-                        fontSize = 26f.ssp,
-                    )
+                    MediaTitle(text = decodeStringWithSpecialCharacter(movieResponse.title))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

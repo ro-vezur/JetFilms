@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,10 +53,10 @@ import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantResponse
 import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedParticipantViewModel
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
+import com.example.jetfilms.ui.theme.typography
 import kotlinx.coroutines.launch
 
 @Composable
@@ -74,7 +73,6 @@ fun ParticipantDetailsScreen(
     val participantImages by detailedParticipantViewModel.selectedParticipantImages.collectAsStateWithLifecycle()
 
     val colors = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
 
     val tabs = listOf(
         "Filmography",
@@ -85,7 +83,7 @@ fun ParticipantDetailsScreen(
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val filmographyColumns = 3f
+    val filmographyColumns = 3
 
     val scope = rememberCoroutineScope()
 
@@ -141,8 +139,7 @@ fun ParticipantDetailsScreen(
                     ) {
                         Text(
                             text = decodeStringWithSpecialCharacter(participantResponse.name),
-                            style = typography.titleLarge,
-                            fontSize = 26f.ssp,
+                            style = typography().titleLarge,
                         )
 
                     }
@@ -165,7 +162,7 @@ fun ParticipantDetailsScreen(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(2f.sdp)
+                                        .height(2.sdp)
                                         .clip(CircleShape)
                                         .background(Color.LightGray.copy(0.42f))
                                 )
@@ -177,7 +174,7 @@ fun ParticipantDetailsScreen(
                                     glowingRadius = 7.sdp,
                                     modifier = Modifier
                                         .tabIndicatorOffset(tabPositions[tabPagerState.currentPage])
-                                        .height(2f.sdp)
+                                        .height(2.sdp)
                                 )
 
 
@@ -203,12 +200,11 @@ fun ParticipantDetailsScreen(
                             text = {
                                 Text(
                                     title,
-                                    style = TextStyle(
+                                    style = typography().bodySmall.copy(
                                         brush = animatedGradient(
                                             colors = listOf(selectedColor1, selectedColor2),
                                             type = animatedGradientTypes.VERTICAL
                                         ),
-                                        fontSize = 14.5f.ssp
                                     )
                                 )
                             },

@@ -72,6 +72,7 @@ import com.example.jetfilms.Helpers.navigate.navigateToSelectedParticipant
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesDisplay
+import com.example.jetfilms.View.Components.DetailedMediaComponents.MediaTitle
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
 import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedSeriesViewModel
 import com.example.jetfilms.extensions.sdp
@@ -198,11 +199,7 @@ fun SerialDetailsScreen(
                     ) {
                         DisplayRating(seriesResponse.rating)
 
-                        Text(
-                            text = decodeStringWithSpecialCharacter(seriesResponse.name),
-                            style = typography().titleLarge,
-                            fontSize = 26f.ssp,
-                        )
+                        MediaTitle(decodeStringWithSpecialCharacter(seriesResponse.name))
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -327,7 +324,7 @@ fun SerialDetailsScreen(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(2f.sdp)
+                                        .height(2.sdp)
                                         .clip(CircleShape)
                                         .background(Color.LightGray.copy(0.42f))
                                 )
@@ -339,7 +336,7 @@ fun SerialDetailsScreen(
                                     glowingRadius = 7.sdp,
                                     modifier = Modifier
                                         .tabIndicatorOffset(tabPositions[seasonsPagerState.currentPage])
-                                        .height(2f.sdp)
+                                        .height(2.sdp)
                                 )
                             }
                         }
@@ -367,12 +364,11 @@ fun SerialDetailsScreen(
                                             if (seriesResponse.seasons.first().seasonNumber == 0) season.seasonNumber + 1
                                             else season.seasonNumber
                                         }",
-                                        style = TextStyle(
+                                        style = typography().bodySmall.copy(
                                             brush = animatedGradient(
                                                 colors = listOf(selectedColor1, selectedColor2),
                                                 type = animatedGradientTypes.VERTICAL
                                             ),
-                                            fontSize = 14f.ssp
                                         )
                                     )
                                 },
