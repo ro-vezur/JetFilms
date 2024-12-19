@@ -151,7 +151,6 @@ fun TextInputField(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus()
-                  //      focusManager.moveFocus(FocusDirection.Up)
                     }
                 ),
                 cursorBrush = SolidColor(Color.White),
@@ -159,7 +158,7 @@ fun TextInputField(
                     fontWeight = FontWeight.Normal,
                     color = textColor,
                     fontSize = textStyle.fontSize * if (visualTransformation == PasswordVisualTransformation()) (1.18f) else (1f),
-                    letterSpacing = if (visualTransformation == PasswordVisualTransformation()) 1.6f.ssp else 0.ssp
+                    letterSpacing = if (visualTransformation == PasswordVisualTransformation()) 1.ssp else 0.ssp
                 ),
                 decorationBox = { innerTextField ->
                     Row(

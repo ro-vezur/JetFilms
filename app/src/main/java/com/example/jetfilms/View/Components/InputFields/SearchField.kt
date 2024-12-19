@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.extensions.sdp
@@ -77,7 +76,6 @@ fun SearchField(
     modifier: Modifier = Modifier
 ) {
     val typography = MaterialTheme.typography
-//    val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -132,6 +130,7 @@ fun SearchField(
                 keyboardActions = KeyboardActions(
                     onDone = {
                         focusManager.clearFocus()
+                        onSearchClick()
                     }
                 ),
                 cursorBrush = SolidColor(Color.White),
@@ -223,10 +222,4 @@ fun SearchField(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun previ() {
-   // SearchField(text = "niga", onTextChange = {}, requestSent = true)
 }
