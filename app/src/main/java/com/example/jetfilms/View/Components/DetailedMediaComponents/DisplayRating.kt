@@ -16,6 +16,7 @@ import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
+import com.example.jetfilms.ui.theme.typography
 
 @Composable
 fun DisplayRating(rating: Float) {
@@ -34,7 +35,7 @@ fun DisplayRating(rating: Float) {
 
         Text(
             text = removeNumbersAfterDecimal(rating,2).toString(),
-            fontSize = 21f.ssp
+            style = typography().bodyLarge
         )
     }
 }
