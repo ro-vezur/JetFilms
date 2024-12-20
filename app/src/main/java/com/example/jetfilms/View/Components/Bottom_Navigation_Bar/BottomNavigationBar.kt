@@ -165,7 +165,7 @@ private fun BottomNavItem(item: BottomNavItems,selectedItem: BottomNavItems, onC
 
         Text(
             text = item.title,
-            fontSize = 13f.ssp,
+            fontSize = 10.ssp,
             fontWeight = FontWeight.SemiBold,
             style = TextStyle(
                 brush =  Brush.horizontalGradient(listOf(animatedGradientPoint1.value,animatedGradientPoint2.value))
