@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +23,6 @@ import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -40,7 +38,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -49,26 +46,24 @@ import com.example.jetfilms.View.Components.Gradient.GradientIcon
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
 import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.ViewModels.SharedMoviesViewModel
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Helpers.DTOsConverters.ToFavoriteMedia.MovieDataToFavoriteMedia
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
+import com.example.jetfilms.View.Components.DetailedMediaComponents.MediaTitle
 import com.example.jetfilms.View.Components.Lists.MoviesCategoryList
 import com.example.jetfilms.View.Components.Lists.SerialsCategoryList
+import com.example.jetfilms.View.Components.Lists.UnifiedMediaCategoryList
 import com.example.jetfilms.View.Screens.MoreMoviesScreenRoute
 import com.example.jetfilms.View.Screens.MoreSerialsScreenRoute
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
-import com.example.jetfilms.ViewModels.SharedSeriesViewModel
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.View.states.rememberForeverLazyListState
 import com.example.jetfilms.View.states.rememberForeverScrollState
 import com.example.jetfilms.ViewModels.HomeViewModel
 import com.example.jetfilms.ui.theme.buttonsColor1
 import kotlinx.coroutines.launch
-import kotlin.math.abs
 
 
 @SuppressLint("SuspiciousIndentation")
@@ -84,12 +79,12 @@ fun HomeScreen(
 ) {
 
     val colors = MaterialTheme.colorScheme
-    val typography = MaterialTheme.typography
 
     val screenScrollState = rememberForeverScrollState(key = "Home screen")
 
     val topRatedMovies by homeViewModel.topRatedMovies.collectAsStateWithLifecycle()
     val popularMovies by homeViewModel.popularMovies.collectAsStateWithLifecycle()
+    val recommendedMedia by homeViewModel.recommendedMedia.collectAsStateWithLifecycle()
     val selectedMovie by homeViewModel.selectedMovie.collectAsStateWithLifecycle()
 
     val popularSerials = homeViewModel.popularSerials.collectAsStateWithLifecycle()
@@ -144,11 +139,7 @@ fun HomeScreen(
 
                 DisplayRating(selectedMovie?.rating?:0f)
 
-                Text(
-                    text = selectedMovie?.title.toString(),
-                    style = typography.titleLarge,
-                    fontSize = 26f.ssp,
-                )
+                MediaTitle(text = selectedMovie?.title.toString())
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -237,6 +228,27 @@ fun HomeScreen(
             }
         }
 
+        UnifiedMediaCategoryList(
+            category = "For You",
+            selectMedia = { id, category ->
+                if(category == MediaCategories.MOVIE) {
+                    selectMovie(id)
+                } else {
+                    selectMovie(id)
+                }
+            },
+            unifiedMediaList = recommendedMedia.take(6),
+            onSeeAllClick = {
+                navController.navigate(MoreMoviesScreenRoute("Popular movies"))
+                seeAllMedia(MediaCategories.MOVIE)
+            },
+            topPadding = 20.sdp,
+            imageModifier = Modifier
+                .clip(RoundedCornerShape(6.sdp))
+                .width(126.sdp)
+                .height(200.sdp)
+        )
+
         MoviesCategoryList(
             category = "Popular movies",
             selectMovie = selectMovie,
@@ -283,14 +295,8 @@ private fun MoviePager(
     )
     val firstVisibleItemIndex by remember { derivedStateOf { lazyListState.firstVisibleItemIndex } }
 
-    val screenWidth = LocalConfiguration.current.screenWidthDp.sdp
-    val screenHeight = LocalConfiguration.current.screenHeightDp.sdp
-    val isVerticalOrientation = screenHeight > screenWidth
-
-    val horizontalPadding = 8.sdp
-    val lazyRowWidth = screenWidth
     val itemsSpacing = 7.sdp
-    val itemWidth = (lazyRowWidth + horizontalPadding - itemsSpacing * moviesList.size) / moviesList.size
+    val itemWidth = 70.sdp
 
     LazyRow(
         state = lazyListState,
@@ -300,16 +306,15 @@ private fun MoviePager(
             .padding(
                 top = 20.sdp,
             )
-            .width(if (isVerticalOrientation) screenWidth else lazyRowWidth)
+            .fillMaxWidth()
     ) {
-
         items(Int.MAX_VALUE){ index ->
             if(moviesList.isNotEmpty() && firstVisibleItemIndex + 5 >= index){
                 val movie = moviesList[index % moviesList.size]
                 Box(
                     modifier = Modifier
                         .width(itemWidth)
-                        .height(46.sdp)
+                        .height(50.sdp)
                         .clip(RoundedCornerShape(7.sdp))
                 ) {
 
