@@ -1,5 +1,6 @@
 package com.example.jetfilms.View.Screens.Account.Screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,14 +29,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
+import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
+import com.example.jetfilms.Models.Email.EmailManager
+import com.example.jetfilms.SEND_EMAIL_RESET_TIME_MINUTES
 import com.example.jetfilms.TEXT_FIELD_MAX_LENGTH
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
 import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputFieldStatusPosition
 import com.example.jetfilms.View.Components.TopBars.BaseTopAppBar
-import com.example.jetfilms.ViewModels.ValidationViewModels.SubmitContactFormValidationViewModel
+import com.example.jetfilms.ViewModels.ValidationViewModels.ContactFormViewModel
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.primaryColor
@@ -44,16 +48,16 @@ import com.example.jetfilms.ui.theme.primaryColor
 fun ContactFormScreen(
     turnBack: () -> Unit,
     user: User,
-    submitContactFormValidationViewModel: SubmitContactFormValidationViewModel = hiltViewModel(),
+    ContactFormViewModel: ContactFormViewModel = hiltViewModel(),
 ) {
-    val usernameValidationResult by submitContactFormValidationViewModel.usernameValidation.collectAsStateWithLifecycle()
+    val usernameValidationResult by ContactFormViewModel.usernameValidation.collectAsStateWithLifecycle()
     var username by remember { mutableStateOf("${user.firstName} ${user.lastName}") }
     val userError = usernameValidationResult == ValidationResult.ERROR
 
     var email by remember { mutableStateOf(user.email) }
     val emailError by remember{ mutableStateOf(false) }
 
-    val feedbackValidationResult by submitContactFormValidationViewModel.feedBackValidation.collectAsStateWithLifecycle()
+    val feedbackValidationResult by ContactFormViewModel.feedBackValidation.collectAsStateWithLifecycle()
     var feedback by remember { mutableStateOf("") }
     val feedbackError = feedbackValidationResult == ValidationResult.ERROR
 
@@ -84,7 +88,7 @@ fun ContactFormScreen(
                     height = (BASE_BUTTON_HEIGHT + 4).sdp,
                     onTextChange = { value ->
                         username = value
-                        submitContactFormValidationViewModel.setUsernameValidationResult(ValidationResult.NONE)
+                        ContactFormViewModel.setUsernameValidationResult(ValidationResult.NONE)
                     },
                     placeHolder = "User name",
                     leadingIcon = Icons.Filled.Person,
@@ -123,9 +127,9 @@ fun ContactFormScreen(
                     text = feedback,
                     onTextChange = { value ->
                         feedback = value
-                        submitContactFormValidationViewModel.setFeedbackValidationResult(ValidationResult.NONE)
+                        ContactFormViewModel.setFeedbackValidationResult(ValidationResult.NONE)
                         if(value.length > TEXT_FIELD_MAX_LENGTH) {
-                            submitContactFormValidationViewModel.setFeedbackValidationResult(ValidationResult.ERROR)
+                            ContactFormViewModel.setFeedbackValidationResult(ValidationResult.ERROR)
                         }
                     },
                     height = (BASE_BUTTON_HEIGHT + 4).sdp,
@@ -161,14 +165,19 @@ fun ContactFormScreen(
                     .align(Alignment.BottomCenter)
                     .padding(bottom = BOTTOM_NAVIGATION_BAR_HEIGHT.sdp + 20.sdp),
                 onClick = {
-                    val valid = submitContactFormValidationViewModel.validation(
+                    val valid = ContactFormViewModel.validation(
                         name = username,
                         feedback = feedback,
                         maxFeedbackLength = TEXT_FIELD_MAX_LENGTH
                     )
 
-                    if(valid){
-
+                    if(valid) {
+                        EmailManager.sendEmail(
+                            senderEmail = email,
+                            senderUsername = username,
+                            messageText = feedback
+                        )
+                        ContactFormViewModel.setEmailSentTime()
                     }
                 },
                 text = "Submit",
