@@ -3,7 +3,12 @@ package com.example.jetfilms.Models.Repositories.Api
 import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import com.example.jetfilms.BASE_MEDIA_CATEGORIES
 import com.example.jetfilms.BASE_MEDIA_GENRES
+import com.example.jetfilms.Helpers.Countries.getCountryList
+import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.MovieDataToUnifiedMedia
+import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.SeriesDataToUnifiedMedia
+import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.Helpers.ListToString.CountryListToString
 import com.example.jetfilms.Helpers.ListToString.IntListToString
 import com.example.jetfilms.Models.API.ApiInterface
@@ -11,6 +16,7 @@ import com.example.jetfilms.Models.DTOs.Filters.SortTypes
 import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
 import com.example.jetfilms.Helpers.Pagination.UnifiedPagingSource
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
@@ -21,13 +27,68 @@ import javax.inject.Singleton
 class FilterRepository @Inject constructor(
     private val apiService: ApiInterface
 ) {
+
+    suspend fun getFilteredMedia(
+        sortType: SortTypes = SortTypes.POPULAR,
+        categories: List<MediaCategories> = BASE_MEDIA_CATEGORIES,
+        countries: List<String> = getCountryList(),
+        genres: List<MediaGenres> = BASE_MEDIA_GENRES,
+        year: Int = 0,
+        yearRange: Map<String,String> = mapOf(
+            "fromYear" to "1888-1-1",
+            "toYear" to "${DateFormats.getCurrentYear()}-12-31"
+        ),
+    ): List<UnifiedMedia> {
+        val moviesResponse = discoverMovies(
+            page = 1,
+            sortBy = sortType?.requestQuery.toString(),
+            genres = genres.map { it.genreId },
+            countries = countries,
+            year = year,
+            yearRange = yearRange
+        )
+        val serialsResponse = discoverSeries(
+            page = 1,
+            sortBy = sortType?.requestQuery.toString(),
+            genres = genres.map { it.genreId },
+            countries = countries,
+            year = year,
+            yearRange = yearRange
+        )
+
+        val unifiedMediaList = mutableListOf<UnifiedMedia>()
+
+        if(categories.contains(MediaCategories.MOVIE)) {
+            unifiedMediaList.addAll(moviesResponse.results.map {
+                MovieDataToUnifiedMedia(it)
+            }
+            )
+        }
+
+        if(categories.contains(MediaCategories.SERIES)) {
+            unifiedMediaList.addAll(serialsResponse.results.map {
+                SeriesDataToUnifiedMedia(it)
+            }
+            )
+        }
+
+        return when(sortType){
+            SortTypes.NEW -> unifiedMediaList.sortedByDescending { it.releaseDate }
+            SortTypes.POPULAR -> unifiedMediaList.sortedByDescending { it.popularity }
+            SortTypes.RATING -> unifiedMediaList.sortedByDescending { it.rating }
+        }
+    }
+
     fun getPaginatedFilteredMedia(
-        sortType: SortTypes?,
-        categories: List<MediaCategories>,
-        countries: List<String>,
-        genres: List<MediaGenres>,
-        year: Int,
-        yearRange: Map<String,String>,
+        sortType: SortTypes?= SortTypes.POPULAR,
+        categories: List<MediaCategories> = BASE_MEDIA_CATEGORIES,
+        countries: List<String> = getCountryList(),
+        genres: List<MediaGenres> = BASE_MEDIA_GENRES,
+        year: Int = 0,
+        yearRange: Map<String,String> = mapOf(
+            "fromYear" to "1888-1-1",
+            "toYear" to "${DateFormats.getCurrentYear()}-12-31"
+        ),
         pagesLimit: Int = Int.MAX_VALUE
     ) = Pager(
         config = PagingConfig(
@@ -35,30 +96,29 @@ class FilterRepository @Inject constructor(
         ),
         pagingSourceFactory = {
             UnifiedPagingSource(
-            getMoviesResponse = { page ->
-                Log.d("year range in repository",yearRange.toString())
-                discoverMovies(
-                    page = page,
-                    sortBy = sortType?.requestQuery.toString(),
-                    genres = genres.map { it.genreId },
-                    countries = countries,
-                    year = year,
-                    yearRange = yearRange,
-                )
-                                },
-            getSerialsResponse = { page ->
-                discoverSeries(
-                    page = page,
-                    sortBy = sortType?.requestQuery.toString(),
-                    genres = genres.map { it.genreId },
-                    countries = countries,
-                    year = year,
-                    yearRange = yearRange,
-                )
-            },
-            sortType = sortType,
-            categories = categories,
-            pagesLimit = pagesLimit
+                getMoviesResponse = { page ->
+                    discoverMovies(
+                        page = page,
+                        sortBy = sortType?.requestQuery.toString(),
+                        genres = genres.map { it.genreId },
+                        countries = countries,
+                        year = year,
+                        yearRange = yearRange,
+                    )
+                },
+                getSerialsResponse = { page ->
+                    discoverSeries(
+                        page = page,
+                        sortBy = sortType?.requestQuery.toString(),
+                        genres = genres.map { it.genreId },
+                        countries = countries,
+                        year = year,
+                        yearRange = yearRange,
+                    )
+                },
+                sortType = sortType,
+                categories = categories,
+                pagesLimit = pagesLimit
         )
         }
     ).flow
@@ -71,9 +131,6 @@ class FilterRepository @Inject constructor(
         year: Int,
         yearRange: Map<String, String>,
     ): MoviesResponse {
-        Log.d("specified Year",year.toString())
-        Log.d("from year",yearRange["fromYear"].toString())
-        Log.d("to year",yearRange["toYear"].toString())
         return if(genres == BASE_MEDIA_GENRES.map { it.genreId }) {
             apiService.discoverMovies(
                 page = page,
@@ -88,7 +145,7 @@ class FilterRepository @Inject constructor(
             apiService.filteredGenresDiscoverMovies(
                 page = page,
                 sortBy = sortBy,
-                genres = IntListToString(genres),
+                genres = genres.joinToString(","),
                 countries = CountryListToString(countries),
                 releaseYear = year.toString(),
                 fromYear = yearRange["fromYear"].toString(),
@@ -119,7 +176,7 @@ class FilterRepository @Inject constructor(
             apiService.filteredGenresDiscoverSerials(
                 page = page,
                 sortBy = sortBy,
-                genres = IntListToString(genres),
+                genres = genres.joinToString(","),
                 countries = CountryListToString(countries),
                 releaseYear = year.toString(),
                 fromYear = yearRange["fromYear"].toString(),

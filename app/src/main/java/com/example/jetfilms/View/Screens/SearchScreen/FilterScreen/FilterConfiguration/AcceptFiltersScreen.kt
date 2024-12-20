@@ -242,7 +242,7 @@ private fun FilterNavigationButton(filter: Filter, onClick: () -> Unit) {
 
         Divider(
             color = Color.DarkGray.copy(0.5f),
-            thickness = 2f.sdp,
+            thickness = 2.sdp,
             modifier = Modifier
                 .padding(bottom = 6.sdp)
                 .fillMaxWidth()

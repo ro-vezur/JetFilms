@@ -39,7 +39,7 @@ class FilterViewModel @Inject constructor(
     private val _filteredYears: MutableStateFlow<Int> = MutableStateFlow(0)
     val filteredYears: StateFlow<Int> = _filteredYears.asStateFlow()
 
-    private val _filterFromYear: MutableStateFlow<String> = MutableStateFlow("1888-1-1")
+    private val _filterFromYear: MutableStateFlow<String> = MutableStateFlow("")
     val filterFromYear: StateFlow<String> = _filterFromYear.asStateFlow()
 
     private val _filterToYear: MutableStateFlow<String> = MutableStateFlow("")
@@ -106,7 +106,6 @@ class FilterViewModel @Inject constructor(
     }
 
     fun setFilteredYearsRange(fromYear: Int, toYear: Int) = viewModelScope.launch {
-        Log.d("is 0?",(fromYear == 0 || toYear == 0).toString())
         if(fromYear == 0 || toYear == 0) {
             _filterFromYear.emit("0")
             _filterToYear.emit("0")
