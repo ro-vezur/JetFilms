@@ -160,4 +160,7 @@ dependencies {
     //email
     implementation("com.sun.mail:android-mail:1.6.0")
     implementation("com.sun.mail:android-activation:1.6.0")
+
+    //data store
+    implementation("androidx.datastore:datastore-preferences:1.0.0-alpha01")
 }
