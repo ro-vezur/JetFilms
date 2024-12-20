@@ -37,5 +37,9 @@ class DateFormats {
 
             return formatter.format(date)
         }
+
+        fun getMinutesFromMillis(millis: Long): Long {
+            return millis / 60000
+        }
     }
 }
