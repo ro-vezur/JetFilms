@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,20 +47,17 @@ import com.example.jetfilms.View.Screens.ParticipantDetailsPackage.ParticipantDe
 import com.example.jetfilms.View.Screens.SearchScreen.exploreScreen
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.View.Screens.Start.StartScreen
+import com.example.jetfilms.ViewModels.HomeViewModel
 import com.example.jetfilms.ViewModels.SharedMoviesViewModel
 import com.example.jetfilms.ViewModels.SearchHistoryViewModel
 import com.example.jetfilms.ViewModels.SharedSeriesViewModel
-import com.example.jetfilms.ViewModels.UserViewModel.AuthStatus
 import com.example.jetfilms.ViewModels.UserViewModel.UserViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
 import com.example.jetfilms.ui.theme.hazeStateBlurTint
-import com.google.firebase.auth.FirebaseAuth
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.haze
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 
@@ -95,8 +91,6 @@ fun MainScreen(
         val sharedSeriesViewModel: SharedSeriesViewModel = hiltViewModel()
 
         val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
-
-        val user by userViewModel.user.collectAsStateWithLifecycle()
 
         val initialRoute = if(firebaseUser != null) {
             HomeRoute
@@ -180,31 +174,45 @@ fun MainScreen(
                 ) {
                     showBottomBar = true
 
-                    HomeScreen(
-                        selectMovie = selectMovie,
-                        selectSeries = selectSeries,
-                        seeAllMedia = { type ->
-                            if(type == MediaCategories.MOVIE) {
-                                sharedMoviesViewModel.setMoreMoviesView(
-                                    response = { page -> sharedMoviesViewModel.getPopularMovies(page) },
-                                    pageLimit = 1
-                                )
-                            } else {
-                                sharedSeriesViewModel.setMoreSerialsView(
-                                    response = { page -> sharedSeriesViewModel.getPopularSeries(page)},
-                                    pageLimit = 1
-                                )
-                            }
-                        },
-                        navController = screensNavController,
-                        addToFavorite = { favoriteMedia ->
-                            userViewModel.addFavoriteMedia(favoriteMedia)
-                        },
-                        isFavoriteUnit = { favoriteMedia ->
-                            user?.favoriteMediaList?.find { it.id == favoriteMedia.id } != null
-                        },
-                        homeViewModel = hiltViewModel(viewModelStoreOwner)
-                    )
+                    val user by userViewModel.user.collectAsStateWithLifecycle()
+
+                    user?.let { checkedUser ->
+                        val homeViewModel = hiltViewModel<HomeViewModel,HomeViewModel.HomeViewModelFactory>(viewModelStoreOwner) { factory ->
+                            factory.create(checkedUser)
+                        }
+
+                        LaunchedEffect(null) {
+                            homeViewModel.setRecommendedMedia()
+                        }
+
+
+                        HomeScreen(
+                            selectMovie = selectMovie,
+                            selectSeries = selectSeries,
+                            seeAllMedia = { type ->
+                                if(type == MediaCategories.MOVIE) {
+                                    sharedMoviesViewModel.setMoreMoviesView(
+                                        response = { page -> sharedMoviesViewModel.getPopularMovies(page) },
+                                        pageLimit = 1
+                                    )
+                                } else {
+                                    sharedSeriesViewModel.setMoreSerialsView(
+                                        response = { page -> sharedSeriesViewModel.getPopularSeries(page)},
+                                        pageLimit = 1
+                                    )
+                                }
+                            },
+                            navController = screensNavController,
+                            addToFavorite = { favoriteMedia ->
+                                userViewModel.addFavoriteMedia(favoriteMedia)
+                            },
+                            isFavoriteUnit = { favoriteMedia ->
+                                user?.favoriteMediaList?.find { it.id == favoriteMedia.id } != null
+                            },
+                            homeViewModel = homeViewModel
+                        )
+                    }
+
                 }
 
                 exploreScreen(
@@ -238,6 +246,7 @@ fun MainScreen(
 
                     val searchedUnifiedMedia by searchHistoryViewModel.searchedUnifiedMedia.collectAsStateWithLifecycle()
                     val searchedMediaInDb by searchHistoryViewModel.searchedHistoryMedia.collectAsStateWithLifecycle()
+                    val user by userViewModel.user.collectAsStateWithLifecycle()
 
                     val searchedHistory = searchedUnifiedMedia.sortedByDescending { unifiedMedia ->
                         searchedMediaInDb.find { mediaFromDb -> unifiedMedia.id == mediaFromDb.mediaId }?.viewedDateMillis
@@ -305,6 +314,8 @@ fun MainScreen(
                 ) { route ->
                     showBottomBar = false
 
+                    val user by userViewModel.user.collectAsStateWithLifecycle()
+
                     val movieResponse =
                         route.arguments?.getParcelable<DetailedMovieResponse>("movie")
                     movieResponse?.let {
@@ -330,6 +341,8 @@ fun MainScreen(
                     enterTransition = { fadeIn(animationSpec = tween(75)) }
                 ) { route ->
                     showBottomBar = false
+
+                    val user by userViewModel.user.collectAsStateWithLifecycle()
 
                     val seriesResponse = route.arguments?.getParcelable<DetailedSerialResponse>("serial")
                     seriesResponse?.let {
@@ -368,10 +381,4 @@ fun MainScreen(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun mainscreen() {
-    MainScreen()
 }
