@@ -13,6 +13,7 @@ import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.Models.Repositories.Api.FilterRepository
 import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
 import com.example.jetfilms.Models.Repositories.Api.SeriesRepository
+import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -40,20 +41,22 @@ class HomeViewModel @AssistedInject constructor(
         fun create(user: User): HomeViewModel
     }
 
-    private val _popularSerials = MutableStateFlow<List<SimplifiedSerialObject>>(emptyList())
-    val  popularSerials = _popularSerials.asStateFlow()
+    private val _popularSerials: MutableStateFlow<List<SimplifiedSerialObject>> = MutableStateFlow(emptyList())
+    val  popularSerials: StateFlow<List<SimplifiedSerialObject>> = _popularSerials.asStateFlow()
 
     private val _popularMovies: MutableStateFlow<List<SimplifiedMovieDataClass>> = MutableStateFlow(emptyList())
-    val popularMovies = _popularMovies.asStateFlow()
+    val popularMovies: StateFlow<List<SimplifiedMovieDataClass>> = _popularMovies.asStateFlow()
 
     private val _recommendedMedia: MutableStateFlow<List<UnifiedMedia>> = MutableStateFlow(emptyList())
     val recommendedMedia: StateFlow<List<UnifiedMedia>> = _recommendedMedia.asStateFlow()
 
-    private val _topRatedMovies = MutableStateFlow<List<SimplifiedMovieDataClass>>(emptyList())
-    val topRatedMovies = _topRatedMovies.asStateFlow()
+    private val _recommendedMediaGenres: MutableStateFlow<List<MediaGenres>> = MutableStateFlow(emptyList())
 
-    private val _selectedMovie = MutableStateFlow<DetailedMovieResponse?>(null)
-    val selectedMovie = _selectedMovie.asStateFlow()
+    private val _topRatedMovies = MutableStateFlow<List<SimplifiedMovieDataClass>>(emptyList())
+    val topRatedMovies: StateFlow<List<SimplifiedMovieDataClass>> = _topRatedMovies.asStateFlow()
+
+    private val _selectedMovie: MutableStateFlow<DetailedMovieResponse?> = MutableStateFlow(null)
+    val selectedMovie: StateFlow<DetailedMovieResponse?> = _selectedMovie.asStateFlow()
 
     init {
         viewModelScope.launch{
@@ -66,7 +69,11 @@ class HomeViewModel @AssistedInject constructor(
                     setSelectedMovie(_topRatedMovies.value.first().id)
                 }
             }
+
+            setRecommendedMedia()
         }
+
+
     }
 
     fun setSelectedMovie(movieId:Int) = viewModelScope.launch {
@@ -86,12 +93,19 @@ class HomeViewModel @AssistedInject constructor(
     }
 
     fun setRecommendedMedia() = viewModelScope.launch {
+        val recommendedMediaGenres = user.recommendedMediaGenres.shuffled().take(2)
         val recommendedMedia = filterRepository.getFilteredMedia(
             categories = user.recommendedMediaCategories,
-            genres = user.recommendedMediaGenres.shuffled().take(1),
+            genres = recommendedMediaGenres,
         )
 
         _recommendedMedia.emit(recommendedMedia)
+        _recommendedMediaGenres.emit(recommendedMediaGenres)
     }
+
+    fun getPaginatedRecommendedMedia() = filterRepository.getPaginatedFilteredMedia(
+        categories = user.recommendedMediaCategories,
+        genres = _recommendedMediaGenres.value,
+    )
 
 }

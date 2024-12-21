@@ -37,9 +37,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.paging.PagingData
 import coil.compose.AsyncImage
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
 import com.example.jetfilms.View.Components.Gradient.GradientIcon
@@ -49,6 +49,7 @@ import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Helpers.DTOsConverters.ToFavoriteMedia.MovieDataToFavoriteMedia
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
 import com.example.jetfilms.View.Components.DetailedMediaComponents.MediaTitle
 import com.example.jetfilms.View.Components.Lists.MoviesCategoryList
@@ -56,6 +57,7 @@ import com.example.jetfilms.View.Components.Lists.SerialsCategoryList
 import com.example.jetfilms.View.Components.Lists.UnifiedMediaCategoryList
 import com.example.jetfilms.View.Screens.MoreMoviesScreenRoute
 import com.example.jetfilms.View.Screens.MoreSerialsScreenRoute
+import com.example.jetfilms.View.Screens.MoreUnifiedMediaScreenRoute
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
@@ -63,6 +65,9 @@ import com.example.jetfilms.View.states.rememberForeverLazyListState
 import com.example.jetfilms.View.states.rememberForeverScrollState
 import com.example.jetfilms.ViewModels.HomeViewModel
 import com.example.jetfilms.ui.theme.buttonsColor1
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 
@@ -73,6 +78,7 @@ fun HomeScreen(
     selectMovie: (id: Int) -> Unit,
     selectSeries: (id: Int) -> Unit,
     seeAllMedia: (category: MediaCategories) -> Unit,
+    seeAllForYouMedia: (paginatedRecommendedMedia: Flow<PagingData<UnifiedMedia>>) -> Unit,
     addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit,
     isFavoriteUnit: (favoriteMedia: FavoriteMedia) -> Boolean,
     homeViewModel: HomeViewModel,
@@ -239,8 +245,10 @@ fun HomeScreen(
             },
             unifiedMediaList = recommendedMedia.take(6),
             onSeeAllClick = {
-                navController.navigate(MoreMoviesScreenRoute("Popular movies"))
-                seeAllMedia(MediaCategories.MOVIE)
+                navController.navigate(MoreUnifiedMediaScreenRoute("For You"))
+                CoroutineScope(Dispatchers.IO).launch {
+                    seeAllForYouMedia(homeViewModel.getPaginatedRecommendedMedia())
+                }
             },
             topPadding = 20.sdp,
             imageModifier = Modifier
