@@ -54,7 +54,7 @@ fun MediaGenreCard(
             .height(114.sdp)
             .border(
                 if (selected) BorderStroke(
-                    2f.sdp,
+                    2.sdp,
                     Brush.horizontalGradient(listOf(buttonsColor1, buttonsColor2))
                 )
                 else BorderStroke(1.sdp, Color.Transparent),

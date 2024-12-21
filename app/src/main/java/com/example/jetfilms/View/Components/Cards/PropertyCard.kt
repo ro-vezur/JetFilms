@@ -31,7 +31,7 @@ fun PropertyCard(
             .height(25.sdp)
             .clip(RoundedCornerShape(14.sdp))
             .background(colors.primary)
-            .border(BorderStroke(1.5f.sdp, blueHorizontalGradient), RoundedCornerShape(14.sdp))
+            .border(BorderStroke(1.sdp, blueHorizontalGradient), RoundedCornerShape(14.sdp))
     ){
         Text(
             text = text,

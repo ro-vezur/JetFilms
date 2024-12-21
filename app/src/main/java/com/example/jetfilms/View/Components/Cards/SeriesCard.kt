@@ -25,7 +25,7 @@ import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
 @Composable
-fun SerialCard(
+fun SeriesCard(
     modifier: Modifier = Modifier,
     serial: SimplifiedSerialObject,
 ) {
@@ -58,7 +58,7 @@ fun SerialCard(
 
             Text(
                 text = removeNumbersAfterDecimal(serial.rating,2).toString(),
-                fontSize = 16f.ssp,
+                fontSize = 13.ssp,
                 color = Color.White,
                 modifier = Modifier
                     .padding(end = 2.sdp)

@@ -31,14 +31,7 @@ import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
-import com.example.jetfilms.ui.theme.hazeStateBlurBackground
-import com.example.jetfilms.ui.theme.hazeStateBlurTint
-import com.primex.core.ExperimentalToolkitApi
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
 
-@OptIn(ExperimentalToolkitApi::class)
 @Composable
 fun MediaFormatCard(mediaFormat: MediaCategories, selected: Boolean, onClick: () -> Unit) {
     val typography = MaterialTheme.typography
@@ -50,7 +43,7 @@ fun MediaFormatCard(mediaFormat: MediaCategories, selected: Boolean, onClick: ()
             .height(104.sdp)
             .border(
                 if (selected) BorderStroke(
-                    2f.sdp,
+                    2.sdp,
                     Brush.horizontalGradient(listOf(buttonsColor1, buttonsColor2))
                 )
                 else BorderStroke(1.sdp, Color.Transparent),

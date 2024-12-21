@@ -37,14 +37,13 @@ fun MovieParticipantCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.72f)
-            //    .height(imageHeight)
                 .clip(RoundedCornerShape(8.sdp)),
             loading = { CircularProgressIndicator() }
         )
 
         Text(
             text = movieParticipant.name,
-            fontSize = 17f.ssp,
+            fontSize = 14.ssp,
             modifier = Modifier
                 .padding(top = 6.sdp)
         )
@@ -52,7 +51,7 @@ fun MovieParticipantCard(
         Text(
             text = movieParticipant.activity,
             color = Color.LightGray.copy(0.84f),
-            fontSize = 15f.ssp,
+            fontSize = 12.ssp,
             modifier = Modifier
                 .padding(top = 2.sdp, start = 1.sdp)
         )

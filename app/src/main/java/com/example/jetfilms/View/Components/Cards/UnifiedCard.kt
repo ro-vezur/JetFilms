@@ -63,7 +63,7 @@ fun UnifiedCard(
 
             Text(
                 text = removeNumbersAfterDecimal(unifiedMedia.rating,2).toString(),
-                fontSize = 16f.ssp,
+                fontSize = 13.ssp,
                 color = Color.White,
                 modifier = Modifier
                     .padding(end = 2.sdp)
