@@ -11,6 +11,7 @@ import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
 import com.example.jetfilms.Models.Repositories.Api.SeriesRepository
 import com.example.jetfilms.Models.Repositories.Room.SearchedHistoryRepository
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,12 +35,24 @@ class SearchHistoryViewModel @Inject constructor(
     )
     val searchedHistoryMedia = _searchedHistoryMedia.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            getAllSearchHistory().forEach { searchedMedia ->
+                if (searchedMedia.mediaType == MediaCategories.MOVIE.format) {
+                    addMovieToFlow(searchedMedia.mediaId)
+                } else {
+                    addSeriesToFlow(searchedMedia.mediaId )
+                }
+            }
+        }
+    }
+
     fun addMovieToFlow(id: Int) = viewModelScope.launch {
         moviesRepository.getMovie(id).let { movie ->
             val unifiedMedia = MovieDataToUnifiedMedia(movie)
             val searchedMedia = MovieDataToSearchedMedia(movie)
 
-            val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaType == unifiedMedia.mediaType }
+            val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaCategory == unifiedMedia.mediaCategory }
             val findSearchedMedia = _searchedHistoryMedia.value.find { it.id == searchedMedia.id && it.mediaType == searchedMedia.mediaType }
 
             if(findUnifiedMedia == null) {
@@ -63,7 +76,7 @@ class SearchHistoryViewModel @Inject constructor(
         val unifiedMedia = SeriesDataToUnifiedMedia(series)
         val searchedMedia = SeriesDataToSearchedMedia(series)
 
-        val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaType == unifiedMedia.mediaType }
+        val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaCategory == unifiedMedia.mediaCategory }
         val findSearchedMedia = _searchedHistoryMedia.value.find { it.id == searchedMedia.id && it.mediaType == searchedMedia.mediaType }
 
         if(findUnifiedMedia == null) {
@@ -86,7 +99,6 @@ class SearchHistoryViewModel @Inject constructor(
 
     suspend fun getAllSearchHistory() = searchedHistoryRepository.getAll()
 
-    suspend fun getSearchedMedia(id: String) =  searchedHistoryRepository.getSearch(id)
 
     suspend fun insertSearchedMediaToDb(searchedMedia: SearchedMedia) = searchedHistoryRepository.insertSearchedMedia(searchedMedia)
 

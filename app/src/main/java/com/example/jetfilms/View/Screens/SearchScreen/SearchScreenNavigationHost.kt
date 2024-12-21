@@ -2,6 +2,7 @@ package com.example.jetfilms.View.Screens.SearchScreen
 
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -20,7 +21,7 @@ fun NavGraphBuilder.exploreScreen(
     showBottomBar: (show: Boolean) -> Unit,
     selectMedia: (id: Int, type: MediaCategories) -> Unit,
     seeAllMedia: (type: MediaCategories, query: String) -> Unit,
-    searchHistoryViewModel: SearchHistoryViewModel,
+    viewModelStoreOwner: ViewModelStoreOwner,
 ) {
     navigation<ExploreNavigationHost>(
         startDestination = ExploreNavigationHost.SearchRoute,
@@ -32,6 +33,9 @@ fun NavGraphBuilder.exploreScreen(
 
             val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
             val filteredResults = filterViewModel.filteredResults.collectAsLazyPagingItems()
+
+            val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel(viewModelStoreOwner)
+
 
             showBottomBar(true)
 

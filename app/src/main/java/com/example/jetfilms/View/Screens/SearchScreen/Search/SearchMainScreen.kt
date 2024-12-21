@@ -134,7 +134,7 @@ fun SearchScreen(
                         )
                     }
                 }
-            ) { innerPadding ->
+            ) { _ ->
 
                 Box(
                     modifier = Modifier
@@ -221,10 +221,10 @@ fun SearchScreen(
                             topPadding = searchBarHeight,
                             data = searchedHistoryUnifiedMedia.sortedByDescending { unifiedMedia ->
                                 searchedHistorySearchedMedia.find {
-                                    it.id == "${unifiedMedia.id}${unifiedMedia.mediaType.format}"
+                                    it.id == "${unifiedMedia.id}${unifiedMedia.mediaCategory.format}"
                                 }?.viewedDateMillis
                             },
-                            selectMedia = { unifiedMedia -> selectMedia(unifiedMedia.id,unifiedMedia.mediaType) }
+                            selectMedia = { unifiedMedia -> selectMedia(unifiedMedia.id,unifiedMedia.mediaCategory) }
                         )
                     }
 
