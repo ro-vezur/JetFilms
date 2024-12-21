@@ -22,11 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.example.jetfilms.View.Components.Cards.SeriesCard
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.View.Components.Cards.UnifiedCard
 import com.example.jetfilms.View.Components.TopBars.BaseTopAppBar
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.View.states.rememberForeverLazyGridState
 import com.example.jetfilms.ui.theme.hazeStateBlurBackground
@@ -38,18 +39,17 @@ import dev.chrisbanes.haze.hazeChild
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MoreSerialsScreen(
+fun MoreUnifiedScreen(
     turnBack: () -> Unit,
-    selectSeries: (id: Int) -> Unit,
+    selectMedia: (id: Int,category: MediaCategories) -> Unit,
     category: String,
-    moreSeriesView: LazyPagingItems<SimplifiedSerialObject>
+    moreUnifiedMediaView: LazyPagingItems<UnifiedMedia>,
 ) {
 
     val gridState = rememberForeverLazyGridState(category)
     val hazeState = remember{HazeState()}
 
-    val topBarHeight = 46
-    val itemsGridSpacing = 9
+    val topBarHeight = 52.sdp
 
     Scaffold(
         containerColor = primaryColor,
@@ -62,47 +62,53 @@ fun MoreSerialsScreen(
             )
         },
         modifier = Modifier
-    ) {  _ ->
+    ) { _ ->
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier =
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .haze(
                     hazeState,
                     backgroundColor = hazeStateBlurBackground,
                     tint = hazeStateBlurTint,
                     blurRadius = HAZE_STATE_BLUR.sdp,
+                    noiseFactor = 0f
                 )
         ){
-
             when {
-                moreSeriesView.loadState.refresh is LoadState.Loading -> {
+                moreUnifiedMediaView.loadState.refresh is LoadState.Loading -> {
                     CircularProgressIndicator()
                 }
-
-                else -> LazyVerticalGrid(
+                else ->  LazyVerticalGrid(
                     modifier = Modifier
                         .fillMaxSize(),
                     columns = GridCells.Fixed(2),
-                    horizontalArrangement = Arrangement.spacedBy(itemsGridSpacing.sdp),
-                    verticalArrangement = Arrangement.spacedBy(itemsGridSpacing.sdp),
+                    horizontalArrangement = Arrangement.spacedBy(9.sdp),
+                    verticalArrangement = Arrangement.spacedBy(9.sdp),
                     contentPadding = PaddingValues(8.sdp),
                     state = gridState,
 
                     ) {
-                    item(span = { GridItemSpan(maxLineSpan) }) { Spacer(modifier = Modifier.height((topBarHeight-itemsGridSpacing).sdp)) }
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Spacer(
+                            modifier = Modifier.height(
+                                topBarHeight
+                            )
+                        )
+                    }
 
-                    items(moreSeriesView.itemCount) { index ->
-                        val serial = moreSeriesView[index]
-                        serial?.let {
-                            SeriesCard(
-                                serial = serial,
+                    items(moreUnifiedMediaView.itemCount) { index ->
+                        val unifiedMedia = moreUnifiedMediaView[index]
+                        unifiedMedia?.let {
+                            UnifiedCard(
+                                unifiedMedia = unifiedMedia,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.sdp))
                                     .height(205.sdp)
-                                    .clickable { selectSeries(serial.id) }
+                                    .clickable {
+                                        selectMedia(unifiedMedia.id,unifiedMedia.mediaCategory)
+                                    }
                             )
                         }
                     }
