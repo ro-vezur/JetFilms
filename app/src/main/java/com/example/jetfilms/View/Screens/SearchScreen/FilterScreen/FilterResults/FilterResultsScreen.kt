@@ -68,7 +68,7 @@ fun FilteredResultsScreen(
                 selectMedia = { filteredMedia ->
                     selectMedia(
                         filteredMedia.id,
-                        filteredMedia.mediaType
+                        filteredMedia.mediaCategory
                     )
                 },
                 topPadding = FILTER_TOP_BAR_HEIGHT.sdp
