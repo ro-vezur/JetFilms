@@ -1,6 +1,8 @@
 package com.example.jetfilms.Models.DTOs.UserDTOs
 
 import android.os.Parcelable
+import com.example.jetfilms.BASE_MEDIA_CATEGORIES
+import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.Helpers.StringFunctions.splitUsername
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
@@ -34,20 +36,15 @@ data class User (
             val (firstName, lastName) = splitUsername(firebaseUser.displayName.toString())
 
            return User(
-                id = firebaseUser.uid,
-                firstName = firstName,
-                lastName = lastName,
-                email = firebaseUser.email.toString(),
-                password = "None",
-               customProviderUsed = false
+               id = firebaseUser.uid,
+               firstName = firstName,
+               lastName = lastName,
+               email = firebaseUser.email.toString(),
+               password = "None",
+               customProviderUsed = false,
+               recommendedMediaGenres = BASE_MEDIA_GENRES.toMutableList(),
+               recommendedMediaCategories = BASE_MEDIA_CATEGORIES.toMutableList(),
             )
-        }
-
-        fun customSignInUser(
-            firebaseUser: FirebaseUser
-        ): User {
-
-            return User()
         }
     }
 }
