@@ -2,12 +2,9 @@ package com.example.jetfilms.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.compose.collectAsLazyPagingItems
-import com.example.jetfilms.Models.DTOs.Filters.SortTypes
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
-import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSeriesResponse
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.Models.Repositories.Api.FilterRepository
@@ -18,15 +15,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = HomeViewModel.HomeViewModelFactory::class)
 class HomeViewModel @AssistedInject constructor(
@@ -41,19 +33,19 @@ class HomeViewModel @AssistedInject constructor(
         fun create(user: User): HomeViewModel
     }
 
-    private val _popularSerials: MutableStateFlow<List<SimplifiedSerialObject>> = MutableStateFlow(emptyList())
-    val  popularSerials: StateFlow<List<SimplifiedSerialObject>> = _popularSerials.asStateFlow()
+    private val _popularSerials: MutableStateFlow<List<SimplifiedSeriesResponse>> = MutableStateFlow(emptyList())
+    val  popularSerials: StateFlow<List<SimplifiedSeriesResponse>> = _popularSerials.asStateFlow()
 
-    private val _popularMovies: MutableStateFlow<List<SimplifiedMovieDataClass>> = MutableStateFlow(emptyList())
-    val popularMovies: StateFlow<List<SimplifiedMovieDataClass>> = _popularMovies.asStateFlow()
+    private val _popularMovies: MutableStateFlow<List<SimplifiedMovieResponse>> = MutableStateFlow(emptyList())
+    val popularMovies: StateFlow<List<SimplifiedMovieResponse>> = _popularMovies.asStateFlow()
 
     private val _recommendedMedia: MutableStateFlow<List<UnifiedMedia>> = MutableStateFlow(emptyList())
     val recommendedMedia: StateFlow<List<UnifiedMedia>> = _recommendedMedia.asStateFlow()
 
     private val _recommendedMediaGenres: MutableStateFlow<List<MediaGenres>> = MutableStateFlow(emptyList())
 
-    private val _topRatedMovies = MutableStateFlow<List<SimplifiedMovieDataClass>>(emptyList())
-    val topRatedMovies: StateFlow<List<SimplifiedMovieDataClass>> = _topRatedMovies.asStateFlow()
+    private val _topRatedMovies = MutableStateFlow<List<SimplifiedMovieResponse>>(emptyList())
+    val topRatedMovies: StateFlow<List<SimplifiedMovieResponse>> = _topRatedMovies.asStateFlow()
 
     private val _selectedMovie: MutableStateFlow<DetailedMovieResponse?> = MutableStateFlow(null)
     val selectedMovie: StateFlow<DetailedMovieResponse?> = _selectedMovie.asStateFlow()

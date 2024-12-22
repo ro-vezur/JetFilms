@@ -45,9 +45,8 @@ import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
 import com.example.jetfilms.View.Components.Gradient.GradientIcon
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
-import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieResponse
 import com.example.jetfilms.BASE_IMAGE_API_URL
-import com.example.jetfilms.Helpers.DTOsConverters.ToFavoriteMedia.MovieDataToFavoriteMedia
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
@@ -99,7 +98,7 @@ fun HomeScreen(
 
     LaunchedEffect(selectedMovie) {
         selectedMovie?.let {
-            isFavorite = isFavoriteUnit(MovieDataToFavoriteMedia(it))
+            isFavorite = isFavoriteUnit(FavoriteMedia.fromDetailedMovieResponse(it))
         }
     }
 
@@ -180,7 +179,7 @@ fun HomeScreen(
                             .clickable {
                                 isFavorite = !isFavorite
                                 selectedMovie?.let {
-                                    addToFavorite(MovieDataToFavoriteMedia(it))
+                                    addToFavorite(FavoriteMedia.fromDetailedMovieResponse(it))
                                 }
 
                             }
@@ -292,8 +291,8 @@ fun HomeScreen(
 
 @Composable
 private fun MoviePager(
-    selectMovie:(movie: SimplifiedMovieDataClass) -> Unit,
-    moviesList: List<SimplifiedMovieDataClass>,
+    selectMovie:(movie: SimplifiedMovieResponse) -> Unit,
+    moviesList: List<SimplifiedMovieResponse>,
     movieToSelect: DetailedMovieResponse?
 ) {
 
@@ -327,7 +326,7 @@ private fun MoviePager(
                 ) {
 
                     AsyncImage(
-                        model = "$BASE_IMAGE_API_URL${movie.poster}",
+                        model = "$BASE_IMAGE_API_URL${movie.posterUrl}",
                         contentDescription = "movie poster",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
