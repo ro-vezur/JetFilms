@@ -2,17 +2,15 @@ package com.example.jetfilms.Helpers.Pagination
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesPageResponse
 import com.example.jetfilms.Models.DTOs.Filters.SortTypes
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.MovieDataToUnifiedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.SeriesDataToUnifiedMedia
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 
 class UnifiedPagingSource(
-    val getMoviesResponse: suspend (page: Int) -> MoviesResponse,
-    val getSerialsResponse: suspend (page: Int) -> SeriesResponse,
+    val getMoviesResponse: suspend (page: Int) -> MoviesPageResponse,
+    val getSerialsResponse: suspend (page: Int) -> SeriesPageResponse,
     val sortType: SortTypes?,
     val categories: List<MediaCategories>,
     val pagesLimit: Int = Int.MAX_VALUE
@@ -35,14 +33,14 @@ class UnifiedPagingSource(
 
             if(categories.contains(MediaCategories.MOVIE)) {
                 unifiedMediaList.addAll(moviesResponse.results.map {
-                    MovieDataToUnifiedMedia(it)
+                    UnifiedMedia.fromSimplifiedMovieResponse(it)
                 }
                 )
             }
 
             if(categories.contains(MediaCategories.SERIES)) {
                 unifiedMediaList.addAll(serialsResponse.results.map {
-                    SeriesDataToUnifiedMedia(it)
+                    UnifiedMedia.fromSimplifiedSeriesResponse(it)
                 }
                 )
             }

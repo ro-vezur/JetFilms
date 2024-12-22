@@ -1,24 +1,22 @@
 package com.example.jetfilms.Helpers.Pagination
 
-import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.jetfilms.Models.API.ApiInterface
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieResponse
 
 class MoviesPagingSource(
-    val getResponse: suspend (page: Int) -> MoviesResponse,
+    val getResponse: suspend (page: Int) -> MoviesPageResponse,
     val pageLimit: Int = Int.MAX_VALUE
-) : PagingSource<Int, SimplifiedMovieDataClass>() {
-    override fun getRefreshKey(state: PagingState<Int, SimplifiedMovieDataClass>): Int? {
+) : PagingSource<Int, SimplifiedMovieResponse>() {
+    override fun getRefreshKey(state: PagingState<Int, SimplifiedMovieResponse>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SimplifiedMovieDataClass> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SimplifiedMovieResponse> {
 
         return try {
             val page = params.key ?: 1
