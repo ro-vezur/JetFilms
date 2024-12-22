@@ -63,7 +63,7 @@ fun SearchSuggestionsLazyColumn(
                 )
 
                 Text(
-                    text = suggestion.name,
+                    text = suggestion.title,
                     color = whiteColor,
                     fontSize = 13.ssp,
                     lineHeight = 17.ssp,

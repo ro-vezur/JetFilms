@@ -2,10 +2,6 @@ package com.example.jetfilms.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.Helpers.DTOsConverters.ToSearchedMedia.MovieDataToSearchedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToSearchedMedia.SeriesDataToSearchedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.MovieDataToUnifiedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.SeriesDataToUnifiedMedia
 import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
@@ -49,8 +45,8 @@ class SearchHistoryViewModel @Inject constructor(
 
     fun addMovieToFlow(id: Int) = viewModelScope.launch {
         moviesRepository.getMovie(id).let { movie ->
-            val unifiedMedia = MovieDataToUnifiedMedia(movie)
-            val searchedMedia = MovieDataToSearchedMedia(movie)
+            val unifiedMedia = UnifiedMedia.fromDetailedMovieResponse(movie)
+            val searchedMedia = SearchedMedia.fromDetailedMovieResponse(movie)
 
             val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaCategory == unifiedMedia.mediaCategory }
             val findSearchedMedia = _searchedHistoryMedia.value.find { it.id == searchedMedia.id && it.mediaType == searchedMedia.mediaType }
@@ -73,8 +69,8 @@ class SearchHistoryViewModel @Inject constructor(
     fun addSeriesToFlow(id: Int) = viewModelScope.launch {
         val series = seriesRepository.getSerial(id)
 
-        val unifiedMedia = SeriesDataToUnifiedMedia(series)
-        val searchedMedia = SeriesDataToSearchedMedia(series)
+        val unifiedMedia = UnifiedMedia.fromDetailedSeriesResponse(series)
+        val searchedMedia = SearchedMedia.fromDetailedSeriesResponse(series)
 
         val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaCategory == unifiedMedia.mediaCategory }
         val findSearchedMedia = _searchedHistoryMedia.value.find { it.id == searchedMedia.id && it.mediaType == searchedMedia.mediaType }

@@ -1,7 +1,5 @@
 package com.example.jetfilms.Models.Repositories.Api
 
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.MovieDataToUnifiedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.SeriesDataToUnifiedMedia
 import com.example.jetfilms.Models.API.ApiInterface
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import javax.inject.Inject
@@ -15,10 +13,10 @@ class SearchRepository @Inject constructor(private val apiService: ApiInterface)
 
         val unifiedMedia = mutableListOf<UnifiedMedia>()
 
-        unifiedMedia.addAll(searchMovies.results.map { MovieDataToUnifiedMedia(it) })
-        unifiedMedia.addAll(searchSeries.results.map { SeriesDataToUnifiedMedia(it) })
+        unifiedMedia.addAll(searchMovies.results.map { UnifiedMedia.fromSimplifiedMovieResponse(it)})
+        unifiedMedia.addAll(searchSeries.results.map { UnifiedMedia.fromSimplifiedSeriesResponse(it) })
 
-        return (searchMovies.results.map { MovieDataToUnifiedMedia(it) } + searchSeries.results.map { SeriesDataToUnifiedMedia(it) }).sortedByDescending { it.popularity }.take(12)
+        return unifiedMedia.sortedByDescending { it.popularity }.take(12)
     }
 
     suspend fun searchMovies(query: String,page: Int) = apiService.searchMovies(query,page)

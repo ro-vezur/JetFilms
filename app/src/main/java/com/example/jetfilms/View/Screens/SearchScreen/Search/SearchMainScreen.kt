@@ -39,8 +39,7 @@ import com.example.jetfilms.View.Components.InputFields.SearchField
 import com.example.jetfilms.View.Components.Lists.MoviesCategoryList
 import com.example.jetfilms.View.Components.Lists.SerialsCategoryList
 import com.example.jetfilms.HAZE_STATE_BLUR
-import com.example.jetfilms.Helpers.DTOsConverters.ToSearchedMedia.MovieDataToSearchedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToSearchedMedia.SeriesDataToSearchedMedia
+import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.View.Components.LazyComponents.LazyGrid.UnifiedMediaVerticalLazyGrid
 import com.example.jetfilms.View.Screens.SearchScreen.SearchScreenComponents.FilterButton
@@ -162,7 +161,7 @@ fun SearchScreen(
                                     selectMovie = { id ->
                                         scope.launch {
                                             searchHistoryViewModel.getMovie(id).let { searchedMovie ->
-                                                val searchedMedia = MovieDataToSearchedMedia(searchedMovie)
+                                                val searchedMedia = SearchedMedia.fromDetailedMovieResponse(searchedMovie)
 
                                                 searchHistoryViewModel.insertSearchedMediaToDb(searchedMedia )
                                                 searchHistoryViewModel.addMovieToFlow(id)
@@ -186,7 +185,7 @@ fun SearchScreen(
                                     selectSerial = { id ->
                                         scope.launch {
                                             val searchedSeries = searchHistoryViewModel.getSeries(id)
-                                            val searchedMedia = SeriesDataToSearchedMedia(searchedSeries)
+                                            val searchedMedia = SearchedMedia.fromDetailedSeriesResponse(searchedSeries)
 
                                             searchHistoryViewModel.insertSearchedMediaToDb(searchedMedia)
                                             searchHistoryViewModel.addSeriesToFlow(id)
@@ -237,10 +236,10 @@ fun SearchScreen(
                             searchSuggestions = searchSuggestions,
                             onSuggestionClick = { suggestion ->
                                 focusManager.clearFocus()
-                                searchViewModel.setSearchText(suggestion.name)
+                                searchViewModel.setSearchText(suggestion.title)
                                 searchViewModel.setIsRequestSent(true)
-                                searchViewModel.setSearchedMovies(suggestion.name)
-                                searchViewModel.setSearchedSerials(suggestion.name)
+                                searchViewModel.setSearchedMovies(suggestion.title)
+                                searchViewModel.setSearchedSerials(suggestion.title)
                             }
                         )
                     }

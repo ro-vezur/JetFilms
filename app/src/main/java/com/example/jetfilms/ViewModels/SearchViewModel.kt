@@ -2,8 +2,8 @@ package com.example.jetfilms.ViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesPageResponse
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.Repositories.Api.SearchRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,10 +27,10 @@ class SearchViewModel @Inject constructor(
     private val _searchSuggestions: MutableStateFlow<List<UnifiedMedia>> = MutableStateFlow(listOf())
     val searchSuggestions = _searchSuggestions.asStateFlow()
 
-    private val _searchedMovies = MutableStateFlow<MoviesResponse?>(null)
+    private val _searchedMovies = MutableStateFlow<MoviesPageResponse?>(null)
     val searchedMovies = _searchedMovies.asStateFlow()
 
-    private val _searchedSeries = MutableStateFlow<SeriesResponse?>(null)
+    private val _searchedSeries = MutableStateFlow<SeriesPageResponse?>(null)
     val searchedSeries = _searchedSeries.asStateFlow()
 
     fun setSearchText(text: String){
