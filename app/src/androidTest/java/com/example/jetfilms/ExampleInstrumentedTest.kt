@@ -1,7 +1,7 @@
 package com.example.jetfilms
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 import com.example.jetfilms.Helpers.Validators.Validators.Registration.Email.EmailValidator
 import com.example.jetfilms.Helpers.Validators.Validators.Registration.Password.PasswordValidator

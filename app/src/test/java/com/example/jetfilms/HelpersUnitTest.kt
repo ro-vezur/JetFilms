@@ -1,6 +1,6 @@
 package com.example.jetfilms
 
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import org.junit.Test
 
 import org.junit.runner.RunWith
