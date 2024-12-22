@@ -102,7 +102,7 @@ fun EditProfileScreen(
                 .fillMaxSize()
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(17f.sdp),
+                verticalArrangement = Arrangement.spacedBy(13.sdp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .padding(bottom = 38.sdp)
@@ -113,7 +113,7 @@ fun EditProfileScreen(
                     modifier = Modifier
                         .padding(top = 26.sdp)
                         .size(userImageSize.sdp)
-                        .border(BorderStroke(2f.sdp, whiteColor), CircleShape)
+                        .border(BorderStroke(2.sdp, whiteColor), CircleShape)
                 ){
                     AsyncImage(
                         model = "",

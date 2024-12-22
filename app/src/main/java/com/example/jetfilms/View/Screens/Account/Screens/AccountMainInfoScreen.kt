@@ -44,12 +44,12 @@ import com.example.jetfilms.View.Screens.AccountScreenNavHost
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.darkerGreenColor
+import com.example.jetfilms.ui.theme.orange
 import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.purpleColor
 import com.example.jetfilms.ui.theme.secondaryColor
 import com.example.jetfilms.ui.theme.typography
 import com.example.jetfilms.ui.theme.whiteColor
-import com.primex.core.Orange
 
 private val navigateButtonsDividerColor = Color(0xFF3e4b62)
 
@@ -75,7 +75,7 @@ fun AccountMainInfoScreen(
             modifier = Modifier
                 .padding(top = 32.sdp)
                 .size(userImageSize.sdp)
-                .border(BorderStroke(2f.sdp, whiteColor), CircleShape)
+                .border(BorderStroke(2.sdp, whiteColor), CircleShape)
         ){
             AsyncImage(
                 model = "",
@@ -128,7 +128,7 @@ fun AccountMainInfoScreen(
 
                     if (NavigationButtonClass.entries.last() != data) {
                         Divider(
-                            thickness = 2f.sdp,
+                            thickness = 2.sdp,
                             color = navigateButtonsDividerColor,
                             modifier = Modifier
                                 .padding(bottom = 3.sdp)
@@ -155,7 +155,7 @@ fun AccountMainInfoScreen(
             corners = RoundedCornerShape(12.sdp),
             background = secondaryColor,
             border = BorderStroke(
-                1.45f.sdp, blueHorizontalGradient
+                1.sdp, blueHorizontalGradient
             ),
             modifier = Modifier
                 .padding(top = 34.sdp)
@@ -216,7 +216,7 @@ private fun NavigationButtonCard(data: NavigationButtonClass, onClick: () -> Uni
 
 private enum class NavigationButtonClass(val text: String, val icon: ImageVector, val color: Color,val route: Any) {
     EDIT_PROFILE("Edit Profile",Icons.Default.Person,Color.Blue,AccountScreenNavHost.EditAccountRoute),
-    SETTINGS("Re-Choose Interest",Icons.Default.Interests,Color.Orange,AccountScreenNavHost.ReChooseInterestNavHost),
+    SETTINGS("Re-Choose Interest",Icons.Default.Interests, orange,AccountScreenNavHost.ReChooseInterestNavHost),
     CONTACT("Contact JetFilms Support",Icons.Default.SupportAgent, purpleColor,AccountScreenNavHost.ContactFormRoute),
     ABOUT("About JetFilms", Icons.Default.Info, darkerGreenColor,AccountScreenNavHost.AboutAppRoute)
 }
