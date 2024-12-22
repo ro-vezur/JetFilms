@@ -4,15 +4,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SeriesResponse(
-    val page: Int,
-    val results: List<SimplifiedSerialObject>,
-    @SerializedName("total_pages") val totalPages: Int,
-    @SerializedName("total_results") val totalResults: Int
-)
-
-@Serializable
-data class SimplifiedSerialObject(
+data class SimplifiedSeriesResponse(
     @SerializedName("poster_path") val poster: String?,
     @SerializedName("genre_ids") val genreIds: List<Int>,
     val id: Int,
