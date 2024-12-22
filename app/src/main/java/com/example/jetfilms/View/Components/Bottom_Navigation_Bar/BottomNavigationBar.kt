@@ -63,9 +63,6 @@ fun BottomNavBar(
             if(currentRoute.contains(item.title)) {
                 selected = item
             }
-            if(item.route.toString().replace("$",".").contains(currentRoute)) {
-
-            }
         }
     }
 
