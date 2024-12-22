@@ -2,10 +2,10 @@ package com.example.jetfilms.ViewModels.DetailedMediaViewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
 import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailersResponse
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.ImagesFromUnifiedMediaResponse
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.MediaCreditsResponse
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.MediaImages.ImagesFromMediaResponse
 import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
 import com.example.jetfilms.Models.Repositories.Api.ParticipantRepository
 import dagger.assisted.Assisted
@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel(assistedFactory = DetailedMovieViewModel.DetailedMovieViewModelFactory::class)
 class DetailedMovieViewModel @AssistedInject constructor(
@@ -30,14 +29,14 @@ class DetailedMovieViewModel @AssistedInject constructor(
         fun create(movieId: Int): DetailedMovieViewModel
     }
 
-    private val _movieCast: MutableStateFlow<UnifiedMediaCreditsResponse?> = MutableStateFlow(null)
-    val movieCast: StateFlow<UnifiedMediaCreditsResponse?> = _movieCast.asStateFlow()
+    private val _movieCast: MutableStateFlow<MediaCreditsResponse?> = MutableStateFlow(null)
+    val movieCast: StateFlow<MediaCreditsResponse?> = _movieCast.asStateFlow()
 
-    private val _movieImages: MutableStateFlow<ImagesFromUnifiedMediaResponse?> = MutableStateFlow(null)
-    val movieImages: StateFlow<ImagesFromUnifiedMediaResponse?> = _movieImages.asStateFlow()
+    private val _movieImages: MutableStateFlow<ImagesFromMediaResponse?> = MutableStateFlow(null)
+    val movieImages: StateFlow<ImagesFromMediaResponse?> = _movieImages.asStateFlow()
 
-    private val _similarMovies: MutableStateFlow<MoviesResponse?> = MutableStateFlow(null)
-    val similarMovies: StateFlow<MoviesResponse?> = _similarMovies.asStateFlow()
+    private val _similarMovies: MutableStateFlow<MoviesPageResponse?> = MutableStateFlow(null)
+    val similarMovies: StateFlow<MoviesPageResponse?> = _similarMovies.asStateFlow()
 
     private val _movieTrailers: MutableStateFlow<TrailersResponse?> = MutableStateFlow(null)
     val movieTrailers: StateFlow<TrailersResponse?> = _movieTrailers.asStateFlow()

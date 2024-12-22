@@ -5,8 +5,8 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.jetfilms.Models.DTOs.MoviePackage.MovieDisplay
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.SimplifiedParticipantResponse
 import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailerObject
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.MovieDetailsPackage.MovieAboutScreen
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.MovieDetailsPackage.MovieMoreLikeThisScreen
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.MovieDetailsPackage.MovieTrailersScreen

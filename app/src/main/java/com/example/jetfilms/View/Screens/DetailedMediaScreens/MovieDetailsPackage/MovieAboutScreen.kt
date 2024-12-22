@@ -23,9 +23,9 @@ import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import com.example.jetfilms.View.Components.Cards.MovieParticipantCard
 import com.example.jetfilms.Models.DTOs.MoviePackage.MovieDisplay
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.SimplifiedParticipantResponse
 import com.example.jetfilms.extensions.sdp
 import java.util.Locale
 
@@ -161,7 +161,6 @@ fun MovieAboutScreen(
                                 .clickable {
                                     navigateToSelectedParticipant(participant)
                                 },
-                            imageHeight = 160.sdp
                         )
                     }
 

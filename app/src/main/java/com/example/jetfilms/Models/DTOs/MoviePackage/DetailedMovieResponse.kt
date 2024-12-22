@@ -23,4 +23,3 @@ data class DetailedMovieResponse(
     @SerializedName("poster_path") val posterUrl: String,
     @SerializedName("spoken_languages") val languages: List<Language> = listOf(),
 ): Parcelable
-

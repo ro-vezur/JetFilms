@@ -12,12 +12,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import com.example.jetfilms.View.Components.Cards.MovieCard
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
 import com.example.jetfilms.extensions.sdp
 
 @Composable
 fun MovieMoreLikeThisScreen(
-    similarMovies: MoviesResponse,
+    similarMovies: MoviesPageResponse,
     selectMovie: (id: Int) -> Unit
 ) {
     LazyRow(
