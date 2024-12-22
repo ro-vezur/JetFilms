@@ -79,3 +79,8 @@ data class MoreSerialsScreenRoute(
     val category: String
 ): Parcelable
 
+@Parcelize
+@Serializable
+data class MoreUnifiedMediaScreenRoute(
+    val category: String
+): Parcelable

@@ -24,12 +24,12 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
 import com.example.jetfilms.View.Components.Bottom_Navigation_Bar.BottomNavBar
-import com.example.jetfilms.extensions.CustomNavType.DetailedMovieNavType
-import com.example.jetfilms.extensions.CustomNavType.DetailedSerialNavType
+import com.example.jetfilms.extensions.CustomNavType.MovieNavType
+import com.example.jetfilms.extensions.CustomNavType.SeriesNavType
 import com.example.jetfilms.extensions.CustomNavType.ParticipantNavType
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
-import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantResponse
-import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.DetailedParticipantResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSeriesResponse
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedSerial
 import com.example.jetfilms.Helpers.Network.ConnectionState
 import com.example.jetfilms.Helpers.Network.connectivityState
@@ -307,7 +307,7 @@ fun MainScreen(
 
                 composable(
                     route = "movie_details/{movie}",
-                    arguments = listOf(navArgument("movie") { type = DetailedMovieNavType() }),
+                    arguments = listOf(navArgument("movie") { type = MovieNavType() }),
                 ) { route ->
                     showBottomBar = false
 
@@ -332,7 +332,7 @@ fun MainScreen(
                 composable(
                     route = "serial_details/{serial}",
                     arguments = listOf(navArgument("serial") {
-                        type = DetailedSerialNavType()
+                        type = SeriesNavType()
                     }),
                     enterTransition = { fadeIn(animationSpec = tween(75)) }
                 ) { route ->
@@ -340,7 +340,7 @@ fun MainScreen(
 
                     val user by userViewModel.user.collectAsStateWithLifecycle()
 
-                    val seriesResponse = route.arguments?.getParcelable<DetailedSerialResponse>("serial")
+                    val seriesResponse = route.arguments?.getParcelable<DetailedSeriesResponse>("serial")
                     seriesResponse?.let {
                         SerialDetailsScreen(
                             navController = screensNavController,
