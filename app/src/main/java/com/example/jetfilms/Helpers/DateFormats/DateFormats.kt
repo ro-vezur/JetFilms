@@ -1,10 +1,7 @@
-package com.example.jetfilms.Helpers.Date_formats
+package com.example.jetfilms.Helpers.DateFormats
 
 import android.icu.text.SimpleDateFormat
-import android.util.Log
 import java.time.LocalDate
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
