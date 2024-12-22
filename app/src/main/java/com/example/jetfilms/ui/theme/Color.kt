@@ -20,6 +20,7 @@ val whiteColor = Color.White
 val transparentColor = Color.Transparent
 val purpleColor = Color(0xFF7f02ff)
 val darkerGreenColor = Color(0xFF11d003)
+val orange = Color(0xFFE47335)
 
 val hazeStateBlurBackground = primaryColor
 val hazeStateBlurTint = primaryColor.copy(0.25f)

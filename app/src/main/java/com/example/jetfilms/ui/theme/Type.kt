@@ -24,24 +24,24 @@ fun typography():Typography {
         ),
 
         bodyMedium = TextStyle(
-            fontSize = (19.1f).ssp,
+            fontSize = (15).ssp,
             fontWeight = FontWeight.SemiBold
         ),
 
         bodyLarge = TextStyle(
-            fontSize = (16).ssp,
-            fontWeight = FontWeight.W400
+            fontSize = (17).ssp,
+            fontWeight = FontWeight.W500
         ),
 
         titleLarge = TextStyle(
-            fontSize = (22).ssp,
+            fontSize = (20).ssp,
             fontWeight = FontWeight.W500,
             lineHeight = 32.ssp
         ),
 
         headlineLarge = TextStyle(
-            fontSize = (20).ssp,
-            fontWeight = FontWeight.Normal,
+            fontSize = (19).ssp,
+            fontWeight = FontWeight.W500,
         )
     )
 }
