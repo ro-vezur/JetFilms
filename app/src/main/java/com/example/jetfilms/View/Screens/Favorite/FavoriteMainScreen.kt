@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,7 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.View.Components.Cards.UnifiedCard
@@ -49,11 +49,6 @@ fun FavoriteMainScreen(
 ) {
     val typography = typography()
     val scrollState = rememberForeverScrollState(key = "favorite screen")
-
-    val screensNavigateButtons = listOf(
-        "Download",
-        "Favorite Movies and Series",
-    )
 
     Scaffold(
         containerColor = primaryColor,
@@ -75,19 +70,17 @@ fun FavoriteMainScreen(
             ) {
                 Divider(
                     color = Color.DarkGray.copy(0.5f),
-                    thickness = 2f.sdp,
+                    thickness = 2.sdp,
                     modifier = Modifier
                         .padding(top = 32.sdp)
                         .fillMaxWidth()
                         .clip(CircleShape)
                 )
 
-                screensNavigateButtons.forEach { text ->
-                    CategoryCard(
-                        text = text,
-                        onClick = {navController.navigate(text)},
-                    )
-                }
+                CategoryCard(
+                    text = "Favorite Movies and Series",
+                    onClick = {navController.navigate("Favorite Movies and Series",)},
+                )
             }
 
             Column(
@@ -120,9 +113,9 @@ fun FavoriteMainScreen(
                 ) {
                     item{ Spacer(modifier = Modifier.width(2.sdp)) }
 
-                    itemsIndexed(searchedHistoryFlow) { index, unifiedMedia ->
+                    items(searchedHistoryFlow) { unifiedMedia ->
 
-                        val searchedMediaInDb = searchedHistoryInDb.find { it.id == "${unifiedMedia.id}${unifiedMedia.mediaType.format}"}
+                        val searchedMediaInDb = searchedHistoryInDb.find { it.id == "${unifiedMedia.id}${unifiedMedia.mediaCategory.format}"}
 
                         searchedMediaInDb?.run {
                             Column(
@@ -182,8 +175,6 @@ fun FavoriteMainScreen(
             }
         }
     }
-
-
 }
 
 @Composable
@@ -225,7 +216,7 @@ private fun CategoryCard(
 
         Divider(
             color = Color.DarkGray.copy(0.5f),
-            thickness = 2f.sdp,
+            thickness = 2.sdp,
             modifier = Modifier
                 .padding(bottom = 6.sdp)
                 .fillMaxWidth()

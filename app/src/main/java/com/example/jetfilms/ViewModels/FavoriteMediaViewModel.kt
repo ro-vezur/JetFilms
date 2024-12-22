@@ -3,8 +3,6 @@ package com.example.jetfilms.ViewModels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.MovieDataToUnifiedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.SeriesDataToUnifiedMedia
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
@@ -60,12 +58,11 @@ class FavoriteMediaViewModel @AssistedInject constructor(
     }
 
     private suspend fun convertFavoriteMovieToUnifiedMedia(favoriteMovie: FavoriteMedia): UnifiedMedia {
-        return MovieDataToUnifiedMedia(moviesRepository.getMovie(favoriteMovie.mediaId))
+        return UnifiedMedia.fromDetailedMovieResponse(moviesRepository.getMovie(favoriteMovie.mediaId))
     }
 
-    private suspend fun convertFavoriteSeriesToUnifiedMedia(favoriteMovie: FavoriteMedia): UnifiedMedia {
-        return SeriesDataToUnifiedMedia(seriesRepository.getSerial(favoriteMovie.mediaId))
-
+    private suspend fun convertFavoriteSeriesToUnifiedMedia(favoriteSeries: FavoriteMedia): UnifiedMedia {
+        return UnifiedMedia.fromDetailedSeriesResponse(seriesRepository.getSerial(favoriteSeries.mediaId))
     }
 
 
