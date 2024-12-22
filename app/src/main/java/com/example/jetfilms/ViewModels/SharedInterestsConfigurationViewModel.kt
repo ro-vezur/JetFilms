@@ -31,7 +31,7 @@ class SharedInterestsConfigurationViewModel @Inject constructor(
 
             user?.let { checkedUser ->
                 _mediaGenres.emit(checkedUser.recommendedMediaGenres)
-                _mediaCategories.emit(checkedUser.recommendedMediaFormats)
+                _mediaCategories.emit(checkedUser.recommendedMediaCategories)
             }
         }
     }
@@ -52,7 +52,7 @@ class SharedInterestsConfigurationViewModel @Inject constructor(
             usersCollectionRepository.addOrUpdateUser(
                 user = checkedUser.copy(
                     recommendedMediaGenres = mediaGenres.value.toMutableList(),
-                    recommendedMediaFormats = mediaCategories.value.toMutableList(),
+                    recommendedMediaCategories = mediaCategories.value.toMutableList(),
                 ),
                 onResult = {}
             )

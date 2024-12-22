@@ -104,7 +104,7 @@ private fun CategoryNavigationButton(text: String,imageUrl: String, onClick: () 
             .width(240.sdp)
             .height(130.sdp)
             .clip(RoundedCornerShape(10.sdp))
-            .border(BorderStroke(2f.sdp, blueHorizontalGradient), RoundedCornerShape(10.sdp))
+            .border(BorderStroke(2.sdp, blueHorizontalGradient), RoundedCornerShape(10.sdp))
             .clickable { onClick() }
     ) {
         AsyncImage(
