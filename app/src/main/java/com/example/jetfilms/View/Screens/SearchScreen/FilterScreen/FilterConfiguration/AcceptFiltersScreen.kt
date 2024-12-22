@@ -28,9 +28,8 @@ import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.Cards.SortSelectedCard
 import com.example.jetfilms.Models.DTOs.Filters.SortTypes
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
-import com.example.jetfilms.Helpers.ListToString.StringListToString
 import com.example.jetfilms.Helpers.Countries.getCountryList
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
 import com.example.jetfilms.View.Screens.ExploreNavigationHost
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
@@ -75,7 +74,7 @@ fun AcceptFiltersScreen(
             }
         }
 
-    val selectedCategoriesTextList = StringListToString(categoriesToSelect.map { it.format })
+    val selectedCategoriesTextList = categoriesToSelect.joinToString(",") { it.format }
 
     val selectedCountriesTextList =
         if (countriesToSelect.sorted() == getCountryList()) "All"
