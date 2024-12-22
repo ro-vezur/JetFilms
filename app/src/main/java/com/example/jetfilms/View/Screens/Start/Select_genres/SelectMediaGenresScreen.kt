@@ -1,8 +1,5 @@
 package com.example.jetfilms.View.Screens.Start.Select_genres
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +23,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,10 +33,11 @@ import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.View.Components.Cards.MediaGenreCard
+import com.example.jetfilms.View.Components.Gradient.animatedGradient
+import com.example.jetfilms.blueGradientColors
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.ui.theme.buttonsColor1
-import com.example.jetfilms.ui.theme.buttonsColor2
-import dev.chrisbanes.haze.HazeState
+import com.example.jetfilms.ui.theme.whiteColor
+import com.example.jetfilms.whiteGradientColors
 
 @Composable
 fun SelectMediaGenresScreen(
@@ -53,7 +50,6 @@ fun SelectMediaGenresScreen(
 
     val selectedGenres = remember{ mutableStateListOf<MediaGenres>() }
     val grindState = rememberLazyGridState()
-    val hazeState = remember { HazeState() }
 
     LaunchedEffect(null) {
         selectedGenres.addAll(user.recommendedMediaGenres)
@@ -62,8 +58,8 @@ fun SelectMediaGenresScreen(
     Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
-            BottomBar(
-                selectedItems = selectedGenres.isEmpty(),
+            AcceptMediaGenresButton(
+                isNotEmpty = selectedGenres.isNotEmpty(),
                 onClick = {
                     if(selectedGenres.isNotEmpty()) {
                         signUp(user)
@@ -79,8 +75,7 @@ fun SelectMediaGenresScreen(
         ) {
 
             TurnBackButton(
-                onClick = { stepsNavController.navigateUp()
-                },
+                onClick = { stepsNavController.navigateUp() },
                 background =  Color.LightGray.copy(0.6f),
                 iconColor = Color.White,
                 modifier = Modifier
@@ -98,7 +93,6 @@ fun SelectMediaGenresScreen(
                     style = typography.titleLarge.copy(
                         fontSize = typography.titleLarge.fontSize * 1.1f,
                         fontWeight = FontWeight.SemiBold,
-                      //  fontStyle = FontStyle(R.font.roboto_medium)
                     ),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -169,8 +163,7 @@ fun SelectMediaGenresScreen(
 }
 
 @Composable
-private fun BottomBar(selectedItems:Boolean,onClick:() -> Unit) {
-    val typography = MaterialTheme.typography
+private fun AcceptMediaGenresButton(isNotEmpty:Boolean, onClick:() -> Unit) {
 
     Box(
         modifier = Modifier
@@ -179,14 +172,12 @@ private fun BottomBar(selectedItems:Boolean,onClick:() -> Unit) {
     ){
         TextButton(
             onClick = onClick,
-            text = if(selectedItems) "Select at Least 1" else "Done",
-            textStyle = typography.bodyMedium.copy(
-                color = if(selectedItems) Color.Black else Color.White
-            ),
+            text = if(isNotEmpty) "Done" else "Select at Least 1",
+            textColor = if(isNotEmpty) whiteColor else Color.Black,
             corners = RoundedCornerShape(12.sdp),
-            gradient = Brush.horizontalGradient(
-                if(selectedItems) listOf(Color.White, Color.White)
-                else listOf(buttonsColor1, buttonsColor2)
+            gradient = animatedGradient(
+                colors = if(isNotEmpty) blueGradientColors
+                else whiteGradientColors
             ),
             modifier = Modifier
                 .align(Alignment.Center)

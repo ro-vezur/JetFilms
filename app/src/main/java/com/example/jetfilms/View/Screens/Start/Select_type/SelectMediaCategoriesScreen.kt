@@ -1,6 +1,5 @@
 package com.example.jetfilms.View.Screens.Start.Select_type
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +16,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,55 +26,39 @@ import com.example.jetfilms.View.Screens.Start.SelectMediaGenresScreenRoute
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.View.Components.Cards.MediaFormatCard
+import com.example.jetfilms.View.Components.Gradient.animatedGradient
+import com.example.jetfilms.blueGradientColors
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.ui.theme.buttonsColor1
-import com.example.jetfilms.ui.theme.buttonsColor2
+import com.example.jetfilms.ui.theme.typography
+import com.example.jetfilms.whiteGradientColors
 
 
 @Composable
-fun SelectMediaFormatScreen(
+fun SelectMediaCategoriesScreen(
     stepsNavController: NavController,
     user: User,
     setUser: (user: User) -> Unit,
 ) {
-    val typography = MaterialTheme.typography
 
-    val selectedFormats = remember{ mutableStateListOf<MediaCategories>() }
+    val selectedCategories = remember{ mutableStateListOf<MediaCategories>() }
 
     LaunchedEffect(null) {
-        Log.d("user",user.toString())
         user.run {
-            selectedFormats.addAll(recommendedMediaFormats)
+            selectedCategories.addAll(recommendedMediaCategories)
         }
     }
 
     Scaffold(
         containerColor = Color.Transparent,
         bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height((BASE_BUTTON_HEIGHT + 28).sdp)
-            ){
-                TextButton(
-                    onClick = {
-                        if(selectedFormats.isNotEmpty()){
-                            stepsNavController.navigate(SelectMediaGenresScreenRoute)
-                        }
-                    },
-                    text = if(selectedFormats.isEmpty()) "Select at Least 1" else "Next",
-                    textStyle = typography.bodyMedium.copy(
-                        color = if(selectedFormats.isEmpty()) Color.Black else Color.White
-                    ),
-                    corners = RoundedCornerShape(12.sdp),
-                    gradient = Brush.horizontalGradient(
-                       if(selectedFormats.isEmpty()) listOf(Color.White, Color.White)
-                       else listOf(buttonsColor1, buttonsColor2)
-                    ),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                )
-            }
+            AcceptMediaCategoriesButton(
+                isNotEmpty = selectedCategories.isNotEmpty(),
+                onClick = {
+                    if(selectedCategories.isNotEmpty()) {
+                        stepsNavController.navigate(SelectMediaGenresScreenRoute)
+                    }
+                }
+            )
         }
     ) { innerPaddingValues ->
         Box(
@@ -102,8 +83,8 @@ fun SelectMediaFormatScreen(
             ){
                 Text(
                     text = "Pick What You'd Like to Watch",
-                    style = typography.titleLarge.copy(
-                        fontSize = typography.titleLarge.fontSize * 1.09,
+                    style = typography().titleLarge.copy(
+                        fontSize = typography().titleLarge.fontSize * 1.09,
                         fontWeight = FontWeight.SemiBold
                     ),
                     textAlign = TextAlign.Center,
@@ -119,28 +100,49 @@ fun SelectMediaFormatScreen(
                         .padding(bottom = 10.sdp)
                 ) {
                     MediaCategories.entries.forEach { format ->
-                        val isSelected = selectedFormats.contains(format)
+                        val isSelected = selectedCategories.contains(format)
                         MediaFormatCard(
                             mediaFormat = format,
                             selected = isSelected,
                             onClick = {
                                 if (isSelected) {
-                                    selectedFormats.remove(format)
+                                    selectedCategories.remove(format)
                                     setUser(
-                                        user.copy(recommendedMediaFormats = selectedFormats)
+                                        user.copy(recommendedMediaCategories = selectedCategories)
                                     )
                                 } else {
-                                    selectedFormats.add(format)
+                                    selectedCategories.add(format)
                                     setUser(
-                                        user.copy(recommendedMediaFormats = selectedFormats)
+                                        user.copy(recommendedMediaCategories = selectedCategories)
                                     )
                                 }
-
                             }
                         )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AcceptMediaCategoriesButton(isNotEmpty:Boolean, onClick:() -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height((BASE_BUTTON_HEIGHT + 28).sdp)
+    ) {
+        TextButton(
+            onClick = onClick,
+            text = if (isNotEmpty) "Next" else "Select at Least 1",
+            textColor = if (isNotEmpty) Color.White else Color.Black,
+            corners = RoundedCornerShape(12.sdp),
+            gradient = animatedGradient(
+                colors = if(isNotEmpty) blueGradientColors else
+                        whiteGradientColors
+            ),
+            modifier = Modifier
+                .align(Alignment.Center)
+        )
     }
 }
