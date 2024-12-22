@@ -25,7 +25,7 @@ import androidx.paging.compose.LazyPagingItems
 import com.example.jetfilms.View.Components.Cards.SeriesCard
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSeriesResponse
 import com.example.jetfilms.View.Components.TopBars.BaseTopAppBar
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.View.states.rememberForeverLazyGridState
@@ -42,7 +42,7 @@ fun MoreSerialsScreen(
     turnBack: () -> Unit,
     selectSeries: (id: Int) -> Unit,
     category: String,
-    moreSeriesView: LazyPagingItems<SimplifiedSerialObject>
+    moreSeriesView: LazyPagingItems<SimplifiedSeriesResponse>
 ) {
 
     val gridState = rememberForeverLazyGridState(category)

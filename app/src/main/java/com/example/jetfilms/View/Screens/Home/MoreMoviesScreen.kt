@@ -3,38 +3,29 @@ package com.example.jetfilms.View.Screens.Home
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.example.jetfilms.View.Components.Cards.MovieCard
-import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.HAZE_STATE_BLUR
-import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieResponse
 import com.example.jetfilms.View.Components.TopBars.BaseTopAppBar
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.View.states.rememberForeverLazyGridState
@@ -51,7 +42,7 @@ fun MoreMoviesScreen(
     turnBack: () -> Unit,
     selectMovie: (id: Int) -> Unit,
     category: String,
-    moreMoviesView: LazyPagingItems<SimplifiedMovieDataClass>,
+    moreMoviesView: LazyPagingItems<SimplifiedMovieResponse>,
 ) {
 
     val gridState = rememberForeverLazyGridState(category)
