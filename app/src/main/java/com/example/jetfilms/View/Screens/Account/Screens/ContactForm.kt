@@ -1,6 +1,5 @@
 package com.example.jetfilms.View.Screens.Account.Screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,11 +28,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.Helpers.Validators.Results.ValidationResult
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.Models.Email.EmailManager
-import com.example.jetfilms.SEND_EMAIL_RESET_TIME_MINUTES
 import com.example.jetfilms.TEXT_FIELD_MAX_LENGTH
 import com.example.jetfilms.View.Components.Buttons.TextButton
 import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
