@@ -24,8 +24,6 @@ fun TrailerScreen(
     trailerKey: String,
     onDismiss: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val activity = context as Activity
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -37,17 +35,17 @@ fun TrailerScreen(
             modifier = Modifier
                 .background(primaryColor),
             factory = {
-            var view = YouTubePlayerView(it)
-            val fragment = view.addYouTubePlayerListener(
-                object : AbstractYouTubePlayerListener() {
-                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                        super.onReady(youTubePlayer)
+                val view = YouTubePlayerView(it)
+                view.addYouTubePlayerListener(
+                    object : AbstractYouTubePlayerListener() {
+                        override fun onReady(youTubePlayer: YouTubePlayer) {
+                            super.onReady(youTubePlayer)
 
-                        youTubePlayer.loadVideo(trailerKey, 0f)
+                            youTubePlayer.loadVideo(trailerKey, 0f)
+                        }
                     }
-                }
-            )
-            view
+                )
+                view
             },
         )
     }

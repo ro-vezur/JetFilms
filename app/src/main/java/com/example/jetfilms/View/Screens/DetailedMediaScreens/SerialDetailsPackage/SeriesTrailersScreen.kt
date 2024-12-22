@@ -27,7 +27,7 @@ fun SeriesTrailersScreen(
                     .height(105.sdp)
                     .clickable { selectTrailer(trailer) },
                 trailerObject = trailer,
-                selectedMediaName = decodeStringWithSpecialCharacter(seriesDisplay.response.name)
+                selectedMediaName = decodeStringWithSpecialCharacter(seriesDisplay.response.title)
             )
         }
     }
