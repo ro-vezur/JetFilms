@@ -52,7 +52,7 @@ class SingUpValidationViewModel @Inject constructor(
         )
         val emailValidator = EmailValidator().invoke(
             email = email,
-            checkIfEmailAlreadyRegistered = !checkIfEmailIsRegistered(email)
+            additionalValidators = checkIfEmailIsRegistered(email)
         )
         val usernameValidator = UsernameValidator().invoke(
             username = name
