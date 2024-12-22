@@ -21,25 +21,26 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import com.example.jetfilms.View.Components.Cards.SeriesCard
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSeriesResponse
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.View.Components.Cards.UnifiedCard
+import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.typography
 
 @Composable
-fun SerialsCategoryList(
+fun UnifiedMediaCategoryList(
     category: String,
-    selectSerial: (id: Int) -> Unit,
-    serialsList: List<SimplifiedSeriesResponse>,
+    selectMedia: (id: Int,category: MediaCategories) -> Unit,
+    unifiedMediaList: List<UnifiedMedia>,
     onSeeAllClick: () -> Unit,
     topPadding: Dp = 0.sdp,
     bottomPadding: Dp = 0.sdp,
     showSeeAllButton: Boolean = true,
-    imageModifier: Modifier = Modifier,
+    imageModifier: Modifier = Modifier
 ) {
 
-    if(serialsList.isNotEmpty()){
+    if(unifiedMediaList.isNotEmpty()){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -90,12 +91,12 @@ fun SerialsCategoryList(
                 modifier = Modifier
                     .padding(start = 15.sdp, top = 14.sdp, bottom = bottomPadding)
             ) {
-                items(items = serialsList) { serial ->
+                items(items = unifiedMediaList) { unifiedMedia ->
 
-                    SeriesCard(
+                    UnifiedCard(
                         modifier = imageModifier
-                            .clickable { selectSerial(serial.id) },
-                        serial = serial
+                            .clickable { selectMedia(unifiedMedia.id,unifiedMedia.mediaCategory) },
+                        unifiedMedia = unifiedMedia
                     )
                 }
             }

@@ -12,9 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,20 +21,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.navigation.NavController
 import com.example.jetfilms.View.Components.Cards.MovieCard
-import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
-import com.example.jetfilms.View.Screens.MoreMoviesScreenRoute
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieResponse
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.typography
 
 @Composable
 fun MoviesCategoryList(
     category: String,
     selectMovie: (id: Int) -> Unit,
-    moviesList: List<SimplifiedMovieDataClass>,
+    moviesList: List<SimplifiedMovieResponse>,
     onSeeAllClick: () -> Unit,
     topPadding: Dp = 0.sdp,
     bottomPadding: Dp = 0.sdp,
