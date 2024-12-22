@@ -20,9 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
-import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.outlined.Bookmarks
-import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
@@ -43,7 +41,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,20 +54,19 @@ import com.example.jetfilms.View.Components.Buttons.TurnBackButton
 import com.example.jetfilms.View.Components.Cards.EpisodeCard
 import com.example.jetfilms.View.Components.Gradient.animatedGradient
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SerialSeasonResponse
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
-import com.example.jetfilms.Helpers.DTOsConverters.ToFavoriteMedia.SeriesDataToFavoriteMedia
 import com.example.jetfilms.View.Components.Cards.PropertyCard
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
 import com.example.jetfilms.View.Components.TabRow
 import com.example.jetfilms.View.Components.TabsContent.SeriesAboutTab
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.Models.DTOs.animatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedParticipant
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
-import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.SimplifiedParticipantResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSeriesResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesDisplay
 import com.example.jetfilms.View.Components.DetailedMediaComponents.MediaTitle
 import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
@@ -87,7 +83,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SerialDetailsScreen(
     navController: NavController,
-    seriesResponse: DetailedSerialResponse,
+    seriesResponse: DetailedSeriesResponse,
     selectSerial: (id: Int) -> Unit,
     addToFavorite: (favoriteMedia: FavoriteMedia) -> Unit,
     isFavoriteUnit: (favoriteMedia: FavoriteMedia) -> Boolean,
@@ -129,7 +125,7 @@ fun SerialDetailsScreen(
     }
 
     LaunchedEffect(null) {
-        isFavorite = isFavoriteUnit(SeriesDataToFavoriteMedia(seriesResponse))
+        isFavorite = isFavoriteUnit(FavoriteMedia.fromDetailedSeriesResponse(seriesResponse))
     }
 
     LaunchedEffect(currentSeasonPage) {
@@ -199,7 +195,7 @@ fun SerialDetailsScreen(
                     ) {
                         DisplayRating(seriesResponse.rating)
 
-                        MediaTitle(decodeStringWithSpecialCharacter(seriesResponse.name))
+                        MediaTitle(decodeStringWithSpecialCharacter(seriesResponse.title))
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -256,7 +252,7 @@ fun SerialDetailsScreen(
                                     )
                                     .clickable {
                                         isFavorite = !isFavorite
-                                        addToFavorite(SeriesDataToFavoriteMedia(seriesResponse))
+                                        addToFavorite(FavoriteMedia.fromDetailedSeriesResponse(seriesResponse))
                                     }
                             ) {
                                 if (isFavorite) {

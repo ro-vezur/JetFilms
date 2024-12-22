@@ -7,12 +7,12 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 @Parcelize
 @Serializable
-data class DetailedSerialResponse(
+data class DetailedSeriesResponse(
     val id: Int,
     @SerializedName("first_air_date") val releaseDate: String,
     val genres: List<Genre>,
     val overview: String,
-    val name: String,
+    val title: String,
     @SerializedName("number_of_seasons") val seasonsCount: Int,
     val popularity: Float,
     @SerializedName("poster_path") val poster: String?,
