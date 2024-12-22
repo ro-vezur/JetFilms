@@ -9,9 +9,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
-val Float.sdp:Dp
-    @Composable
-    get() = this.sdpGet()
 
 val Int.sdp: Dp
     @Composable
@@ -37,29 +34,6 @@ private fun Int.sdpGet(): Dp {
     val resourceField = getFieldId(id)
     return if (resourceField != 0) dimensionResource(id = resourceField) else this.dp
 
-
-}
-
-val Float.ssp: TextUnit
-    @Composable get() = this.textSdp(density = LocalDensity.current)
-
-
-@Composable
-private fun Float.textSdp(density: Density): TextUnit = with(density) {
-    this@textSdp.sdp.toSp()
-}
-
-@Composable
-private fun Float.sdpGet(): Dp {
-
-    val id = when (this) {
-        in 1f..600f -> "_${this}sdp"
-        in (-60f..-1f) -> "_minus${this}sdp"
-        else -> return this.dp
-    }
-
-    val resourceField = getFieldId(id)
-    return if (resourceField != 0) dimensionResource(id = resourceField) else this.dp
 
 }
 
