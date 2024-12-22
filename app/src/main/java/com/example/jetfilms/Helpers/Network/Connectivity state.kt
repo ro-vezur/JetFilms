@@ -13,9 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 fun connectivityState(): State<ConnectionState> {
     val context = LocalContext.current
 
-    // Creates a State<ConnectionState> with current connectivity state as initial value
     return produceState(initialValue = context.currentConnectivityState) {
-        // In a coroutine, can make suspend calls
         context.observeConnectivityAsFlow().collect { value = it }
     }
 }
