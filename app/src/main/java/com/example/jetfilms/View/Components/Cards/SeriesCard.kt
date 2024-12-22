@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSeriesResponse
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
 import com.example.jetfilms.BASE_IMAGE_API_URL
@@ -27,7 +27,7 @@ import com.example.jetfilms.extensions.ssp
 @Composable
 fun SeriesCard(
     modifier: Modifier = Modifier,
-    serial: SimplifiedSerialObject,
+    serial: SimplifiedSeriesResponse,
 ) {
     Box(
         modifier = modifier

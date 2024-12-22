@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
-import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieDataClass
+import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieResponse
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
 import com.example.jetfilms.BASE_IMAGE_API_URL
@@ -27,13 +27,13 @@ import com.example.jetfilms.extensions.ssp
 @Composable
 fun MovieCard(
     modifier: Modifier = Modifier,
-    movie: SimplifiedMovieDataClass,
+    movie: SimplifiedMovieResponse,
 ) {
     Box(
         modifier = modifier
     ){
         AsyncImage(
-            model = "$BASE_IMAGE_API_URL${movie.poster}",
+            model = "$BASE_IMAGE_API_URL${movie.posterUrl}",
             contentDescription = "movie poster",
             contentScale = ContentScale.Crop,
             modifier = modifier

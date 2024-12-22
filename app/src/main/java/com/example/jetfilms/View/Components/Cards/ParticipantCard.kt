@@ -15,8 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import coil.compose.SubcomposeAsyncImage
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.SimplifiedParticipantResponse
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.SimplifiedParticipantResponse
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
@@ -24,7 +24,6 @@ import com.example.jetfilms.extensions.ssp
 fun MovieParticipantCard(
     modifier: Modifier = Modifier,
     movieParticipant: SimplifiedParticipantResponse,
-    imageHeight: Dp
 ) {
     Column(
         horizontalAlignment = Alignment.Start,
