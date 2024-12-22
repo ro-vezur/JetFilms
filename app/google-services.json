@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "809913150797",
-    "project_id": "jetfilms-a7f3f",
-    "storage_bucket": "jetfilms-a7f3f.firebasestorage.app"
+    "project_number": "898029886638",
+    "project_id": "jetfilms-5ba96",
+    "storage_bucket": "jetfilms-5ba96.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:809913150797:android:00f3ad0aa60d88136c9b04",
+        "mobilesdk_app_id": "1:898029886638:android:20537c02444f526431613f",
         "android_client_info": {
           "package_name": "com.example.jetfilms"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "898029886638-g0glrruj2drd6tpvssf7ee28lj4tbcef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jetfilms",
+            "certificate_hash": "1d9de4a1b8d570d51e0707723e57d69f1c13fc99"
+          }
+        },
+        {
+          "client_id": "898029886638-vnahi6dvfe052g1hmm4coulq21jm27ka.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCLyMeL--VneNN9hKsZmPd-QYGUUoJO3sw"
+          "current_key": "AIzaSyCkK1aXMsHdkuaWcu3g7Z9mGVoI9b2CIIQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "898029886638-vnahi6dvfe052g1hmm4coulq21jm27ka.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
