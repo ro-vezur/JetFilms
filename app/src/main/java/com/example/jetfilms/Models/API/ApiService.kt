@@ -1,17 +1,16 @@
 package com.example.jetfilms.Models.API
 
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMediaCreditsResponse
-import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.ImagesFromUnifiedMediaResponse
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantResponse
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.MediaCreditsResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.DetailedParticipantResponse
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantFilmography
-import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantImagesResponse
-import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSerialResponse
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantImages.ParticipantImagesResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.DetailedSeriesResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SerialSeasonResponse
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesPageResponse
 import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailersResponse
+import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.MediaImages.ImagesFromMediaResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -20,12 +19,12 @@ interface ApiInterface {
     @GET("movie/popular?$MINIMUM_VOTE_COUNTS")
     suspend fun popularMovies(
         @Query("page") page: Int,
-    ): MoviesResponse
+    ): MoviesPageResponse
 
     @GET("movie/top_rated?$MINIMUM_VOTE_COUNTS")
     suspend fun topRatedMovies(
         @Query("page") page: Int,
-    ): MoviesResponse
+    ): MoviesPageResponse
 
     @GET("movie/{movie_id}")
     suspend fun movie(
@@ -35,42 +34,42 @@ interface ApiInterface {
     @GET("movie/{movie_id}/credits")
     suspend fun movieCredits(
         @Path("movie_id") movieId: Int,
-    ): UnifiedMediaCreditsResponse
+    ): MediaCreditsResponse
 
     @GET("movie/{movie_id}/images")
     suspend fun imagesFromMovie(
         @Path("movie_id") movieId: Int,
-    ): ImagesFromUnifiedMediaResponse
+    ): ImagesFromMediaResponse
 
     @GET("movie/{movie_id}/similar?$MINIMUM_VOTE_COUNTS")
     suspend fun similarMovies(
         @Path("movie_id") movieId: Int,
-    ): MoviesResponse
+    ): MoviesPageResponse
 
     @GET("tv/popular?$MINIMUM_VOTE_COUNTS")
     suspend fun popularSerials(
         @Query("page") page: Int,
-    ): SeriesResponse
+    ): SeriesPageResponse
 
     @GET("tv/{serial_id}")
     suspend fun serial(
         @Path("serial_id") id: Int,
-    ): DetailedSerialResponse
+    ): DetailedSeriesResponse
 
     @GET("tv/{serial_id}/credits")
     suspend fun serialCredits(
         @Path("serial_id") id: Int,
-    ): UnifiedMediaCreditsResponse
+    ): MediaCreditsResponse
 
     @GET("tv/{serial_id}/images")
     suspend fun imagesFromSerial(
         @Path("serial_id") id: Int,
-    ): ImagesFromUnifiedMediaResponse
+    ): ImagesFromMediaResponse
 
     @GET("tv/{serial_id}/similar?$MINIMUM_VOTE_COUNTS")
     suspend fun similarSerials(
         @Path("serial_id") id: Int,
-    ): SeriesResponse
+    ): SeriesPageResponse
 
     @GET("tv/{serial_id}/season/{season_number}")
     suspend fun serialSeason(
@@ -97,13 +96,13 @@ interface ApiInterface {
     suspend fun searchMovies(
         @Query("query") query: String,
         @Query("page") page: Int,
-    ): MoviesResponse
+    ): MoviesPageResponse
 
     @GET("search/tv?")
     suspend fun searchSerials(
         @Query("query") query: String,
         @Query("page") page: Int,
-    ): SeriesResponse
+    ): SeriesPageResponse
 
     @GET("discover/tv?$MINIMUM_VOTE_COUNTS")
     suspend fun filteredGenresDiscoverSerials(
@@ -114,7 +113,7 @@ interface ApiInterface {
         @Query("first_air_date_year") releaseYear: String,
         @Query("first_air_date.gte") fromYear: String,
         @Query("first_air_date.lte") toYear: String
-    ): SeriesResponse
+    ): SeriesPageResponse
 
     @GET("discover/movie?$MINIMUM_VOTE_COUNTS")
     suspend fun filteredGenresDiscoverMovies(
@@ -125,7 +124,7 @@ interface ApiInterface {
         @Query("primary_release_year") releaseYear: String,
         @Query("primary_release_date.gte") fromYear: String,
         @Query("primary_release_date.lte") toYear: String
-    ): MoviesResponse
+    ): MoviesPageResponse
 
     @GET("discover/tv?$MINIMUM_VOTE_COUNTS")
     suspend fun discoverSerials(
@@ -135,7 +134,7 @@ interface ApiInterface {
         @Query("first_air_date_year") releaseYear: String,
         @Query("first_air_date.gte") fromYear: String,
         @Query("first_air_date.lte") toYear: String
-    ): SeriesResponse
+    ): SeriesPageResponse
 
     @GET("discover/movie?$MINIMUM_VOTE_COUNTS")
     suspend fun discoverMovies(
@@ -145,7 +144,7 @@ interface ApiInterface {
         @Query("primary_release_year") releaseYear: String,
         @Query("primary_release_date.gte") fromYear: String,
         @Query("primary_release_date.lte") toYear: String
-    ): MoviesResponse
+    ): MoviesPageResponse
 
     @GET("movie/{movie_id}/videos")
     suspend fun movieTrailers(
