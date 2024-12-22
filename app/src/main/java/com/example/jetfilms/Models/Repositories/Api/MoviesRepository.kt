@@ -3,10 +3,7 @@ package com.example.jetfilms.Models.Repositories.Api
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.jetfilms.Models.API.ApiInterface
-import com.example.jetfilms.BASE_MEDIA_GENRES
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.Helpers.ListToString.CountryListToString
-import com.example.jetfilms.Helpers.ListToString.IntListToString
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.Helpers.Pagination.MoviesPagingSource
 import javax.inject.Inject
@@ -17,7 +14,7 @@ class MoviesRepository @Inject constructor(private val apiService: ApiInterface)
 
     suspend fun getMovie(id: Int) = apiService.movie(id)
 
-    fun getPaginatedMovies(getResponse: suspend (page: Int) -> MoviesResponse, pagesLimit: Int = Int.MAX_VALUE) =
+    fun getPaginatedMovies(getResponse: suspend (page: Int) -> MoviesPageResponse, pagesLimit: Int = Int.MAX_VALUE) =
         Pager(
             config = PagingConfig(
                 pageSize = PAGE_SIZE,
