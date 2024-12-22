@@ -17,8 +17,6 @@ object RoomDependencyProvider {
     @Provides
     @Singleton
     fun provideSearchHistoryRepository(@ApplicationContext context: Context): SearchedHistoryRepository {
-        //   SearchedHistoryDataBase.getSearchedHistoryDataBase(context).close()
-        //    context.deleteDatabase("Search history")
         return SearchedHistoryRepository(SearchedHistoryDataBase.getSearchedHistoryDataBase(context).dao)
     }
 }
