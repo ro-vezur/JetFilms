@@ -1,15 +1,10 @@
-package com.example.jetfilms.Models.DTOs.UnifiedDataPackage
+package com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses
 
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-@Parcelize
-@Serializable
-data class UnifiedMediaCreditsResponse (
-    val cast: List<SimplifiedParticipantResponse> = listOf()
-): Parcelable
 @Parcelize
 @Serializable
 data class SimplifiedParticipantResponse(

@@ -3,18 +3,15 @@ package com.example.jetfilms.ViewModels.DetailedMediaViewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantFilmography
-import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantImagesResponse
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParticipantImages.ParticipantImagesResponse
 import com.example.jetfilms.Models.Repositories.Api.ParticipantRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 
 @HiltViewModel(assistedFactory = DetailedParticipantViewModel.DetailedParticipantViewModelFactory::class)

@@ -50,7 +50,7 @@ import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.View.Components.Cards.MovieCard
 import com.example.jetfilms.Models.DTOs.animatedGradientTypes
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
-import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantResponse
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.DetailedParticipantResponse
 import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedParticipantViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
