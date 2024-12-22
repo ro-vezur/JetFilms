@@ -30,6 +30,7 @@ import com.example.jetfilms.View.Screens.MoreMoviesScreenRoute
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
+import com.example.jetfilms.ui.theme.typography
 
 @Composable
 fun MoviesCategoryList(
@@ -42,8 +43,6 @@ fun MoviesCategoryList(
     showSeeAllButton: Boolean = true,
     imageModifier: Modifier = Modifier
 ) {
-    val typography = MaterialTheme.typography
-    val scrollState = rememberScrollState()
 
     if(moviesList.isNotEmpty()){
         Column(
@@ -60,9 +59,8 @@ fun MoviesCategoryList(
             ) {
                 Text(
                     text = category,
-                    style = typography.titleLarge,
+                    style = typography().headlineLarge,
                     color = Color.White,
-                    fontSize = 25f.ssp,
                     modifier = Modifier
                 )
 
@@ -80,11 +78,10 @@ fun MoviesCategoryList(
                     ) {
                         Text(
                             text = "See All",
-                            style = typography.bodyMedium.copy(
+                            style = typography().bodyMedium.copy(
                                 brush = blueHorizontalGradient,
                                 fontWeight = FontWeight.Normal
                             ),
-                            fontSize = 20.5f.ssp,
                             modifier = Modifier
                                 .align(Alignment.Center)
 

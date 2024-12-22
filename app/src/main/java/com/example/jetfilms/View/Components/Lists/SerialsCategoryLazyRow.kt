@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,13 +21,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.navigation.NavController
-import com.example.jetfilms.View.Components.Cards.SerialCard
+import com.example.jetfilms.View.Components.Cards.SeriesCard
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSerialObject
-import com.example.jetfilms.View.Screens.MoreSerialsScreenRoute
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.extensions.ssp
+import com.example.jetfilms.ui.theme.typography
 
 @Composable
 fun SerialsCategoryList(
@@ -41,7 +38,6 @@ fun SerialsCategoryList(
     showSeeAllButton: Boolean = true,
     imageModifier: Modifier = Modifier,
 ) {
-    val typography = MaterialTheme.typography
 
     if(serialsList.isNotEmpty()){
         Column(
@@ -58,9 +54,8 @@ fun SerialsCategoryList(
             ) {
                 Text(
                     text = category,
-                    style = typography.titleLarge,
+                    style = typography().headlineLarge,
                     color = Color.White,
-                    fontSize = 25f.ssp,
                     modifier = Modifier
                 )
 
@@ -78,11 +73,10 @@ fun SerialsCategoryList(
                     ) {
                         Text(
                             text = "See All",
-                            style = typography.bodyMedium.copy(
+                            style = typography().bodyMedium.copy(
                                 brush = blueHorizontalGradient,
                                 fontWeight = FontWeight.Normal
                             ),
-                            fontSize = 20.5f.ssp,
                             modifier = Modifier
                                 .align(Alignment.Center)
 
@@ -98,7 +92,7 @@ fun SerialsCategoryList(
             ) {
                 items(items = serialsList) { serial ->
 
-                    SerialCard(
+                    SeriesCard(
                         modifier = imageModifier
                             .clickable { selectSerial(serial.id) },
                         serial = serial
