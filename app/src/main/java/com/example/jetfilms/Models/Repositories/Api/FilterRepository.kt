@@ -1,20 +1,16 @@
 package com.example.jetfilms.Models.Repositories.Api
 
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.jetfilms.BASE_MEDIA_CATEGORIES
 import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.Helpers.Countries.getCountryList
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.MovieDataToUnifiedMedia
-import com.example.jetfilms.Helpers.DTOsConverters.ToUnifiedMedia.SeriesDataToUnifiedMedia
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.Helpers.ListToString.CountryListToString
-import com.example.jetfilms.Helpers.ListToString.IntListToString
 import com.example.jetfilms.Models.API.ApiInterface
 import com.example.jetfilms.Models.DTOs.Filters.SortTypes
-import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesResponse
-import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesResponse
+import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
+import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesPageResponse
 import com.example.jetfilms.Helpers.Pagination.UnifiedPagingSource
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.PAGE_SIZE
@@ -49,7 +45,7 @@ class FilterRepository @Inject constructor(
         )
         val serialsResponse = discoverSeries(
             page = 1,
-            sortBy = sortType?.requestQuery.toString(),
+            sortBy = sortType.requestQuery,
             genres = genres.map { it.genreId },
             countries = countries,
             year = year,
@@ -60,14 +56,14 @@ class FilterRepository @Inject constructor(
 
         if(categories.contains(MediaCategories.MOVIE)) {
             unifiedMediaList.addAll(moviesResponse.results.map {
-                MovieDataToUnifiedMedia(it)
+                UnifiedMedia.fromSimplifiedMovieResponse(it)
             }
             )
         }
 
         if(categories.contains(MediaCategories.SERIES)) {
             unifiedMediaList.addAll(serialsResponse.results.map {
-                SeriesDataToUnifiedMedia(it)
+                UnifiedMedia.fromSimplifiedSeriesResponse(it)
             }
             )
         }
@@ -130,7 +126,7 @@ class FilterRepository @Inject constructor(
         countries:List<String>,
         year: Int,
         yearRange: Map<String, String>,
-    ): MoviesResponse {
+    ): MoviesPageResponse {
         return if(genres == BASE_MEDIA_GENRES.map { it.genreId }) {
             apiService.discoverMovies(
                 page = page,
@@ -161,7 +157,7 @@ class FilterRepository @Inject constructor(
         countries: List<String>,
         year: Int,
         yearRange: Map<String, String>,
-    ): SeriesResponse {
+    ): SeriesPageResponse {
         return if(genres == BASE_MEDIA_GENRES.map { it.genreId }) {
             apiService.discoverSerials(
                 page = page,

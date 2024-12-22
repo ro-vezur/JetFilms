@@ -1,6 +1,5 @@
 package com.example.jetfilms.View.Screens.SearchScreen.FilterScreen.FilterConfiguration
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -9,11 +8,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.jetfilms.BASE_MEDIA_GENRES
-import com.example.jetfilms.Helpers.Countries.getCountryList
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
 import com.example.jetfilms.View.Screens.ExploreNavigationHost
-import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.ViewModels.FilterViewModel
 import com.example.jetfilms.extensions.popBackStackOrIgnore
 

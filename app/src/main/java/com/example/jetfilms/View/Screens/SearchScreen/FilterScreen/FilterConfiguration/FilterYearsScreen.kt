@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import com.example.jetfilms.BASE_BUTTON_WIDTH
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.View.Components.Buttons.AcceptMultipleSelectionButton
 import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
 import com.example.jetfilms.View.Components.TabRow

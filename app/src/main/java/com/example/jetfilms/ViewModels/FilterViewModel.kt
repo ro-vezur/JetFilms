@@ -1,6 +1,5 @@
 package com.example.jetfilms.ViewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -9,7 +8,7 @@ import com.example.jetfilms.BASE_MEDIA_GENRES
 import com.example.jetfilms.Models.DTOs.Filters.SortTypes
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Helpers.Countries.getCountryList
-import com.example.jetfilms.Helpers.Date_formats.DateFormats
+import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.Models.Repositories.Api.FilterRepository
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
