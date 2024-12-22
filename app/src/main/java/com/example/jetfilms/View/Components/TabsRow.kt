@@ -29,6 +29,7 @@ import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
+import com.example.jetfilms.ui.theme.typography
 import kotlinx.coroutines.launch
 
 @Composable
@@ -53,7 +54,7 @@ fun TabRow(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(2f.sdp)
+                            .height(2.sdp)
                             .clip(CircleShape)
                             .background(Color.LightGray.copy(0.42f))
                     )
@@ -65,7 +66,7 @@ fun TabRow(
                         glowingRadius = 7.sdp,
                         modifier = Modifier
                             .tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                            .height(2f.sdp)
+                            .height(2.sdp)
                     )
                 }
             }
@@ -76,8 +77,6 @@ fun TabRow(
 
             var selectedColor1 by remember{ mutableStateOf(buttonsColor1) }
             var selectedColor2 by remember{ mutableStateOf(buttonsColor2) }
-
-            var unselectedColor by remember{ mutableStateOf(Color.DarkGray) }
 
             if(selected){
                 selectedColor1 = buttonsColor1
@@ -96,7 +95,7 @@ fun TabRow(
                                 colors = listOf(selectedColor1,selectedColor2),
                                 type = animatedGradientTypes.VERTICAL
                             ),
-                            fontSize = 14.5f.ssp
+                            fontSize = 11.ssp
                         )
                     )
                 },
