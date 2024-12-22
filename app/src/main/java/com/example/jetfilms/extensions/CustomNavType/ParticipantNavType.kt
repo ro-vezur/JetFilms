@@ -2,7 +2,7 @@ package com.example.jetfilms.extensions.CustomNavType
 
 import android.os.Bundle
 import androidx.navigation.NavType
-import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantResponse
+import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.DetailedParticipantResponse
 import kotlinx.serialization.json.Json
 
 class ParticipantNavType : NavType<DetailedParticipantResponse>(isNullableAllowed = false) {

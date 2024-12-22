@@ -5,7 +5,7 @@ import androidx.navigation.NavType
 import com.example.jetfilms.Models.DTOs.MoviePackage.DetailedMovieResponse
 import kotlinx.serialization.json.Json
 
-class DetailedMovieNavType : NavType<DetailedMovieResponse>(isNullableAllowed = false) {
+class MovieNavType : NavType<DetailedMovieResponse>(isNullableAllowed = false) {
     override fun get(bundle: Bundle, key: String): DetailedMovieResponse? {
         return bundle.getParcelable(key)
     }
