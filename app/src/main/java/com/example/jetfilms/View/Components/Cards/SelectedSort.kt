@@ -30,7 +30,6 @@ fun SortSelectedCard(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val colors = MaterialTheme.colorScheme
 
     Box(
         modifier = Modifier
@@ -40,7 +39,7 @@ fun SortSelectedCard(
             .background( if(selected) secondaryColor.copy(0.75f) else Color.DarkGray.copy(0.85f))
             .border(
                 BorderStroke(
-                    1.5f.sdp,
+                    1.sdp,
                     if(selected) blueHorizontalGradient
                     else Brush.horizontalGradient(listOf(transparentColor,transparentColor))
                 ),
