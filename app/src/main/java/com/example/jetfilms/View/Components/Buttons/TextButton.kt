@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,29 +18,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import com.example.jetfilms.BASE_BUTTON_HEIGHT
 import com.example.jetfilms.BASE_BUTTON_WIDTH
 import com.example.jetfilms.extensions.sdp
-import com.example.jetfilms.extensions.ssp
+import com.example.jetfilms.ui.theme.typography
 import com.example.jetfilms.ui.theme.whiteColor
 
 @Composable
 fun TextButton(
     modifier: Modifier = Modifier,
-    onClick:() -> Unit,
-    text:String,
-    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    onClick: () -> Unit,
+    text: String,
+    textStyle: TextStyle = typography().bodyMedium,
     textAlign: Alignment = Alignment.Center,
     textColor: Color = whiteColor,
-    height:Dp = BASE_BUTTON_HEIGHT.sdp,
-    width:Dp = BASE_BUTTON_WIDTH.sdp,
-    corners:RoundedCornerShape = RoundedCornerShape(12.sdp),
+    height: Dp = BASE_BUTTON_HEIGHT.sdp,
+    width: Dp = BASE_BUTTON_WIDTH.sdp,
+    corners: RoundedCornerShape = RoundedCornerShape(12.sdp),
     background: Color = Color.White,
-    border:BorderStroke = BorderStroke(1.sdp,Color.Transparent),
-    image: @Composable (modifier:Modifier) -> Unit = {}
+    border: BorderStroke = BorderStroke(1.sdp, Color.Transparent),
+    image: @Composable (modifier: Modifier) -> Unit = {},
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -66,17 +62,17 @@ fun TextButton(
 @Composable
 fun TextButton(
     modifier: Modifier = Modifier,
-    onClick:() -> Unit,
-    text:String = "",
-    textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    onClick: () -> Unit,
+    text: String = "",
+    textStyle: TextStyle = typography().bodyMedium,
     textColor: Color = whiteColor,
-    height:Dp = BASE_BUTTON_HEIGHT.sdp,
-    width:Dp = BASE_BUTTON_WIDTH.sdp,
+    height: Dp = BASE_BUTTON_HEIGHT.sdp,
+    width: Dp = BASE_BUTTON_WIDTH.sdp,
     textAlign: Alignment = Alignment.Center,
-    corners:RoundedCornerShape = RoundedCornerShape(10.sdp),
+    corners: RoundedCornerShape = RoundedCornerShape(10.sdp),
     gradient: Brush,
-    border:BorderStroke = BorderStroke(1.sdp,Color.Transparent),
-    image: @Composable (modifier:Modifier) -> Unit = {}
+    border: BorderStroke = BorderStroke(1.sdp, Color.Transparent),
+    image: @Composable (modifier: Modifier) -> Unit = {},
 ) {
 
     Box(
@@ -110,7 +106,10 @@ private fun TextButtonsContent(
             .fillMaxSize()
     ){
 
-        image(Modifier.align(Alignment.CenterStart).padding(start = 26.sdp))
+        image(
+            Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 26.sdp))
 
         Text(
             text = text,
