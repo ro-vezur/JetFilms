@@ -1,5 +1,7 @@
 package com.example.jetfilms.Models.Email
 
+import com.example.jetfilms.smtpPassword
+import com.example.jetfilms.supportEmail
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,8 +22,8 @@ class EmailManager {
             CoroutineScope(Dispatchers.IO).launch {
                 val host = "smtp.gmail.com"
                 val port = 587
-                val username = "romavzr3011@gmail.com"
-                val password = "indt dszt ezqt mdof"
+                val username = supportEmail
+                val password = smtpPassword
 
                 val receiver = "romavzr3011@gmail.com"
 

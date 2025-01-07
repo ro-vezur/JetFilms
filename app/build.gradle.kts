@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.konan.properties.Properties
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -33,6 +34,27 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+
+        buildConfigField(
+            type = "String",
+            name = "apiKey",
+            value = "\"${properties.getProperty("apiKey")}\""
+        )
+
+        buildConfigField(
+            type = "String",
+            name = "smtpPassword",
+            value = "\"${properties.getProperty("smtpPassword")}\""
+        )
+
+        buildConfigField(
+            type = "String",
+            name = "supportEmail",
+            value = "\"${properties.getProperty("supportEmail")}\""
+        )
     }
 
     buildTypes {
@@ -53,6 +75,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.2"

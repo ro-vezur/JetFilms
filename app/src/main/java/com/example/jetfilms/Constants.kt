@@ -22,7 +22,6 @@ val whiteGradientColors = listOf(whiteColor, whiteColor)
 
 val blueHorizontalGradient = Brush.horizontalGradient(blueGradientColors)
 val blueVerticalGradient = Brush.horizontalGradient(blueGradientColors)
-val whiteGradient = Brush.horizontalGradient(whiteGradientColors)
 
 const val PAGE_SIZE = 20
 
@@ -39,12 +38,18 @@ val infoTabs = listOf(
 
 const val BASE_API_URL = "https://api.themoviedb.org/3/"
 const val BASE_IMAGE_API_URL = "https://image.tmdb.org/t/p/w500"
-const val API_KEY = ""
+const val API_KEY = BuildConfig.apiKey
 
 const val BASE_YOUTUBE_IMAGES_URL = "https://img.youtube.com/vi/"
 const val YOUTUBE_IMAGE_THUMBNAIL_TYPE = "/mqdefault.jpg"
 
 const val USERS_COLLECTION = "users"
+
+const val PREFERENCES_NAME = "preferences"
+
+const val smtpPassword = BuildConfig.smtpPassword
+const val supportEmail = BuildConfig.supportEmail
+const val SEND_EMAIL_RESET_TIME_MINUTES = 20
 
 const val APP_DESCRIPTION = "Welcome to JetFilms, your ultimate app for discovering movies and TV shows!\n" +
         "\n" +
