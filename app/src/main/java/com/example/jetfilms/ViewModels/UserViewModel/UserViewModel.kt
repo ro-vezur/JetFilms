@@ -119,12 +119,8 @@ class UserViewModel @Inject constructor(
                     }
 
                 }
-                is Resource.Loading -> {
-                    Log.d("loading",result.message.toString())
-                }
-                is Resource.Error -> {
-                    Log.e("error",result.message.toString())
-                }
+                is Resource.Loading -> {}
+                is Resource.Error -> {}
             }
         }
     }

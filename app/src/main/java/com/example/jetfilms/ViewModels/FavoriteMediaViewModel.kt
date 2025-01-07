@@ -22,7 +22,6 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = FavoriteMediaViewModel.FavoriteMediaViewModelFactory::class)
 class FavoriteMediaViewModel @AssistedInject constructor(
     @Assisted val user: User,
-    private val userCollectionRepository: UsersCollectionRepository,
     private val moviesRepository: MoviesRepository,
     private val seriesRepository: SeriesRepository,
 ): ViewModel() {
@@ -34,14 +33,6 @@ class FavoriteMediaViewModel @AssistedInject constructor(
 
     private val _favoriteMediaList: MutableStateFlow<List<UnifiedMedia>> = MutableStateFlow(listOf())
     val favoriteMediaList: StateFlow<List<UnifiedMedia>> = _favoriteMediaList.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            Log.d("favorite media list",user.favoriteMediaList.toString())
-         //   setFavoriteMedia(user.favoriteMediaList)
-            Log.d("favorite media list to display",_favoriteMediaList.value.toString())
-        }
-    }
 
     fun setFavoriteMedia(newFavoriteMediaList: List<FavoriteMedia>) = viewModelScope.launch {
 

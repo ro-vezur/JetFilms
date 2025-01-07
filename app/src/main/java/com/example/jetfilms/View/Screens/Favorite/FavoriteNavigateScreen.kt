@@ -57,12 +57,7 @@ fun FavoriteNavigateScreen(
             }
 
             composable("Favorite Movies and Series") {
-
-
                 val favoriteMediaList by favoriteMediaViewModel.favoriteMediaList.collectAsStateWithLifecycle()
-
-                Log.d("user media list size",user.favoriteMediaList.size.toString())
-
 
                 LaunchedEffect(null){ favoriteMediaViewModel.setFavoriteMedia(user.favoriteMediaList) }
 
@@ -71,11 +66,6 @@ fun FavoriteNavigateScreen(
                     selectMedia = selectMedia,
                     favoriteMediaList = favoriteMediaList
                 )
-            }
-
-
-            composable("Download") {
-
             }
         }
     }

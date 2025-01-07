@@ -68,7 +68,6 @@ class AuthRepository @Inject constructor(
 
 
         return flow {
-            Log.d("test","test")
 
             val googleIdOption = GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(false)
@@ -81,7 +80,6 @@ class AuthRepository @Inject constructor(
                 .addCredentialOption(googleIdOption)
                 .build()
 
-            Log.d("request",request.toString())
 
             try {
                 val credentialManager = CredentialManager.create(context)
@@ -91,7 +89,6 @@ class AuthRepository @Inject constructor(
                 )
 
                 val credential = result.credential
-                Log.d("is custom" ,(credential is CustomCredential).toString())
                 if(credential is CustomCredential) {
                     if(credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                         try {
@@ -108,7 +105,6 @@ class AuthRepository @Inject constructor(
                             val authResult = signInResult.await()
 
                             if(signInResult.isSuccessful) {
-                                Log.d("user",authResult.user.toString())
                                 emit(Resource.Success(data = authResult))
                             } else {
                                 emit(Resource.Error(message = signInResult.exception?.message.toString()))
@@ -116,7 +112,6 @@ class AuthRepository @Inject constructor(
 
 
                         } catch (e: Exception) {
-                            Log.e("error",e.message.toString())
                             Resource.Error(
                                 message = e.message.toString(),
                                 data = null
@@ -125,7 +120,6 @@ class AuthRepository @Inject constructor(
                     }
                 }
             } catch (e:Exception) {
-                Log.e("error",e.message.toString())
                 Resource.Error(
                     message = e.message.toString(),
                     data = null

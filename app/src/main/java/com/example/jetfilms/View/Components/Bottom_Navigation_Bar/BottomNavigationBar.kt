@@ -1,6 +1,5 @@
 package com.example.jetfilms.View.Components.Bottom_Navigation_Bar
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -44,7 +43,6 @@ import com.example.jetfilms.ui.theme.buttonsColor2
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeChild
 
-
 @Composable
 fun BottomNavBar(
     navController: NavController,
@@ -56,8 +54,6 @@ fun BottomNavBar(
 
     LaunchedEffect(currentBackStackEntry) {
         val currentRoute = currentBackStackEntry?.destination?.route.toString()
-
-        Log.d("current route",currentRoute)
 
         BottomNavItems.entries.forEach { item ->
             if(currentRoute.contains(item.title)) {

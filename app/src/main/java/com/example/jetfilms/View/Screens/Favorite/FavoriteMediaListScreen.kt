@@ -29,8 +29,6 @@ fun FavoriteMediaListScreen(
 
     val hazeState = remember {HazeState()}
 
-    Log.d("favorite media",favoriteMediaList.toString())
-
     Scaffold(
         containerColor = primaryColor,
         topBar = {

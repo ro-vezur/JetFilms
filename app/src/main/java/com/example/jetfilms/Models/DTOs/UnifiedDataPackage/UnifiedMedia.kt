@@ -20,7 +20,7 @@ data class UnifiedMedia(
             return UnifiedMedia(
                 id = movie.id,
                 title = movie.title,
-                poster = movie.posterUrl,
+                poster = movie.posterUrl.toString(),
                 mediaCategory = MediaCategories.MOVIE,
                 popularity = movie.popularity,
                 rating = movie.rating,
@@ -44,7 +44,7 @@ data class UnifiedMedia(
             return UnifiedMedia(
                 id = movie.id,
                 title = movie.title,
-                poster = movie.posterUrl,
+                poster = movie.posterUrl.toString(),
                 mediaCategory = MediaCategories.MOVIE,
                 popularity = movie.popularity,
                 rating = movie.rating,

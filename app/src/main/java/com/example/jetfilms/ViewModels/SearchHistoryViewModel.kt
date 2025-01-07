@@ -102,5 +102,4 @@ class SearchHistoryViewModel @Inject constructor(
 
     suspend fun clearSearchHistory(searchHistory: List<SearchedMedia>) = searchedHistoryRepository.clearSearchHistory(searchHistory)
 
-
 }

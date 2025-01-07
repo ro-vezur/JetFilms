@@ -14,7 +14,7 @@ fun navigateToSelectedMovie(navController: NavController, selectedMovie: Detaile
             title = encodeStringWithSpecialCharacter(selectedMovie.title),
             overview = encodeStringWithSpecialCharacter(selectedMovie.overview),
             tagline = encodeStringWithSpecialCharacter(selectedMovie.tagline),
-            posterUrl = encodeStringWithSpecialCharacter(selectedMovie.posterUrl),
+            posterUrl = encodeStringWithSpecialCharacter(selectedMovie.posterUrl.toString()),
             )
     )
     if(navController.currentDestination?.route.toString() != "movie_details/{movie}") {

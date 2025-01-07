@@ -28,15 +28,11 @@ fun NavGraphBuilder.reChooseInterestsNavHost(
             }
 
             val sharedInterestsConfigurationViewModel: SharedInterestsConfigurationViewModel = hiltViewModel(parentEntry)
-            val mediaGenres by sharedInterestsConfigurationViewModel.mediaGenres.collectAsStateWithLifecycle()
-            val mediaTypes by sharedInterestsConfigurationViewModel.mediaCategories.collectAsStateWithLifecycle()
 
             ChooseInterestToChangeScreen(
                 navController = navController,
                 turnBack = turnBack,
                 acceptChanges = {
-                    Log.d("new media genres",mediaGenres.toString())
-                    Log.d("new media types",mediaTypes.toString())
                     sharedInterestsConfigurationViewModel.setUser()
                     turnBack()
                 }

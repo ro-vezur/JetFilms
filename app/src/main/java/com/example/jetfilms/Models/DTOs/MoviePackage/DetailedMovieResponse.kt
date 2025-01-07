@@ -20,6 +20,6 @@ data class DetailedMovieResponse(
     @SerializedName("release_date") val releaseDate: String,
     @SerializedName("origin_country") val originCountries:List<String>,
     @SerializedName("vote_average") val rating: Float,
-    @SerializedName("poster_path") val posterUrl: String,
+    @SerializedName("poster_path") val posterUrl: String?,
     @SerializedName("spoken_languages") val languages: List<Language> = listOf(),
 ): Parcelable

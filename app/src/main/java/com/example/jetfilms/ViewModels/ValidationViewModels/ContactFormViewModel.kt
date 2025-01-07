@@ -51,8 +51,6 @@ class ContactFormViewModel @Inject constructor(
         setFeedbackValidationResult(feedbackValidator)
         val timeToReset = DateFormats.getMinutesFromMillis( DateFormats.getCurrentDateMillis() - _emailSentTime.value)
 
-        Log.d("time to reset",timeToReset.toString())
-
         return usernameValidator == ValidationResult.CORRECT &&
                 feedbackValidator == ValidationResult.CORRECT &&
                 timeToReset >= SEND_EMAIL_RESET_TIME_MINUTES
