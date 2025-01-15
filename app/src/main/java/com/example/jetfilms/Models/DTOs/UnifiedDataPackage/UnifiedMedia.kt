@@ -31,7 +31,7 @@ data class UnifiedMedia(
         fun fromDetailedSeriesResponse(series: DetailedSeriesResponse): UnifiedMedia {
             return UnifiedMedia(
                 id = series.id,
-                title = series.title,
+                title = series.title.toString(),
                 poster = series.poster.toString(),
                 mediaCategory = MediaCategories.SERIES,
                 popularity = series.popularity,

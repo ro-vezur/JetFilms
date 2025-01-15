@@ -11,7 +11,7 @@ fun navigateToSelectedSerial(navController: NavController, selectedSerial: Detai
     val jsonSerial = Json.encodeToString(
         selectedSerial.copy(
             overview = encodeStringWithSpecialCharacter(selectedSerial.overview),
-            title = encodeStringWithSpecialCharacter(selectedSerial.title),
+            title = encodeStringWithSpecialCharacter(selectedSerial.title.toString()),
             poster = encodeStringWithSpecialCharacter(selectedSerial.poster.toString()),
         )
     )

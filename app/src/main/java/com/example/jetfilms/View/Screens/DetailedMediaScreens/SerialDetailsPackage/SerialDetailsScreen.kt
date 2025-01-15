@@ -195,7 +195,7 @@ fun SerialDetailsScreen(
                     ) {
                         DisplayRating(seriesResponse.rating)
 
-                        MediaTitle(decodeStringWithSpecialCharacter(seriesResponse.title))
+                        MediaTitle(decodeStringWithSpecialCharacter(seriesResponse.title.toString()))
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
