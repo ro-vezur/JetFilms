@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -21,17 +22,16 @@ import com.example.jetfilms.extensions.ssp
 @Composable
 fun PropertyCard(
     text:String,
-    lengthMultiplayer: Int
 ) {
     val colors = MaterialTheme.colorScheme
 
     Box(
         modifier = Modifier
-            .width((text.length.sdp * lengthMultiplayer))
             .height(25.sdp)
             .clip(RoundedCornerShape(14.sdp))
             .background(colors.primary)
             .border(BorderStroke(1.sdp, blueHorizontalGradient), RoundedCornerShape(14.sdp))
+            .padding(horizontal = 12.sdp)
     ){
         Text(
             text = text,

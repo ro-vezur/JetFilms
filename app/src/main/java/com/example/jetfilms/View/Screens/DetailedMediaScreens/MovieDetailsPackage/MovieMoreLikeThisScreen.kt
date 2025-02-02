@@ -22,8 +22,7 @@ fun MovieMoreLikeThisScreen(
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(9.sdp),
-        modifier = Modifier
-            .padding(top = 14.sdp, bottom = 10.sdp)
+        modifier = Modifier.padding(bottom = 10.sdp)
     ) {
         items(items = similarMovies.results) { movie ->
 

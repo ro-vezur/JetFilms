@@ -52,6 +52,8 @@ fun FilterYearsScreen(
     var filterFromYearToSet by remember{ mutableStateOf(usedFromYear) }
     var filterToYearToSet by remember{ mutableStateOf(usedToYear) }
 
+    val selectedTabIndex = remember { mutableStateOf(0) }
+
     Scaffold(
         containerColor = primaryColor,
         topBar = {
@@ -76,8 +78,8 @@ fun FilterYearsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ){
                 TabRow(
+                    selectedTabIndex = selectedTabIndex,
                     tabs = listOf("Specific Year", "Year Range"),
-                    pagerState = pagerState
                 )
 
                 HorizontalPager(

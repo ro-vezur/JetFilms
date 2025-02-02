@@ -73,7 +73,7 @@ import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
 import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedSeriesViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
-import com.example.jetfilms.infoTabs
+import com.example.jetfilms.mediaAboutTabs
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
@@ -101,19 +101,18 @@ fun SerialDetailsScreen(
 
     val seasonTabs = seriesResponse.seasons
 
-    val seasonsPagerState = rememberPagerState(pageCount = {seasonTabs.size})
-    val currentSeasonPage = seasonsPagerState.currentPage
-
-    val infoPagerState = rememberPagerState(pageCount = {infoTabs.size})
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     val scope = rememberCoroutineScope()
 
+    var selectedSeasonTabIndex by remember { mutableStateOf(0) }
     var selectedSeason by remember { mutableStateOf<SerialSeasonResponse?>(null) }
-    var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
 
+    var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
+
+    val selectedSeriesAboutTabIndex = remember { mutableStateOf(0) }
 
     val selectParticipant = { participant: SimplifiedParticipantResponse ->
         scope.launch {
@@ -128,12 +127,12 @@ fun SerialDetailsScreen(
         isFavorite = isFavoriteUnit(FavoriteMedia.fromDetailedSeriesResponse(seriesResponse))
     }
 
-    LaunchedEffect(currentSeasonPage) {
+    LaunchedEffect(selectedSeasonTabIndex) {
         selectedSeason =
            try {
-               detailedSeriesViewModel.getSerialSeason(seriesResponse.id,currentSeasonPage)
+               detailedSeriesViewModel.getSerialSeason(seriesResponse.id,selectedSeasonTabIndex)
            } catch (e:Exception){
-               detailedSeriesViewModel.getSerialSeason(seriesResponse.id,currentSeasonPage + 1)
+               detailedSeriesViewModel.getSerialSeason(seriesResponse.id,selectedSeasonTabIndex + 1)
            }
     }
 
@@ -203,25 +202,15 @@ fun SerialDetailsScreen(
                             modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
                         ) {
                             if (seriesResponse.releaseDate.isNotBlank()) {
-                                PropertyCard(
-                                    text = DateFormats.getYear(seriesResponse.releaseDate)
-                                        .toString(),
-                                    lengthMultiplayer = 13
-                                )
+                                PropertyCard(DateFormats.getYear(seriesResponse.releaseDate).toString())
                             }
 
                             if (seriesResponse.genres.isNotEmpty()) {
-                                PropertyCard(
-                                    text = seriesResponse.genres.first().name,
-                                    lengthMultiplayer = 8
-                                )
+                                PropertyCard(text = seriesResponse.genres.first().name,)
                             }
 
                             if (seriesResponse.originCountries.isNotEmpty()) {
-                                PropertyCard(
-                                    text = seriesResponse.originCountries.first(),
-                                    lengthMultiplayer = 21
-                                )
+                                PropertyCard(seriesResponse.originCountries.first())
                             }
                         }
 
@@ -252,7 +241,11 @@ fun SerialDetailsScreen(
                                     )
                                     .clickable {
                                         isFavorite = !isFavorite
-                                        addToFavorite(FavoriteMedia.fromDetailedSeriesResponse(seriesResponse))
+                                        addToFavorite(
+                                            FavoriteMedia.fromDetailedSeriesResponse(
+                                                seriesResponse
+                                            )
+                                        )
                                     }
                             ) {
                                 if (isFavorite) {
@@ -308,10 +301,10 @@ fun SerialDetailsScreen(
                         .padding(top = 8.sdp, start = 6.sdp, end = 6.sdp)
                         .fillMaxWidth(),
                     edgePadding = 0.sdp,
-                    selectedTabIndex = seasonsPagerState.currentPage, divider = {},
+                    selectedTabIndex = selectedSeasonTabIndex, divider = {},
                     containerColor = Color.Transparent,
                     indicator = { tabPositions ->
-                        if (seasonsPagerState.currentPage < tabPositions.size) {
+                        if (selectedSeasonTabIndex < tabPositions.size) {
                             Box(
                                 contentAlignment = Alignment.BottomCenter,
                                 modifier = Modifier
@@ -331,7 +324,7 @@ fun SerialDetailsScreen(
                                     cornersRadius = Int.MAX_VALUE.sdp,
                                     glowingRadius = 7.sdp,
                                     modifier = Modifier
-                                        .tabIndicatorOffset(tabPositions[seasonsPagerState.currentPage])
+                                        .tabIndicatorOffset(tabPositions[selectedSeasonTabIndex])
                                         .height(2.sdp)
                                 )
                             }
@@ -340,7 +333,7 @@ fun SerialDetailsScreen(
                 ) {
                     seasonTabs.forEachIndexed { index, season ->
                         if (season.episodeCount != 0) {
-                            val selected = seasonsPagerState.currentPage == index
+                            val selected = selectedSeasonTabIndex == index
 
                             var selectedColor1 by remember { mutableStateOf(buttonsColor1) }
                             var selectedColor2 by remember { mutableStateOf(buttonsColor2) }
@@ -371,24 +364,12 @@ fun SerialDetailsScreen(
                                 selectedContentColor = buttonsColor1,
                                 unselectedContentColor = primaryColor,
                                 selected = selected,
-                                onClick = {
-                                    scope.launch { seasonsPagerState.animateScrollToPage(index) }
-                                },
+                                onClick = { selectedSeasonTabIndex = index },
                                 modifier = Modifier
                             )
                         }
                     }
                 }
-            }
-
-            item{
-                HorizontalPager(
-                    userScrollEnabled = false,
-                    state = seasonsPagerState,
-                    modifier = Modifier
-                        .padding(top = 8.sdp)
-                        .fillMaxWidth()
-                ) {}
             }
 
             selectedSeason?.let {
@@ -405,8 +386,8 @@ fun SerialDetailsScreen(
 
             item{
                 TabRow(
-                    tabs = infoTabs,
-                    pagerState = infoPagerState,
+                    tabs = mediaAboutTabs,
+                    selectedTabIndex = selectedSeriesAboutTabIndex,
                     modifier = Modifier
                         .padding(top = 12.sdp, start = 6.sdp, end = 6.sdp)
                 )
@@ -415,7 +396,7 @@ fun SerialDetailsScreen(
             item{
                 if(seriesCast.value != null && seriesImages.value != null && similarSeries.value != null && seriesTrailers.value != null){
                     SeriesAboutTab(
-                        pagerState = infoPagerState,
+                        selectedTabIndex = selectedSeriesAboutTabIndex.value,
                         navigateToSelectedParticipant = { selectParticipant(it) },
                         selectSeries = selectSerial,
                         seriesDisplay = SeriesDisplay(

@@ -65,7 +65,7 @@ import com.example.jetfilms.View.Screens.DetailedMediaScreens.TrailerScreen
 import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedMovieViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
-import com.example.jetfilms.infoTabs
+import com.example.jetfilms.mediaAboutTabs
 import kotlinx.coroutines.launch
 
 @Composable
@@ -90,13 +90,13 @@ fun MovieDetailsScreen(
     val colors = MaterialTheme.colorScheme
 
     val scrollState = rememberScrollState()
-    val tabPagerState = rememberPagerState(pageCount = { infoTabs.size})
-
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
+
+    val selectedMovieAboutTabIndex = remember { mutableStateOf(0) }
 
     val selectParticipant = { participant: SimplifiedParticipantResponse ->
         scope.launch {
@@ -172,24 +172,15 @@ fun MovieDetailsScreen(
                         modifier = Modifier.padding(top = 14.sdp, start = 3.sdp, bottom = 6.sdp)
                     ) {
                         if(movieResponse.releaseDate.isNotBlank()) {
-                            PropertyCard(
-                                text = DateFormats.getYear(movieResponse.releaseDate).toString(),
-                                lengthMultiplayer = 13
-                            )
+                            PropertyCard(DateFormats.getYear(movieResponse.releaseDate).toString(),)
                         }
 
                         if(movieResponse.genres.isNotEmpty()){
-                            PropertyCard(
-                                text = movieResponse.genres.first().name,
-                                lengthMultiplayer = 8
-                            )
+                            PropertyCard(movieResponse.genres.first().name,)
                         }
 
                         if(movieResponse.originCountries.isNotEmpty()){
-                            PropertyCard(
-                                text = movieResponse.originCountries.first(),
-                                lengthMultiplayer = 21
-                            )
+                            PropertyCard(movieResponse.originCountries.first(),)
                         }
                     }
 
@@ -273,15 +264,15 @@ fun MovieDetailsScreen(
             }
 
             TabRow(
-                tabs = infoTabs,
-                pagerState = tabPagerState,
+                tabs = mediaAboutTabs,
+                selectedTabIndex = selectedMovieAboutTabIndex,
                 modifier = Modifier
                     .padding(top = 12.sdp, start = 6.sdp,end = 6.sdp)
             )
 
             if(movieCast.value != null && movieImages.value != null && similarMovies.value != null && movieTrailers.value != null){
                 MovieAboutTab(
-                    pagerState = tabPagerState,
+                    selectedTabIndex = selectedMovieAboutTabIndex.value,
                     movieDisplay = MovieDisplay(
                         response = movieResponse,
                         movieCast = movieCast.value!!,
@@ -318,7 +309,6 @@ fun MovieDetailsScreen(
             modifier = Modifier
                 .padding(start = 8.sdp, top = 34.sdp)
         )
-
 
     }
 }

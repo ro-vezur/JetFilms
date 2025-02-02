@@ -23,7 +23,7 @@ fun SerialMoreLikeThisScreen(
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(9.sdp),
         modifier = Modifier
-            .padding(top = 14.sdp, bottom = 10.sdp)
+            .padding(bottom = 10.sdp)
     ) {
         items(items = similarSeries.results) { serial ->
             SeriesCard(

@@ -11,6 +11,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,17 +36,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun TabRow(
     tabs: List<String>,
-    pagerState: PagerState,
+    selectedTabIndex: MutableState<Int>,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
 
     TabRow(
         modifier = modifier,
-        selectedTabIndex = pagerState.currentPage, divider = {},
+        selectedTabIndex = selectedTabIndex.value, divider = {},
         containerColor = Color.Transparent,
         indicator = { tabPositions ->
-            if (pagerState.currentPage < tabPositions.size) {
+            if (selectedTabIndex.value < tabPositions.size) {
                 Box(
                     contentAlignment = Alignment.BottomCenter,
                     modifier = Modifier
@@ -65,7 +65,7 @@ fun TabRow(
                         cornersRadius = Int.MAX_VALUE.sdp,
                         glowingRadius = 7.sdp,
                         modifier = Modifier
-                            .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                            .tabIndicatorOffset(tabPositions[selectedTabIndex.value])
                             .height(2.sdp)
                     )
                 }
@@ -73,7 +73,7 @@ fun TabRow(
         }
     ) {
         tabs.forEachIndexed { index, title ->
-            val selected = pagerState.currentPage == index
+            val selected = selectedTabIndex.value == index
 
             var selectedColor1 by remember{ mutableStateOf(buttonsColor1) }
             var selectedColor2 by remember{ mutableStateOf(buttonsColor2) }
@@ -102,7 +102,7 @@ fun TabRow(
                 selectedContentColor = buttonsColor1,
                 unselectedContentColor = primaryColor,
                 selected = selected,
-                onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
+                onClick = { selectedTabIndex.value = index },
                 modifier = Modifier
             )
         }

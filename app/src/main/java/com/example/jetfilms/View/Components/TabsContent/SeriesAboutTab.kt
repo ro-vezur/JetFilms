@@ -1,5 +1,6 @@
 package com.example.jetfilms.View.Components.TabsContent
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
@@ -14,20 +15,15 @@ import com.example.jetfilms.View.Screens.DetailedMediaScreens.SerialDetailsPacka
 @Composable
 fun SeriesAboutTab(
     modifier: Modifier = Modifier,
-    pagerState: PagerState,
+    selectedTabIndex: Int,
     seriesDisplay: SeriesDisplay,
     selectSeries: (id: Int) -> Unit,
     navigateToSelectedParticipant: (participant: SimplifiedParticipantResponse) -> Unit,
     selectTrailer: (trailer: TrailerObject) -> Unit
 ) {
-    val seriesResponse = seriesDisplay.response
 
-    HorizontalPager(
-        state = pagerState,
-        modifier = modifier,
-        userScrollEnabled = false
-    ) { index ->
-        when (index) {
+    Box(modifier = modifier) {
+        when (selectedTabIndex) {
             0 -> {
                 SeriesTrailersScreen(
                     seriesDisplay = seriesDisplay,

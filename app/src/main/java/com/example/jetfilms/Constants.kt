@@ -30,7 +30,7 @@ const val HAZE_STATE_BLUR = 28
 val BASE_MEDIA_GENRES = MediaGenres.entries.drop(1).sorted()
 val BASE_MEDIA_CATEGORIES = MediaCategories.entries.toList()
 
-val infoTabs = listOf(
+val mediaAboutTabs = listOf(
     "Trailers",
     "More Like This",
     "About"

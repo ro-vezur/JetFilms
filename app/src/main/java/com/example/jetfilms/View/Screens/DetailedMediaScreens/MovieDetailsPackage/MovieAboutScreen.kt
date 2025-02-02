@@ -38,8 +38,6 @@ fun MovieAboutScreen(
 
     val movieResponse = movieDisplay.response
 
-    val context = LocalContext.current
-
     Column(
         verticalArrangement = Arrangement.spacedBy(20.sdp),
         modifier = Modifier
