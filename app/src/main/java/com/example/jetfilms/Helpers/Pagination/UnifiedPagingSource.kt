@@ -7,6 +7,7 @@ import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesPageResponse
 import com.example.jetfilms.Models.DTOs.Filters.SortTypes
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
+import kotlinx.coroutines.delay
 
 class UnifiedPagingSource(
     val getMoviesResponse: suspend (page: Int) -> MoviesPageResponse,
@@ -23,6 +24,8 @@ class UnifiedPagingSource(
     }
 
     override suspend fun load(params: PagingSource.LoadParams<Int>): PagingSource.LoadResult<Int, UnifiedMedia> {
+
+        delay(1200)
 
         return try {
             val page = params.key ?: 1

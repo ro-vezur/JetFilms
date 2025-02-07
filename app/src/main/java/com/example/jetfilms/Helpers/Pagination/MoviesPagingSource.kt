@@ -4,6 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
 import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieResponse
+import kotlinx.coroutines.delay
 
 class MoviesPagingSource(
     val getResponse: suspend (page: Int) -> MoviesPageResponse,
@@ -17,6 +18,8 @@ class MoviesPagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SimplifiedMovieResponse> {
+
+        delay(1200)
 
         return try {
             val page = params.key ?: 1
