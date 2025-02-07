@@ -24,8 +24,9 @@ fun MovieMoreLikeThisScreen(
         horizontalArrangement = Arrangement.spacedBy(9.sdp),
         modifier = Modifier.padding(bottom = 10.sdp)
     ) {
-        items(items = similarMovies.results) { movie ->
+        item {  }
 
+        items(items = similarMovies.results) { movie ->
             MovieCard(
                 modifier = Modifier
                     .clip(RoundedCornerShape(6.sdp))
@@ -34,7 +35,8 @@ fun MovieMoreLikeThisScreen(
                     .clickable { selectMovie(movie.id) },
                 movie = movie
             )
-
         }
+
+        item {  }
     }
 }

@@ -65,8 +65,6 @@ fun EditProfileScreen(
 ) {
     val scope = rememberCoroutineScope()
 
-    val userImageSize = 85
-
     val usernameValidationResult by editProfileValidationViewModel.usernameValidation.collectAsStateWithLifecycle()
     var firstName by remember{ mutableStateOf(user.firstName) }
     var lastName by remember{ mutableStateOf(user.lastName) }
@@ -112,7 +110,7 @@ fun EditProfileScreen(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .padding(top = 26.sdp)
-                        .size(userImageSize.sdp)
+                        .size(85.sdp)
                         .border(BorderStroke(2.sdp, whiteColor), CircleShape)
                 ){
                     AsyncImage(
@@ -120,7 +118,7 @@ fun EditProfileScreen(
                         contentDescription = "user image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size((userImageSize - 2).sdp)
+                            .size((83).sdp)
                             .clip(CircleShape)
                             .background(secondaryColor)
                     )
@@ -208,95 +206,103 @@ fun EditProfileScreen(
                     modifier = Modifier
                 )
 
-                TextInputField(
-                    text = oldPasswordText,
-                    isError = oldPasswordError,
-                    height = (BASE_BUTTON_HEIGHT + 1).sdp,
-                    onTextChange = { value ->
-                        oldPasswordText = value
-                        editProfileValidationViewModel.setOldPasswordValidationResult(
-                            ValidationResult.NONE)
-                    },
-                    placeHolder = "Current Password",
-                    leadingIcon = Icons.Filled.Lock,
-                    trailingIcon = {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(5.sdp)
-                        ){
-                            if(oldPasswordValidationResult != ValidationResult.NONE){
+                if(user.customProviderUsed) {
+                    TextInputField(
+                        text = oldPasswordText,
+                        isError = oldPasswordError,
+                        height = (BASE_BUTTON_HEIGHT + 1).sdp,
+                        onTextChange = { value ->
+                            oldPasswordText = value
+                            editProfileValidationViewModel.setOldPasswordValidationResult(
+                                ValidationResult.NONE
+                            )
+                        },
+                        placeHolder = "Current Password",
+                        leadingIcon = Icons.Filled.Lock,
+                        trailingIcon = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(5.sdp)
+                            ) {
+                                if (oldPasswordValidationResult != ValidationResult.NONE) {
+                                    Icon(
+                                        imageVector = oldPasswordValidationResult.icon,
+                                        contentDescription = "check icon",
+                                        tint = oldPasswordValidationResult.tint,
+                                        modifier = Modifier
+                                            .clip(CircleShape)
+                                            .size(20.sdp)
+                                    )
+                                }
+
                                 Icon(
-                                    imageVector = oldPasswordValidationResult.icon,
-                                    contentDescription = "check icon",
-                                    tint = oldPasswordValidationResult.tint,
+                                    imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = "password",
+                                    tint = if (oldPasswordError) errorColor else Color.LightGray.copy(
+                                        0.9f
+                                    ),
                                     modifier = Modifier
+                                        .padding(end = 11.sdp)
                                         .clip(CircleShape)
                                         .size(20.sdp)
+                                        .clickable {
+                                            showPassword = !showPassword
+                                        }
                                 )
                             }
+                        },
+                        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier
+                    )
 
-                            Icon(
-                                imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                contentDescription = "password",
-                                tint = if(oldPasswordError) errorColor else Color.LightGray.copy(0.9f) ,
-                                modifier = Modifier
-                                    .padding(end = 11.sdp)
-                                    .clip(CircleShape)
-                                    .size(20.sdp)
-                                    .clickable {
-                                        showPassword = !showPassword
-                                    }
+                    TextInputField(
+                        text = newPasswordText,
+                        isError = newPasswordError,
+                        height = (BASE_BUTTON_HEIGHT + 1).sdp,
+                        onTextChange = { value ->
+                            newPasswordText = value
+                            editProfileValidationViewModel.setNewPasswordValidationResult(
+                                ValidationResult.NONE
                             )
-                        }
-                    },
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    modifier = Modifier
-                )
+                        },
+                        placeHolder = "New Confirm",
+                        leadingIcon = Icons.Filled.Lock,
+                        trailingIcon = {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(5.sdp)
+                            ) {
+                                if (newPasswordValidationResult != ValidationResult.NONE) {
+                                    Icon(
+                                        imageVector = newPasswordValidationResult.icon,
+                                        contentDescription = "check icon",
+                                        tint = newPasswordValidationResult.tint,
+                                        modifier = Modifier
+                                            .clip(CircleShape)
+                                            .size(20.sdp)
+                                    )
+                                }
 
-                TextInputField(
-                    text = newPasswordText,
-                    isError = newPasswordError,
-                    height = (BASE_BUTTON_HEIGHT + 1).sdp,
-                    onTextChange = { value ->
-                        newPasswordText = value
-                        editProfileValidationViewModel.setNewPasswordValidationResult(
-                            ValidationResult.NONE)
-                    },
-                    placeHolder = "New Confirm",
-                    leadingIcon = Icons.Filled.Lock,
-                    trailingIcon = {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(5.sdp)
-                        ){
-                            if(newPasswordValidationResult != ValidationResult.NONE){
                                 Icon(
-                                    imageVector = newPasswordValidationResult.icon,
-                                    contentDescription = "check icon",
-                                    tint = newPasswordValidationResult.tint,
+                                    imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                    contentDescription = "password",
+                                    tint = if (newPasswordError) errorColor else Color.LightGray.copy(
+                                        0.9f
+                                    ),
                                     modifier = Modifier
+                                        .padding(end = 11.sdp)
                                         .clip(CircleShape)
                                         .size(20.sdp)
+                                        .clickable {
+                                            showPassword = !showPassword
+                                        }
                                 )
                             }
-
-                            Icon(
-                                imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                contentDescription = "password",
-                                tint = if(newPasswordError) errorColor else Color.LightGray.copy(0.9f) ,
-                                modifier = Modifier
-                                    .padding(end = 11.sdp)
-                                    .clip(CircleShape)
-                                    .size(20.sdp)
-                                    .clickable {
-                                        showPassword = !showPassword
-                                    }
-                            )
-                        }
-                    },
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    modifier = Modifier
-                )
+                        },
+                        visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier
+                    )
+                }
             }
 
             TextButton(

@@ -23,13 +23,13 @@ import com.example.jetfilms.extensions.ssp
 fun PropertyCard(
     text:String,
 ) {
-    val colors = MaterialTheme.colorScheme
+    val colorScheme = MaterialTheme.colorScheme
 
     Box(
         modifier = Modifier
             .height(25.sdp)
             .clip(RoundedCornerShape(14.sdp))
-            .background(colors.primary)
+            .background(colorScheme.primary)
             .border(BorderStroke(1.sdp, blueHorizontalGradient), RoundedCornerShape(14.sdp))
             .padding(horizontal = 12.sdp)
     ){

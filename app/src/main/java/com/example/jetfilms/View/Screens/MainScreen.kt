@@ -1,8 +1,10 @@
 package com.example.jetfilms.View.Screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -15,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,7 +24,7 @@ import androidx.navigation.navArgument
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
-import com.example.jetfilms.View.Components.Bottom_Navigation_Bar.BottomNavBar
+import com.example.jetfilms.View.Components.BottomNavigationBar.BottomNavBar
 import com.example.jetfilms.extensions.CustomNavType.MovieNavType
 import com.example.jetfilms.extensions.CustomNavType.SeriesNavType
 import com.example.jetfilms.extensions.CustomNavType.ParticipantNavType
@@ -79,13 +80,7 @@ fun MainScreen(
         val userViewModel: UserViewModel = hiltViewModel()
         val firebaseUser by userViewModel.firebaseUser.collectAsStateWithLifecycle()
 
-
-        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-        }
-
         val sharedMediaViewModel: SharedMediaViewModel = hiltViewModel()
-
 
         val initialRoute = if(firebaseUser != null) {
             HomeRoute
@@ -95,12 +90,15 @@ fun MainScreen(
         val selectMovie: (movieId: Int) -> Unit = { id ->
             try {
                 scope.launch {
+                    Log.d("movie id",id.toString())
                     navigateToSelectedMovie(
                         screensNavController,
                         sharedMediaViewModel.getMovie(id)
                     )
                 }
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                Log.e("failed to select movie",e.message.toString())
+            }
         }
 
         val selectSeries: (seriesId: Int) -> Unit = { id ->
@@ -129,6 +127,8 @@ fun MainScreen(
             NavHost(
                 navController = screensNavController,
                 startDestination = initialRoute,
+                enterTransition = { fadeIn(animationSpec = tween(200)) },
+                exitTransition = { fadeOut(animationSpec = tween(200)) },
                 modifier = Modifier
                     .fillMaxSize()
                     .haze(
@@ -157,7 +157,7 @@ fun MainScreen(
                     val user by userViewModel.user.collectAsStateWithLifecycle()
 
                     user?.let { checkedUser ->
-                        val homeViewModel = hiltViewModel<HomeViewModel,HomeViewModel.HomeViewModelFactory>(viewModelStoreOwner) { factory ->
+                        val homeViewModel = hiltViewModel<HomeViewModel,HomeViewModel.HomeViewModelFactory> { factory ->
                             factory.create(checkedUser)
                         }
 
@@ -216,13 +216,12 @@ fun MainScreen(
                             selectSeries(id)
                         }
                     },
-                    viewModelStoreOwner = viewModelStoreOwner
                 )
 
                 composable<FavoriteRoute> {
                     showBottomBar = true
 
-                    val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel(viewModelStoreOwner)
+                    val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
 
                     val searchedUnifiedMedia by searchHistoryViewModel.searchedUnifiedMedia.collectAsStateWithLifecycle()
                     val searchedMediaInDb by searchHistoryViewModel.searchedHistoryMedia.collectAsStateWithLifecycle()

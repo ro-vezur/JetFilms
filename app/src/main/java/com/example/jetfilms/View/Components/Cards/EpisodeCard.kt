@@ -17,6 +17,7 @@ import coil.compose.AsyncImage
 import com.example.jetfilms.Models.DTOs.SeriesPackage.Episode
 import com.example.jetfilms.Helpers.fromMinutesToHours
 import com.example.jetfilms.BASE_IMAGE_API_URL
+import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.typography
 
@@ -31,9 +32,8 @@ fun EpisodeCard(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(5.sdp)
     ) {
-        AsyncImage(
-            model = BASE_IMAGE_API_URL + episode.image.toString(),
-            contentDescription = "episode image",
+        OptimizedImage(
+            url = BASE_IMAGE_API_URL + episode.image.toString(),
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxHeight()

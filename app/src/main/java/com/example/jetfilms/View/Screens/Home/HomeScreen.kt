@@ -40,6 +40,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.paging.PagingData
+import androidx.compose.material3.MaterialTheme.colorScheme
 import coil.compose.AsyncImage
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
 import com.example.jetfilms.View.Components.Gradient.GradientIcon
@@ -54,6 +55,7 @@ import com.example.jetfilms.View.Components.DetailedMediaComponents.MediaTitle
 import com.example.jetfilms.View.Components.Lists.MoviesCategoryList
 import com.example.jetfilms.View.Components.Lists.SerialsCategoryList
 import com.example.jetfilms.View.Components.Lists.UnifiedMediaCategoryList
+import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.View.Screens.MoreMoviesScreenRoute
 import com.example.jetfilms.View.Screens.MoreSerialsScreenRoute
 import com.example.jetfilms.View.Screens.MoreUnifiedMediaScreenRoute
@@ -83,8 +85,6 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
 ) {
 
-    val colors = MaterialTheme.colorScheme
-
     val screenScrollState = rememberForeverScrollState(key = "Home screen")
 
     val topRatedMovies by homeViewModel.topRatedMovies.collectAsStateWithLifecycle()
@@ -106,7 +106,7 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .background(colors.primary)
+            .background(colorScheme.primary)
             .verticalScroll(screenScrollState)
     ) {
         Box(
@@ -114,9 +114,8 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .height(290.sdp)
         ) {
-            AsyncImage(
-                model = "$BASE_IMAGE_API_URL${selectedMovie?.posterUrl}",
-                contentDescription = "",
+            OptimizedImage(
+                url = "$BASE_IMAGE_API_URL${selectedMovie?.posterUrl}",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
@@ -129,8 +128,8 @@ fun HomeScreen(
                         Brush.verticalGradient(
                             listOf(
                                 Color.Transparent,
-                                colors.primary.copy(0.64f),
-                                colors.primary.copy(1f),
+                                colorScheme.primary.copy(0.64f),
+                                colorScheme.primary.copy(1f),
                             )
                         )
                     )
@@ -173,8 +172,8 @@ fun HomeScreen(
                             .size(34.sdp)
                             .clip(CircleShape)
                             .background(
-                                if (isFavorite) colors.secondary.copy(.85f)
-                                else colors.secondary.copy(.92f)
+                                if (isFavorite) colorScheme.secondary.copy(.85f)
+                                else colorScheme.secondary.copy(.92f)
                             )
                             .clickable {
                                 isFavorite = !isFavorite
