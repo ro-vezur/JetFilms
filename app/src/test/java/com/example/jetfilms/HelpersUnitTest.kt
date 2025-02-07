@@ -1,6 +1,7 @@
 package com.example.jetfilms
 
 import com.example.jetfilms.Helpers.DateFormats.DateFormats
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 import org.junit.runner.RunWith
@@ -21,11 +22,11 @@ class HelpersUnitTest {
 
     @Test
     fun testGetCurrentYear() {
-        val mockedDateFormats = mock(DateFormats.Companion::class.java)
+        val mockedDateFormats = mock(DateFormats::class.java)
 
         val result = mockedDateFormats.getCurrentYear()
 
-     //   assertEquals(2024, result)
+        assertEquals(2025, result)
 
     }
 

@@ -6,37 +6,35 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 
-class DateFormats {
-    companion object{
-        private val baseFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        fun getCurrentYear(): Int {
+object DateFormats {
+    private val baseFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    fun getCurrentYear(): Int {
 
-            return Calendar.getInstance().get(Calendar.YEAR)
+        return Calendar.getInstance().get(Calendar.YEAR)
+    }
+
+    fun getYear(dateString: String): Int {
+        return  try {
+            val date = LocalDate.parse(dateString, baseFormatter)
+            date.year
         }
-
-        fun getYear(dateString: String): Int {
-            return  try {
-                val date = LocalDate.parse(dateString, baseFormatter)
-                date.year
-            }
-            catch (e:Exception){
-                0
-            }
+        catch (e:Exception){
+            0
         }
+    }
 
-        fun getCurrentDateMillis(): Long {
-            return System.currentTimeMillis()
-        }
+    fun getCurrentDateMillis(): Long {
+        return System.currentTimeMillis()
+    }
 
-        fun getDateFromMillis(millis: Long): String{
-            val formatter = SimpleDateFormat("dd/MM/yyyy")
-            val date = Date(millis)
+    fun getDateFromMillis(millis: Long): String{
+        val formatter = SimpleDateFormat("dd/MM/yyyy")
+        val date = Date(millis)
 
-            return formatter.format(date)
-        }
+        return formatter.format(date)
+    }
 
-        fun getMinutesFromMillis(millis: Long): Long {
-            return millis / 60000
-        }
+    fun getMinutesFromMillis(millis: Long): Long {
+        return millis / 60000
     }
 }

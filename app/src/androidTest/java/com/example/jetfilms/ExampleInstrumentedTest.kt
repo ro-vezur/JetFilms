@@ -24,7 +24,7 @@ class ExampleInstrumentedTest {
     @Test
     fun getCurrentYear() {
         val result = DateFormats.getCurrentYear()
-        assertEquals(2024, result)
+        assertEquals(2025, result)
     }
 
     @Test
