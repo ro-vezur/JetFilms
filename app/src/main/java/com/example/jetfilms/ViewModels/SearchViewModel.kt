@@ -33,22 +33,6 @@ class SearchViewModel @Inject constructor(
     private val _searchedSeries = MutableStateFlow<SeriesPageResponse?>(null)
     val searchedSeries = _searchedSeries.asStateFlow()
 
-    fun setSearchText(text: String){
-        viewModelScope.launch {
-            withContext(Dispatchers.IO){
-                _searchText.emit(text)
-            }
-        }
-    }
-
-    fun setIsRequestSent(sent: Boolean){
-        viewModelScope.launch{
-            withContext(Dispatchers.IO){
-                _requestSent.emit(sent)
-            }
-        }
-    }
-
     fun fetchSearchSuggestions(query: String){
         viewModelScope.launch {
             withContext(Dispatchers.IO){
@@ -56,8 +40,6 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
-
-    suspend fun searchMovies(query: String,page: Int) = searchRepository.searchMovies(query, page)
 
     fun setSearchedMovies(query: String?){
         viewModelScope.launch{
@@ -69,8 +51,6 @@ class SearchViewModel @Inject constructor(
             }
         }
     }
-
-    suspend fun searchSeries(query: String,page: Int) = searchRepository.searchSeries(query, page)
 
     fun setSearchedSerials(query: String?){
         viewModelScope.launch{

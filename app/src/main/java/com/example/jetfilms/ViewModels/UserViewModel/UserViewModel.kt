@@ -1,12 +1,11 @@
 package com.example.jetfilms.ViewModels.UserViewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetfilms.Models.DTOs.FavoriteMediaDTOs.FavoriteMedia
 import com.example.jetfilms.Models.DTOs.UserDTOs.User
 import com.example.jetfilms.Models.Firebase.Auth.AuthService
-import com.example.jetfilms.Models.Firebase.Auth.Resource
+import com.example.jetfilms.Models.Resource
 import com.example.jetfilms.Models.Repositories.Firebase.UsersCollectionRepository
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -19,7 +18,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-private val TAG = "Google "
 
 @HiltViewModel
 class UserViewModel @Inject constructor(

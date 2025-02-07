@@ -64,23 +64,20 @@ class FilterViewModel @Inject constructor(
         yearRange: Map<String, String>
     ){
         viewModelScope.launch {
-            withContext(Dispatchers.IO){
+            val paginatedUnifiedData = filterRepository.getPaginatedFilteredMedia(
+                sortType = sortType,
+                categories = categories,
+                countries = countries,
+                genres = genres,
+                year = year,
+                yearRange = yearRange
+            )
 
-                val paginatedUnifiedData = filterRepository.getPaginatedFilteredMedia(
-                    sortType = sortType,
-                    categories = categories,
-                    countries = countries,
-                    genres = genres,
-                    year = year,
-                    yearRange = yearRange
-                )
-
-                paginatedUnifiedData
-                    .cachedIn(viewModelScope)
-                    .collect{
-                        _filteredResults.emit(it)
-                    }
-            }
+            paginatedUnifiedData
+                .cachedIn(viewModelScope)
+                .collect{
+                    _filteredResults.emit(it)
+                }
         }
     }
 
