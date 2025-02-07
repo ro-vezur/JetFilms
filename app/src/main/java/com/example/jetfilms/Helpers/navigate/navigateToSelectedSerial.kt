@@ -11,12 +11,10 @@ fun navigateToSelectedSerial(navController: NavController, selectedSerial: Detai
     val jsonSerial = Json.encodeToString(
         selectedSerial.copy(
             overview = encodeStringWithSpecialCharacter(selectedSerial.overview),
-            title = encodeStringWithSpecialCharacter(selectedSerial.title.toString()),
+            name = encodeStringWithSpecialCharacter(selectedSerial.name.toString()),
             poster = encodeStringWithSpecialCharacter(selectedSerial.poster.toString()),
         )
     )
 
-    if(navController.currentDestination?.route.toString() != "serial_details/{serial}") {
-        navController.navigate("serial_details/$jsonSerial")
-    }
+    navController.navigate("serial_details/$jsonSerial")
 }

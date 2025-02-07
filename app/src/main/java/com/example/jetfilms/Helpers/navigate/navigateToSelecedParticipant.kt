@@ -16,5 +16,7 @@ fun navigateToSelectedParticipant(navController: NavController,selectedParticipa
         )
     )
 
-    navController.navigate("participant_details/$jsonParticipant")
+    navController.navigate("participant_details/$jsonParticipant") {
+        launchSingleTop = true
+    }
 }

@@ -9,6 +9,8 @@ import kotlinx.serialization.json.Json
 
 fun navigateToSelectedMovie(navController: NavController, selectedMovie: DetailedMovieResponse){
 
+    Log.d("selected movie",selectedMovie.toString())
+
     val jsonMovie = Json.encodeToString(
         selectedMovie.copy(
             title = encodeStringWithSpecialCharacter(selectedMovie.title),
@@ -17,7 +19,6 @@ fun navigateToSelectedMovie(navController: NavController, selectedMovie: Detaile
             posterUrl = encodeStringWithSpecialCharacter(selectedMovie.posterUrl.toString()),
             )
     )
-    if(navController.currentDestination?.route.toString() != "movie_details/{movie}") {
-        navController.navigate("movie_details/$jsonMovie")
-    }
+
+    navController.navigate("movie_details/$jsonMovie")
 }
