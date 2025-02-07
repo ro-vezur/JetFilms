@@ -12,7 +12,7 @@ data class DetailedSeriesResponse(
     @SerializedName("first_air_date") val releaseDate: String,
     val genres: List<Genre>,
     val overview: String,
-    val title: String?,
+    val name: String?,
     @SerializedName("number_of_seasons") val seasonsCount: Int,
     val popularity: Float,
     @SerializedName("poster_path") val poster: String?,
