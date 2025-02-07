@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.jetfilms.HAZE_STATE_BLUR
+import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -47,7 +48,6 @@ fun MediaGenreCard(
     onClick: () -> Unit
 ) {
     val typography = MaterialTheme.typography
-    val request = ImageRequest.Builder(LocalContext.current).data(mediaGenre.imageUrl).allowHardware(false).build()
 
     Box(
         modifier = Modifier
@@ -64,10 +64,8 @@ fun MediaGenreCard(
                 onClick()
             }
     ){
-        AsyncImage(
-            model = request,
-            contentDescription = "genre image",
-            contentScale = ContentScale.Crop,
+        OptimizedImage(
+            url = mediaGenre.imageUrl,
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.sdp))

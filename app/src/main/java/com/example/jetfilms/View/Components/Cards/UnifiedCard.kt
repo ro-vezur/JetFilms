@@ -24,6 +24,7 @@ import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
+import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
@@ -32,15 +33,12 @@ fun UnifiedCard(
     modifier: Modifier = Modifier,
     unifiedMedia: UnifiedMedia,
 ) {
-    val context = LocalContext.current
 
     Box(
         modifier = modifier
     ){
-        AsyncImage(
-            model = "$BASE_IMAGE_API_URL${unifiedMedia.poster}",
-            contentDescription = "movie poster",
-            contentScale = ContentScale.Crop,
+        OptimizedImage(
+            url = "$BASE_IMAGE_API_URL${unifiedMedia.poster}",
             modifier = modifier
         )
 

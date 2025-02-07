@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.Dp
 import coil.compose.SubcomposeAsyncImage
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.SimplifiedParticipantResponse
+import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
@@ -29,15 +30,13 @@ fun MovieParticipantCard(
         horizontalAlignment = Alignment.Start,
         modifier = modifier
     ){
-        SubcomposeAsyncImage(
-            model = "$BASE_IMAGE_API_URL${movieParticipant.image}",
-            contentDescription = "movie poster",
+        OptimizedImage(
+            url = "$BASE_IMAGE_API_URL${movieParticipant.image}",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight(0.72f)
                 .clip(RoundedCornerShape(8.sdp)),
-            loading = { CircularProgressIndicator() }
         )
 
         Text(

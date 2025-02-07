@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
+import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -51,9 +52,8 @@ fun MediaFormatCard(mediaFormat: MediaCategories, selected: Boolean, onClick: ()
             )
             .clickable { onClick() }
     ){
-        AsyncImage(
-            model = mediaFormat.imageUrl,
-            contentDescription = "image poster",
+        OptimizedImage(
+            url = mediaFormat.imageUrl,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
