@@ -1,6 +1,6 @@
 package com.example.jetfilms.Models.Firebase.Auth
 
-import com.example.jetfilms.Models.Firebase.Auth.Resource
+import com.example.jetfilms.Models.Resource
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.Flow
 
