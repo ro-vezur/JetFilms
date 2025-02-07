@@ -83,7 +83,7 @@ fun SearchSuggestionsLazyColumn(
                 Text(
                     text = removeNumbersAfterDecimal(
                         suggestion.rating,
-                        numbersAfterDecimal = 2
+                        numbersAfterDecimal = 1
                     ).toString(),
                     color = whiteColor,
                     fontSize = 12.ssp,

@@ -21,7 +21,6 @@ fun NavGraphBuilder.exploreScreen(
     showBottomBar: (show: Boolean) -> Unit,
     selectMedia: (id: Int, type: MediaCategories) -> Unit,
     seeAllMedia: (type: MediaCategories, query: String) -> Unit,
-    viewModelStoreOwner: ViewModelStoreOwner,
 ) {
     navigation<ExploreNavigationHost>(
         startDestination = ExploreNavigationHost.SearchRoute,
@@ -34,8 +33,7 @@ fun NavGraphBuilder.exploreScreen(
             val filterViewModel: FilterViewModel = hiltViewModel(parentEntry)
             val filteredResults = filterViewModel.filteredResults.collectAsLazyPagingItems()
 
-            val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel(viewModelStoreOwner)
-
+            val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
 
             showBottomBar(true)
 

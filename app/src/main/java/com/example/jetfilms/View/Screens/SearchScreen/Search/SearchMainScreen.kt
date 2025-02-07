@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,8 +71,8 @@ fun SearchScreen(
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val scope = rememberCoroutineScope()
 
-    val searchText by searchViewModel.searchText.collectAsStateWithLifecycle()
-    val requestSent = searchViewModel.requestSent.collectAsStateWithLifecycle()
+    var searchText by rememberSaveable { mutableStateOf("") }
+    var requestSent by rememberSaveable { mutableStateOf(false) }
 
     val searchedMovies by searchViewModel.searchedMovies.collectAsStateWithLifecycle()
     val searchedSerials by searchViewModel.searchedSeries.collectAsStateWithLifecycle()
@@ -91,7 +92,7 @@ fun SearchScreen(
     val columnItemsSpacing = 15
 
     LaunchedEffect(requestSent) {
-        searchBarXOffset = if (requestSent.value) screenWidth / 50 else screenWidth / 27
+        searchBarXOffset = if (requestSent) screenWidth / 50 else screenWidth / 27
     }
 
     Box(
@@ -111,24 +112,24 @@ fun SearchScreen(
                         SearchField(
                             text = searchText,
                             onTextChange = {
-                                searchViewModel.setSearchText(it)
+                                searchText = it
                                 searchViewModel.fetchSearchSuggestions(it)
                             },
                             onSearchClick = {
-                                searchViewModel.setIsRequestSent(true)
+                                requestSent = true
                                 searchViewModel.setSearchedMovies(searchText)
                                 searchViewModel.setSearchedSerials(searchText)
                             },
                             clearText = {
-                                searchViewModel.setSearchText("")
+                                searchText = ""
                                 searchViewModel.fetchSearchSuggestions("")
                             },
                             cancelRequest = {
-                                searchViewModel.setIsRequestSent(false)
+                                requestSent = false
                                 searchViewModel.setSearchedMovies(null)
                                 searchViewModel.setSearchedSerials(null)
                             },
-                            requestSent = requestSent.value,
+                            requestSent = requestSent,
                             interactionSource = interactionSource,
                         )
                     }
@@ -139,7 +140,7 @@ fun SearchScreen(
                     modifier = Modifier
                     .fillMaxSize()
                 ){
-                    AnimatedVisibility( visible = requestSent.value) {
+                    AnimatedVisibility( visible = requestSent) {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(columnItemsSpacing.sdp),
                             modifier = Modifier
@@ -206,7 +207,7 @@ fun SearchScreen(
                         }
                     }
 
-                    AnimatedVisibility(visible = !requestSent.value){
+                    AnimatedVisibility(visible = !requestSent){
                         UnifiedMediaVerticalLazyGrid(
                             modifier = Modifier
                                 .padding(horizontal = lazyColumnsHorizontalPadding)
@@ -236,8 +237,8 @@ fun SearchScreen(
                             searchSuggestions = searchSuggestions,
                             onSuggestionClick = { suggestion ->
                                 focusManager.clearFocus()
-                                searchViewModel.setSearchText(suggestion.title)
-                                searchViewModel.setIsRequestSent(true)
+                                searchText = suggestion.title
+                                requestSent = true
                                 searchViewModel.setSearchedMovies(suggestion.title)
                                 searchViewModel.setSearchedSerials(suggestion.title)
                             }
@@ -245,7 +246,7 @@ fun SearchScreen(
                     }
 
                     AnimatedVisibility(
-                        visible = !requestSent.value,
+                        visible = !requestSent,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                     ) {
