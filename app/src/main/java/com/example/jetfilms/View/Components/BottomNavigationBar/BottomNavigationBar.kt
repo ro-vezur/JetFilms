@@ -1,4 +1,4 @@
-package com.example.jetfilms.View.Components.Bottom_Navigation_Bar
+package com.example.jetfilms.View.Components.BottomNavigationBar
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
