@@ -88,7 +88,7 @@ class FilterRepository @Inject constructor(
         pagesLimit: Int = Int.MAX_VALUE
     ) = Pager(
         config = PagingConfig(
-            pageSize = PAGE_SIZE,
+            pageSize = 19,
         ),
         pagingSourceFactory = {
             UnifiedPagingSource(

@@ -148,7 +148,6 @@ fun AcceptFiltersScreen(
                     SortTypes.entries.forEach { type ->
                         SortSelectedCard(
                             text = type.title,
-                            lengthMultiplayer = 9,
                             selected = selectedSortType == type,
                             onClick = { selectSortType(type) }
                         )

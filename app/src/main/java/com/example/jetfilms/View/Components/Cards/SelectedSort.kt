@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -26,14 +27,12 @@ import com.example.jetfilms.ui.theme.transparentColor
 @Composable
 fun SortSelectedCard(
     text:String,
-    lengthMultiplayer: Int,
     selected: Boolean,
     onClick: () -> Unit,
 ) {
 
     Box(
         modifier = Modifier
-            .width((text.length.coerceAtLeast(5).sdp * lengthMultiplayer))
             .height(27.sdp)
             .clip(RoundedCornerShape(14.sdp))
             .background( if(selected) secondaryColor.copy(0.75f) else Color.DarkGray.copy(0.85f))
@@ -45,6 +44,7 @@ fun SortSelectedCard(
                 ),
                 RoundedCornerShape(14.sdp)
             )
+            .padding(horizontal = 8.sdp)
             .clickable { onClick() }
     ){
         Text(

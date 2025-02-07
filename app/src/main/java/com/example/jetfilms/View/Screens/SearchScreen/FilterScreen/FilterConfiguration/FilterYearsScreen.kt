@@ -42,7 +42,6 @@ fun FilterYearsScreen(
     usedYearRangeFilter: Map<String,String>,
     acceptNewYearsFilter: (year: Int, yearRange: Map<String,String>) -> Unit,
 ) {
-    val pagerState = rememberPagerState(pageCount = {2})
 
     var yearsFilterToSet by remember { mutableStateOf(usedYearsFilter.toString()) }
 
@@ -82,48 +81,39 @@ fun FilterYearsScreen(
                     tabs = listOf("Specific Year", "Year Range"),
                 )
 
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .padding(top = 15.sdp),
-                    userScrollEnabled = false
-                ) { page ->
-                    when (page) {
-                        0 -> {
-                            EnterSpecificYearScreen(
-                                text = yearsFilterToSet,
-                                onTextChange = { yearsFilterToSet = it}
-                            )
-                        }
+                when (selectedTabIndex.value) {
+                    0 -> {
+                        EnterSpecificYearScreen(
+                            text = yearsFilterToSet,
+                            onTextChange = { yearsFilterToSet = it}
+                        )
+                    }
 
-                        1 -> {
-                            EnterYearRangeScreen(
-                                textFromYear = filterFromYearToSet,
-                                textToYear = filterToYearToSet,
-                                onChangeTextFromYear = { filterFromYearToSet = it },
-                                onChangeTextToYear = { filterToYearToSet = it }
-                            )
-                        }
+                    1 -> {
+                        EnterYearRangeScreen(
+                            textFromYear = filterFromYearToSet,
+                            textToYear = filterToYearToSet,
+                            onChangeTextFromYear = { filterFromYearToSet = it },
+                            onChangeTextToYear = { filterToYearToSet = it }
+                        )
                     }
                 }
             }
 
 
-
             AcceptMultipleSelectionButton(
-                isEmpty = if(pagerState.currentPage == 0) yearsFilterToSet.isBlank()
+                isEmpty = if(selectedTabIndex.value == 0) yearsFilterToSet.isBlank()
                 else filterFromYearToSet.isBlank() || filterToYearToSet.isBlank(),
-                isDataSameAsBefore = if(pagerState.currentPage == 0) yearsFilterToSet == usedYearsFilter.toString()
+                isDataSameAsBefore = if(selectedTabIndex.value == 0) yearsFilterToSet == usedYearsFilter.toString()
                 else filterFromYearToSet == usedFromYear && filterToYearToSet == usedToYear,
                 additionalText = "Enter a Year",
                 onClick = {
-
                     turnBack()
                     acceptNewYearsFilter(
-                        if(pagerState.currentPage == 0) yearsFilterToSet.toInt() else 0,
+                        if(selectedTabIndex.value == 0) yearsFilterToSet.toInt() else 0,
                         mapOf(
-                            "fromYear" to if(pagerState.currentPage == 1) filterFromYearToSet else "0",
-                            "toYear" to if(pagerState.currentPage == 1) filterToYearToSet else "0"
+                            "fromYear" to if(selectedTabIndex.value == 1) filterFromYearToSet else "0",
+                            "toYear" to if(selectedTabIndex.value == 1) filterToYearToSet else "0"
                         )
                     )
                 },
