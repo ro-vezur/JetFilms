@@ -41,7 +41,7 @@ import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.View.Components.Buttons.AcceptMultipleSelectionButton
 import com.example.jetfilms.View.Components.Gradient.animatedGradient
 import com.example.jetfilms.View.Components.InputFields.SearchField
-import com.example.jetfilms.Models.DTOs.animatedGradientTypes
+import com.example.jetfilms.Models.Enums.AnimatedGradientTypes
 import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Helpers.Countries.getCountryName
@@ -220,7 +220,7 @@ private fun CountryCard(
                 style = TextStyle(
                     brush = 
                     if(selected) animatedGradient(colors = listOf(buttonsColor1, buttonsColor2),
-                        animatedGradientTypes.VERTICAL)
+                        AnimatedGradientTypes.VERTICAL)
                     else animatedGradient(colors = listOf(whiteColor, whiteColor))
                 ),
                 modifier = Modifier

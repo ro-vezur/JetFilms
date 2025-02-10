@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,7 +25,7 @@ import com.example.jetfilms.FILTER_TOP_BAR_HEIGHT
 import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.View.Components.Buttons.AcceptMultipleSelectionButton
 import com.example.jetfilms.View.Components.InputFields.TextInPutField.TextInputField
-import com.example.jetfilms.View.Components.TabRow
+import com.example.jetfilms.View.Components.CustomTabRow
 import com.example.jetfilms.View.Components.TopBars.FiltersTopBar
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.primaryColor
@@ -76,7 +74,7 @@ fun FilterYearsScreen(
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ){
-                TabRow(
+                CustomTabRow(
                     selectedTabIndex = selectedTabIndex,
                     tabs = listOf("Specific Year", "Year Range"),
                 )
@@ -99,7 +97,6 @@ fun FilterYearsScreen(
                     }
                 }
             }
-
 
             AcceptMultipleSelectionButton(
                 isEmpty = if(selectedTabIndex.value == 0) yearsFilterToSet.isBlank()

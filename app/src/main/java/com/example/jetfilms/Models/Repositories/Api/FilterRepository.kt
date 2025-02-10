@@ -8,10 +8,10 @@ import com.example.jetfilms.Helpers.Countries.getCountryList
 import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.Helpers.ListToString.CountryListToString
 import com.example.jetfilms.Models.API.ApiInterface
-import com.example.jetfilms.Models.DTOs.Filters.SortTypes
+import com.example.jetfilms.Models.Enums.SortTypes
 import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesPageResponse
-import com.example.jetfilms.Helpers.Pagination.UnifiedPagingSource
+import com.example.jetfilms.Models.Pagination.UnifiedPagingSource
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
@@ -37,7 +37,7 @@ class FilterRepository @Inject constructor(
     ): List<UnifiedMedia> {
         val moviesResponse = discoverMovies(
             page = 1,
-            sortBy = sortType?.requestQuery.toString(),
+            sortBy = sortType.requestQuery,
             genres = genres.map { it.genreId },
             countries = countries,
             year = year,
@@ -88,7 +88,7 @@ class FilterRepository @Inject constructor(
         pagesLimit: Int = Int.MAX_VALUE
     ) = Pager(
         config = PagingConfig(
-            pageSize = 18,
+            pageSize = PAGE_SIZE,
         ),
         pagingSourceFactory = {
             UnifiedPagingSource(

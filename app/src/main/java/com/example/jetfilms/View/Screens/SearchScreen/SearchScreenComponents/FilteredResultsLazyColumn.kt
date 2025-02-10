@@ -19,6 +19,7 @@ import androidx.paging.compose.LazyPagingItems
 import com.example.jetfilms.BOTTOM_NAVIGATION_BAR_HEIGHT
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.View.Components.Cards.UnifiedCard
+import com.example.jetfilms.View.Screens.other.LoadingScreen
 import com.example.jetfilms.extensions.sdp
 
 @Composable
@@ -31,7 +32,7 @@ fun FilteredResultsLazyColumn(
 
     when {
         results.loadState.refresh is LoadState.Loading -> {
-            CircularProgressIndicator()
+            LoadingScreen()
         }
 
         else -> LazyVerticalGrid(
@@ -58,7 +59,7 @@ fun FilteredResultsLazyColumn(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.sdp))
                             .height(155.sdp)
-                            .clickable {selectMedia(filteredMedia) }
+                            .clickable { selectMedia(filteredMedia) }
                     )
                 }
             }
