@@ -1,10 +1,10 @@
-package com.example.jetfilms.Helpers.Pagination
+package com.example.jetfilms.Models.Pagination
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.jetfilms.Models.DTOs.MoviePackage.MoviesPageResponse
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesPageResponse
-import com.example.jetfilms.Models.DTOs.Filters.SortTypes
+import com.example.jetfilms.Models.Enums.SortTypes
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import kotlinx.coroutines.delay
@@ -25,7 +25,7 @@ class UnifiedPagingSource(
 
     override suspend fun load(params: PagingSource.LoadParams<Int>): PagingSource.LoadResult<Int, UnifiedMedia> {
 
-        delay(1200)
+        delay(1000)
 
         return try {
             val page = params.key ?: 1

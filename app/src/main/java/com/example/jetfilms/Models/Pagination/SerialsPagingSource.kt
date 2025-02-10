@@ -1,4 +1,4 @@
-package com.example.jetfilms.Helpers.Pagination
+package com.example.jetfilms.Models.Pagination
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -19,7 +19,7 @@ class SerialsPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, SimplifiedSeriesResponse> {
 
-        delay(1200)
+        delay(1000)
 
         return try {
             val page = params.key ?: 1
