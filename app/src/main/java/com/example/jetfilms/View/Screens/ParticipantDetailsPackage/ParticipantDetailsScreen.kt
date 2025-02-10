@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,9 +50,10 @@ import com.example.jetfilms.View.Components.Gradient.animatedGradient
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.DetailedParticipantDisplay
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.View.Components.Cards.MovieCard
-import com.example.jetfilms.Models.DTOs.animatedGradientTypes
+import com.example.jetfilms.Models.Enums.AnimatedGradientTypes
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.DetailedParticipantResponse
+import com.example.jetfilms.View.Components.CustomTabRow
 import com.example.jetfilms.ViewModels.DetailedMediaViewModels.DetailedParticipantViewModel
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
@@ -59,6 +62,7 @@ import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.typography
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ParticipantDetailsScreen(
     navController: NavController,
@@ -79,13 +83,19 @@ fun ParticipantDetailsScreen(
         "Biography",
     )
 
-    val tabPagerState = rememberPagerState(pageCount = {tabs.size})
+    val selectedTabsIndex = remember { mutableStateOf(0) }
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
-    val filmographyColumns = 3
 
-    val scope = rememberCoroutineScope()
+    val filmographyColumns = 3
+    val sortedMoviesList by remember(participantFilmography) {
+        mutableStateOf(
+            participantFilmography.cast
+                .sortedByDescending { movie -> movie.popularity }
+                .chunked(filmographyColumns)
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -147,86 +157,15 @@ fun ParticipantDetailsScreen(
             }
 
             item{
-                TabRow(
-                    modifier = Modifier
-                        .padding(top = 8.sdp, start = 6.sdp, end = 6.sdp),
-                    selectedTabIndex = tabPagerState.currentPage, divider = {},
-                    containerColor = Color.Transparent,
-                    indicator = { tabPositions ->
-                        if (tabPagerState.currentPage < tabPositions.size) {
-                            Box(
-                                contentAlignment = Alignment.BottomCenter,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(2.sdp)
-                                        .clip(CircleShape)
-                                        .background(Color.LightGray.copy(0.42f))
-                                )
-
-                                NeonCard(
-                                    glowingColor = buttonsColor1,
-                                    containerColor = buttonsColor2,
-                                    cornersRadius = Int.MAX_VALUE.sdp,
-                                    glowingRadius = 7.sdp,
-                                    modifier = Modifier
-                                        .tabIndicatorOffset(tabPositions[tabPagerState.currentPage])
-                                        .height(2.sdp)
-                                )
-
-
-                            }
-                        }
-                    }
-                ) {
-                    tabs.forEachIndexed { index, title ->
-                        val selected = tabPagerState.currentPage == index
-
-                        var selectedColor1 by remember { mutableStateOf(buttonsColor1) }
-                        var selectedColor2 by remember { mutableStateOf(buttonsColor2) }
-
-                        if (selected) {
-                            selectedColor1 = buttonsColor1
-                            selectedColor2 = buttonsColor2
-                        } else {
-                            selectedColor1 = Color.LightGray.copy(0.42f)
-                            selectedColor2 = Color.LightGray.copy(0.42f)
-                        }
-
-                        Tab(
-                            text = {
-                                Text(
-                                    title,
-                                    style = typography().bodySmall.copy(
-                                        brush = animatedGradient(
-                                            colors = listOf(selectedColor1, selectedColor2),
-                                            type = animatedGradientTypes.VERTICAL
-                                        ),
-                                    )
-                                )
-                            },
-                            selectedContentColor = buttonsColor1,
-                            unselectedContentColor = primaryColor,
-                            selected = selected,
-                            onClick = { scope.launch { tabPagerState.animateScrollToPage(index) } },
-                            modifier = Modifier
-                        )
-                    }
-                }
+                CustomTabRow(
+                    tabs = tabs,
+                    selectedTabIndex = selectedTabsIndex
+                )
             }
 
-            item{
-                HorizontalPager(
-                    state = tabPagerState,
-                    userScrollEnabled = false
-                ){}
-            }
+            if(selectedTabsIndex.value == 0){
 
-            if(tabPagerState.currentPage == 0){
-                items(participantFilmography.cast.sortedByDescending { movie -> movie.popularity }.chunked(3)){ chunk ->
+                items(sortedMoviesList){ chunk ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -248,7 +187,7 @@ fun ParticipantDetailsScreen(
             }
 
             item {
-                AnimatedVisibility(visible = tabPagerState.currentPage == 1) {
+                AnimatedVisibility(visible = selectedTabsIndex.value == 1) {
                     BiographyScreen(
                         participantDisplay = DetailedParticipantDisplay(
                             participantResponse = participantResponse,
