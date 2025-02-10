@@ -21,12 +21,12 @@ tasks{
 
 android {
     namespace = "com.example.jetfilms"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.jetfilms"
         minSdk = 27
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -92,7 +92,7 @@ dependencies {
 
     val compose_version = "1.7.4"
     val hiltVersion = "2.51.1"
-    val credentialsVersion = "1.5.0-alpha05"
+  //  val credentialsVersion = "1.5.0-alpha05"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -160,9 +160,6 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
 
-    //live data
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
-
     //mock
     testImplementation("io.mockk:mockk:1.13.5")
     testImplementation("org.mockito:mockito-core:5.7.0")
@@ -177,8 +174,8 @@ dependencies {
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 
     // credential manager
-    implementation("androidx.credentials:credentials:$credentialsVersion")
-    implementation("androidx.credentials:credentials-play-services-auth:$credentialsVersion")
+ //   implementation("androidx.credentials:credentials:$credentialsVersion")
+  //  implementation("androidx.credentials:credentials-play-services-auth:$credentialsVersion")
 
     //email
     implementation("com.sun.mail:android-mail:1.6.0")
