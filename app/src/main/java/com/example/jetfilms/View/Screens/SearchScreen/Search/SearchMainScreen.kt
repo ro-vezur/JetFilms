@@ -41,11 +41,14 @@ import com.example.jetfilms.View.Components.Lists.MoviesCategoryList
 import com.example.jetfilms.View.Components.Lists.SerialsCategoryList
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
+import com.example.jetfilms.Models.Resource
 import com.example.jetfilms.PAGE_SIZE
 import com.example.jetfilms.View.Components.LazyComponents.LazyGrid.UnifiedMediaVerticalLazyGrid
 import com.example.jetfilms.View.Screens.SearchScreen.SearchScreenComponents.FilterButton
 import com.example.jetfilms.View.Screens.SearchScreen.SearchScreenComponents.SearchSuggestionsLazyColumn
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
+import com.example.jetfilms.View.Screens.other.EmptyScreen
+import com.example.jetfilms.View.Screens.other.LoadingScreen
 import com.example.jetfilms.ViewModels.SearchHistoryViewModel
 import com.example.jetfilms.ViewModels.SearchViewModel
 import com.example.jetfilms.extensions.sdp
@@ -78,9 +81,7 @@ fun SearchScreen(
     val searchedSerials by searchViewModel.searchedSeries.collectAsStateWithLifecycle()
     val searchSuggestions by searchViewModel.searchSuggestions.collectAsStateWithLifecycle()
 
-    val searchedHistoryUnifiedMedia by searchHistoryViewModel.searchedUnifiedMedia.collectAsStateWithLifecycle()
-    val searchedHistorySearchedMedia by searchHistoryViewModel.searchedHistoryMedia.collectAsStateWithLifecycle()
-
+    val searchedMediaDataResult by searchHistoryViewModel.searchedMediaData.collectAsStateWithLifecycle()
 
     val interactionSource = remember { MutableInteractionSource() }
     val focusManager = LocalFocusManager.current
@@ -92,172 +93,180 @@ fun SearchScreen(
     val columnItemsSpacing = 15
 
     LaunchedEffect(requestSent) {
-        searchBarXOffset = if (requestSent) screenWidth / 50 else screenWidth / 27
+        searchBarXOffset = if (requestSent) 5 else 10
     }
 
-    Box(
-        modifier = Modifier
-    ) {
-            Scaffold(
-                containerColor = primaryColor,
-                topBar = {
-                    Box(
-                        contentAlignment = Alignment.CenterStart,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(searchBarHeight)
-                            .hazeChild(state = hazeState)
-                            .offset(animateIntAsState(targetValue = searchBarXOffset).value.sdp)
-                    ) {
-                        SearchField(
-                            text = searchText,
-                            onTextChange = {
-                                searchText = it
-                                searchViewModel.fetchSearchSuggestions(it)
-                            },
-                            onSearchClick = {
-                                requestSent = true
-                                searchViewModel.setSearchedMovies(searchText)
-                                searchViewModel.setSearchedSerials(searchText)
-                            },
-                            clearText = {
-                                searchText = ""
-                                searchViewModel.fetchSearchSuggestions("")
-                            },
-                            cancelRequest = {
-                                requestSent = false
-                                searchViewModel.setSearchedMovies(null)
-                                searchViewModel.setSearchedSerials(null)
-                            },
-                            requestSent = requestSent,
-                            interactionSource = interactionSource,
-                        )
-                    }
-                }
-            ) { _ ->
+    Scaffold(
+        containerColor = primaryColor,
+        topBar = {
+            Box(
+                contentAlignment = Alignment.CenterStart,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(searchBarHeight)
+                    .hazeChild(state = hazeState)
+                    .offset(animateIntAsState(targetValue = searchBarXOffset).value.sdp)
+            ) {
+                SearchField(
+                    text = searchText,
+                    onTextChange = {
+                        searchText = it
+                        searchViewModel.fetchSearchSuggestions(it)
+                    },
+                    onSearchClick = {
+                        requestSent = true
+                        searchViewModel.setSearchedMovies(searchText)
+                        searchViewModel.setSearchedSerials(searchText)
+                    },
+                    clearText = {
+                        searchText = ""
+                        searchViewModel.fetchSearchSuggestions("")
+                    },
+                    cancelRequest = {
+                        requestSent = false
+                        searchViewModel.setSearchedMovies(null)
+                        searchViewModel.setSearchedSerials(null)
+                    },
+                    requestSent = requestSent,
+                    interactionSource = interactionSource,
+                )
+            }
+        }
+    ) { _ ->
 
-                Box(
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ){
+            AnimatedVisibility( visible = requestSent) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(columnItemsSpacing.sdp),
                     modifier = Modifier
-                    .fillMaxSize()
-                ){
-                    AnimatedVisibility( visible = requestSent) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(columnItemsSpacing.sdp),
-                            modifier = Modifier
-                                .padding(horizontal = lazyColumnsHorizontalPadding)
-                                .fillMaxSize()
-                                .verticalScroll(scrollState)
-                                .haze(
-                                    hazeState,
-                                    backgroundColor = hazeStateBlurBackground,
-                                    tint = hazeStateBlurTint,
-                                    blurRadius = HAZE_STATE_BLUR.sdp,
-                                )
-                        ) {
-                            Spacer(modifier = Modifier.height(searchBarHeight))
+                        .padding(horizontal = lazyColumnsHorizontalPadding)
+                        .fillMaxSize()
+                        .verticalScroll(scrollState)
+                        .haze(
+                            hazeState,
+                            backgroundColor = hazeStateBlurBackground,
+                            tint = hazeStateBlurTint,
+                            blurRadius = HAZE_STATE_BLUR.sdp,
+                        )
+                ) {
+                    Spacer(modifier = Modifier.height(searchBarHeight))
 
-                            searchedMovies?.let {
-                                MoviesCategoryList(
-                                    category = "Searched Movies",
-                                    selectMovie = { id ->
-                                        scope.launch {
-                                            searchHistoryViewModel.getMovie(id).let { searchedMovie ->
-                                                val searchedMedia = SearchedMedia.fromDetailedMovieResponse(searchedMovie)
+                    searchedMovies?.let {
+                        MoviesCategoryList(
+                            category = "Searched Movies",
+                            selectMovie = { id ->
+                                scope.launch {
+                                    searchHistoryViewModel.getMovie(id).let { searchedMovie ->
+                                        val searchedMedia = SearchedMedia.fromDetailedMovieResponse(searchedMovie)
 
-                                                searchHistoryViewModel.insertSearchedMediaToDb(searchedMedia )
-                                                searchHistoryViewModel.addMovieToFlow(id)
-                                                selectMedia(id,MediaCategories.MOVIE)
-                                            }
-                                        }
-                                    },
-                                    moviesList = it.results,
-                                    onSeeAllClick = { seeAllMedia(MediaCategories.MOVIE,searchText) },
-                                    showSeeAllButton = it.totalResults > PAGE_SIZE,
-                                    imageModifier = Modifier
-                                        .clip(RoundedCornerShape(6.sdp))
-                                        .width(114.sdp)
-                                        .height(185.sdp)
-                                )
-                            }
-
-                            searchedSerials?.let {
-                                SerialsCategoryList(
-                                    category = "Searched Serials",
-                                    selectSerial = { id ->
-                                        scope.launch {
-                                            val searchedSeries = searchHistoryViewModel.getSeries(id)
-                                            val searchedMedia = SearchedMedia.fromDetailedSeriesResponse(searchedSeries)
-
-                                            searchHistoryViewModel.insertSearchedMediaToDb(searchedMedia)
-                                            searchHistoryViewModel.addSeriesToFlow(id)
-                                            selectMedia(id,MediaCategories.SERIES)
-                                        }
-                                    },
-                                    serialsList = it.results,
-                                    onSeeAllClick = { seeAllMedia(MediaCategories.SERIES,searchText) },
-                                    showSeeAllButton = it.totalResults > PAGE_SIZE,
-                                    imageModifier = Modifier
-                                        .clip(RoundedCornerShape(6.sdp))
-                                        .width(114.sdp)
-                                        .height(185.sdp)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height((BOTTOM_NAVIGATION_BAR_HEIGHT).sdp))
-                        }
-                    }
-
-                    AnimatedVisibility(visible = !requestSent){
-                        UnifiedMediaVerticalLazyGrid(
-                            modifier = Modifier
-                                .padding(horizontal = lazyColumnsHorizontalPadding)
-                                .fillMaxSize()
-                                .haze(
-                                    hazeState,
-                                    backgroundColor = hazeStateBlurBackground,
-                                    tint = hazeStateBlurTint,
-                                    blurRadius = HAZE_STATE_BLUR.sdp,
-                                ),
-                            topPadding = searchBarHeight,
-                            data = searchedHistoryUnifiedMedia.sortedByDescending { unifiedMedia ->
-                                searchedHistorySearchedMedia.find {
-                                    it.id == "${unifiedMedia.id}${unifiedMedia.mediaCategory.format}"
-                                }?.viewedDateMillis
+                                        searchHistoryViewModel.insertSearchedMediaToDb(searchedMedia )
+                                        searchHistoryViewModel.setSearchedMediaData()
+                                        selectMedia(id,MediaCategories.MOVIE)
+                                    }
+                                }
                             },
-                            selectMedia = { unifiedMedia -> selectMedia(unifiedMedia.id,unifiedMedia.mediaCategory) }
+                            moviesList = it.results,
+                            onSeeAllClick = { seeAllMedia(MediaCategories.MOVIE,searchText) },
+                            showSeeAllButton = it.totalResults > PAGE_SIZE,
+                            imageModifier = Modifier
+                                .clip(RoundedCornerShape(6.sdp))
+                                .width(114.sdp)
+                                .height(185.sdp)
                         )
                     }
 
-                    AnimatedVisibility(
-                        visible = isSearchBarFocused,
-                        enter = fadeIn() ,
-                        exit = fadeOut(),
-                    ){
-                        SearchSuggestionsLazyColumn(
-                            searchSuggestions = searchSuggestions,
-                            onSuggestionClick = { suggestion ->
-                                focusManager.clearFocus()
-                                searchText = suggestion.title
-                                requestSent = true
-                                searchViewModel.setSearchedMovies(suggestion.title)
-                                searchViewModel.setSearchedSerials(suggestion.title)
-                            }
+                    searchedSerials?.let {
+                        SerialsCategoryList(
+                            category = "Searched Serials",
+                            selectSerial = { id ->
+                                scope.launch {
+                                    val searchedSeries = searchHistoryViewModel.getSeries(id)
+                                    val searchedMedia = SearchedMedia.fromDetailedSeriesResponse(searchedSeries)
+
+                                    searchHistoryViewModel.insertSearchedMediaToDb(searchedMedia)
+                                    searchHistoryViewModel.setSearchedMediaData()
+                                    selectMedia(id,MediaCategories.SERIES)
+                                }
+                            },
+                            serialsList = it.results,
+                            onSeeAllClick = { seeAllMedia(MediaCategories.SERIES,searchText) },
+                            showSeeAllButton = it.totalResults > PAGE_SIZE,
+                            imageModifier = Modifier
+                                .clip(RoundedCornerShape(6.sdp))
+                                .width(114.sdp)
+                                .height(185.sdp)
                         )
                     }
 
-                    AnimatedVisibility(
-                        visible = !requestSent,
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                    ) {
-                        FilterButton(
-                            onClick = onFilterButtonClick
-                        )
-                    }
+                    Spacer(modifier = Modifier.height((BOTTOM_NAVIGATION_BAR_HEIGHT).sdp))
                 }
             }
 
+            AnimatedVisibility(visible = !requestSent){
+                when(searchedMediaDataResult) {
+                    is Resource.Success -> {
+                        searchedMediaDataResult.data?.let { data ->
+                            if(data.isNotEmpty()) {
+                                UnifiedMediaVerticalLazyGrid(
+                                    modifier = Modifier
+                                        .padding(horizontal = lazyColumnsHorizontalPadding)
+                                        .fillMaxSize()
+                                        .haze(
+                                            hazeState,
+                                            backgroundColor = hazeStateBlurBackground,
+                                            tint = hazeStateBlurTint,
+                                            blurRadius = HAZE_STATE_BLUR.sdp,
+                                        ),
+                                    topPadding = searchBarHeight,
+                                    data = data,
+                                    selectMedia = { unifiedMedia ->
+                                        selectMedia(
+                                            unifiedMedia.id,
+                                            unifiedMedia.mediaCategory
+                                        )
+                                    }
+                                )
+                            } else {
+                                EmptyScreen(text = "Your Search History is Empty")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
 
+                    }
+                    is Resource.Loading -> { LoadingScreen() }
+                }
+            }
 
+            AnimatedVisibility(
+                visible = isSearchBarFocused,
+                enter = fadeIn() ,
+                exit = fadeOut(),
+            ){
+                SearchSuggestionsLazyColumn(
+                    searchSuggestions = searchSuggestions,
+                    onSuggestionClick = { suggestion ->
+                        focusManager.clearFocus()
+                        searchText = suggestion.title
+                        requestSent = true
+                        searchViewModel.setSearchedMovies(suggestion.title)
+                        searchViewModel.setSearchedSerials(suggestion.title)
+                    }
+                )
+            }
+
+            AnimatedVisibility(
+                visible = !requestSent,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+            ) {
+                FilterButton(
+                    onClick = onFilterButtonClick
+                )
+            }
+        }
     }
 }
