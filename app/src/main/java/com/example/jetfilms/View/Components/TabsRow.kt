@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -15,7 +14,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,17 +22,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import com.example.jetfilms.View.Components.Cards.NeonCard
 import com.example.jetfilms.View.Components.Gradient.animatedGradient
-import com.example.jetfilms.Models.DTOs.animatedGradientTypes
+import com.example.jetfilms.Models.Enums.AnimatedGradientTypes
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
 import com.example.jetfilms.ui.theme.primaryColor
-import com.example.jetfilms.ui.theme.typography
-import kotlinx.coroutines.launch
 
 @Composable
-fun TabRow(
+fun CustomTabRow(
     tabs: List<String>,
     selectedTabIndex: MutableState<Int>,
     modifier: Modifier = Modifier
@@ -93,7 +89,7 @@ fun TabRow(
                         style = TextStyle(
                             brush = animatedGradient(
                                 colors = listOf(selectedColor1,selectedColor2),
-                                type = animatedGradientTypes.VERTICAL
+                                type = AnimatedGradientTypes.VERTICAL
                             ),
                             fontSize = 11.ssp
                         )

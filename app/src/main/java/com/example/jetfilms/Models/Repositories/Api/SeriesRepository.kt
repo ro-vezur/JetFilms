@@ -4,7 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.jetfilms.Models.API.ApiInterface
 import com.example.jetfilms.Models.DTOs.SeriesPackage.SeriesPageResponse
-import com.example.jetfilms.Helpers.Pagination.SerialsPagingSource
+import com.example.jetfilms.Models.Pagination.SerialsPagingSource
 import com.example.jetfilms.PAGE_SIZE
 import javax.inject.Inject
 import javax.inject.Singleton
