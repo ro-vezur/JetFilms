@@ -21,7 +21,6 @@ import com.example.jetfilms.Models.DTOs.SeriesPackage.SimplifiedSeriesResponse
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
 import com.example.jetfilms.BASE_IMAGE_API_URL
-import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
@@ -33,8 +32,10 @@ fun SeriesCard(
     Box(
         modifier = modifier
     ){
-        OptimizedImage(
-            url = "$BASE_IMAGE_API_URL${serial.poster}",
+        AsyncImage(
+            model = "$BASE_IMAGE_API_URL${serial.poster}",
+            contentScale = ContentScale.Crop,
+            contentDescription = "poster",
             modifier = modifier
         )
 

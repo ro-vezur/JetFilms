@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
@@ -24,7 +23,6 @@ import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
-import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
@@ -37,8 +35,10 @@ fun UnifiedCard(
     Box(
         modifier = modifier
     ){
-        OptimizedImage(
-            url = "$BASE_IMAGE_API_URL${unifiedMedia.poster}",
+        AsyncImage(
+            model = "$BASE_IMAGE_API_URL${unifiedMedia.poster}",
+            contentScale = ContentScale.Crop,
+            contentDescription = "unified media image",
             modifier = modifier
         )
 

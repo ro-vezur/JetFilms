@@ -21,7 +21,6 @@ import com.example.jetfilms.Models.DTOs.MoviePackage.SimplifiedMovieResponse
 import com.example.jetfilms.Helpers.removeNumbersAfterDecimal
 import com.example.jetfilms.R
 import com.example.jetfilms.BASE_IMAGE_API_URL
-import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
@@ -33,8 +32,10 @@ fun MovieCard(
     Box(
         modifier = modifier
     ){
-        OptimizedImage(
-            url = "$BASE_IMAGE_API_URL${movie.posterUrl}",
+        AsyncImage(
+            model = "$BASE_IMAGE_API_URL${movie.posterUrl}",
+            contentScale = ContentScale.Crop,
+            contentDescription = "movie image",
             modifier = modifier
         )
 

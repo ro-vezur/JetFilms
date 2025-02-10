@@ -16,7 +16,6 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import com.example.jetfilms.BASE_YOUTUBE_IMAGES_URL
 import com.example.jetfilms.Models.DTOs.TrailersResponse.TrailerObject
-import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.YOUTUBE_IMAGE_THUMBNAIL_TYPE
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.typography
@@ -33,8 +32,9 @@ fun TrailerCard(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(5.sdp)
     ) {
-        OptimizedImage(
-            url = "$BASE_YOUTUBE_IMAGES_URL${trailerObject.key}$YOUTUBE_IMAGE_THUMBNAIL_TYPE",
+        AsyncImage(
+            model = "$BASE_YOUTUBE_IMAGES_URL${trailerObject.key}$YOUTUBE_IMAGE_THUMBNAIL_TYPE",
+            contentDescription = "trailer thumbnail",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxHeight()

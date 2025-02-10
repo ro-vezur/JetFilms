@@ -55,7 +55,6 @@ import com.example.jetfilms.View.Components.DetailedMediaComponents.MediaTitle
 import com.example.jetfilms.View.Components.Lists.MoviesCategoryList
 import com.example.jetfilms.View.Components.Lists.SerialsCategoryList
 import com.example.jetfilms.View.Components.Lists.UnifiedMediaCategoryList
-import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.View.Screens.MoreMoviesScreenRoute
 import com.example.jetfilms.View.Screens.MoreSerialsScreenRoute
 import com.example.jetfilms.View.Screens.MoreUnifiedMediaScreenRoute
@@ -114,8 +113,9 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .height(290.sdp)
         ) {
-            OptimizedImage(
-                url = "$BASE_IMAGE_API_URL${selectedMovie?.posterUrl}",
+            AsyncImage(
+                model = "$BASE_IMAGE_API_URL${selectedMovie?.posterUrl}",
+                contentDescription = "selected movie image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()

@@ -14,10 +14,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
+import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.Models.DTOs.ParticipantPackage.ParicipantResponses.SimplifiedParticipantResponse
-import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.extensions.ssp
 
@@ -30,8 +30,9 @@ fun MovieParticipantCard(
         horizontalAlignment = Alignment.Start,
         modifier = modifier
     ){
-        OptimizedImage(
-            url = "$BASE_IMAGE_API_URL${movieParticipant.image}",
+        AsyncImage(
+            model = "$BASE_IMAGE_API_URL${movieParticipant.image}",
+            contentDescription = "participant image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()

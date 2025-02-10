@@ -18,28 +18,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.jetfilms.HAZE_STATE_BLUR
-import com.example.jetfilms.View.Components.OptimizedImage
 import com.example.jetfilms.View.Screens.Start.Select_genres.MediaGenres
 import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.buttonsColor1
 import com.example.jetfilms.ui.theme.buttonsColor2
-import com.example.jetfilms.ui.theme.hazeStateBlurBackground
-import com.example.jetfilms.ui.theme.hazeStateBlurTint
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.haze
-import dev.chrisbanes.haze.hazeChild
 
 @Composable
 fun MediaGenreCard(
@@ -64,8 +54,10 @@ fun MediaGenreCard(
                 onClick()
             }
     ){
-        OptimizedImage(
-            url = mediaGenre.imageUrl,
+        AsyncImage(
+            model = mediaGenre.imageUrl,
+            contentDescription = "media genre",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.sdp))
