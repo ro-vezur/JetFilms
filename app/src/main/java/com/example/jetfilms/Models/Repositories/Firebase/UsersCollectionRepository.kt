@@ -45,7 +45,9 @@ class UsersCollectionRepository @Inject constructor(
     override suspend fun checkIfPasswordMatches(email: String, password: String): Boolean {
         val users = fireStore.collection(USERS_COLLECTION).get().await()
         return users.documents.find {
-            it.toObject(User::class.java)?.email == email && it.toObject(User::class.java)?.password == password
+            val user = it.toObject(User::class.java)
+
+            user?.email == email && user.password == password
         } != null
     }
 
