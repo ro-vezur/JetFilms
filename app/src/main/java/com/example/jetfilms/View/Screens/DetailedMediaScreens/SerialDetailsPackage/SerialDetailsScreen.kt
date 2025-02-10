@@ -20,7 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
@@ -43,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.jetfilms.View.Components.Gradient.GradientIcon
 import com.example.jetfilms.View.Components.Cards.NeonCard
@@ -56,9 +55,9 @@ import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.View.Components.Cards.PropertyCard
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
-import com.example.jetfilms.View.Components.TabRow
+import com.example.jetfilms.View.Components.CustomTabRow
 import com.example.jetfilms.View.Components.TabsContent.SeriesAboutTab
-import com.example.jetfilms.Models.DTOs.animatedGradientTypes
+import com.example.jetfilms.Models.Enums.AnimatedGradientTypes
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedParticipant
@@ -95,22 +94,18 @@ fun SerialDetailsScreen(
     val similarSeries = detailedSeriesViewModel.similarSeries.collectAsStateWithLifecycle()
     val seriesTrailers = detailedSeriesViewModel.seriesTrailers.collectAsStateWithLifecycle()
 
-    val colors = MaterialTheme.colorScheme
-
     val seasonTabs = seriesResponse.seasons
-
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     val scope = rememberCoroutineScope()
 
-    var selectedSeasonTabIndex by remember { mutableStateOf(0) }
+    var selectedSeasonTabIndex by rememberSaveable { mutableStateOf(0) }
     var selectedSeason by remember { mutableStateOf<SerialSeasonResponse?>(null) }
 
     var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
 
-    val selectedSeriesAboutTabIndex = remember { mutableStateOf(0) }
+    val selectedSeriesAboutTabIndex = rememberSaveable { mutableStateOf(0) }
 
     val selectParticipant = { participant: SimplifiedParticipantResponse ->
         scope.launch {
@@ -121,7 +116,8 @@ fun SerialDetailsScreen(
         }
     }
 
-    LaunchedEffect(null) {
+    LaunchedEffect(Unit) {
+        imageHeight = 335
         isFavorite = isFavoriteUnit(FavoriteMedia.fromDetailedSeriesResponse(seriesResponse))
     }
 
@@ -134,15 +130,6 @@ fun SerialDetailsScreen(
            }
     }
 
-    LaunchedEffect(currentBackStackEntry) {
-        imageHeight = if(currentBackStackEntry?.destination?.route == "serial_details/{serial}"){
-            335
-        } else{
-            290
-        }
-    }
-
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -151,7 +138,7 @@ fun SerialDetailsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .background(colors.primary)
+                .background(colorScheme.primary)
         ) {
             item{
                 Box(
@@ -178,8 +165,8 @@ fun SerialDetailsScreen(
                                 Brush.verticalGradient(
                                     listOf(
                                         Color.Transparent,
-                                        colors.primary.copy(0.64f),
-                                        colors.primary.copy(1f),
+                                        colorScheme.primary.copy(0.64f),
+                                        colorScheme.primary.copy(1f),
                                     )
                                 )
                             )
@@ -234,8 +221,8 @@ fun SerialDetailsScreen(
                                     .size(32.sdp)
                                     .clip(CircleShape)
                                     .background(
-                                        if (isFavorite) colors.secondary.copy(.85f)
-                                        else colors.secondary.copy(.92f)
+                                        if (isFavorite) colorScheme.secondary.copy(.85f)
+                                        else colorScheme.secondary.copy(.92f)
                                     )
                                     .clickable {
                                         isFavorite = !isFavorite
@@ -354,7 +341,7 @@ fun SerialDetailsScreen(
                                         style = typography().bodySmall.copy(
                                             brush = animatedGradient(
                                                 colors = listOf(selectedColor1, selectedColor2),
-                                                type = animatedGradientTypes.VERTICAL
+                                                type = AnimatedGradientTypes.VERTICAL
                                             ),
                                         )
                                     )
@@ -383,7 +370,7 @@ fun SerialDetailsScreen(
             }
 
             item{
-                TabRow(
+                CustomTabRow(
                     tabs = mediaAboutTabs,
                     selectedTabIndex = selectedSeriesAboutTabIndex,
                     modifier = Modifier

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,7 +40,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
 import com.example.jetfilms.Helpers.fromMinutesToHours
 import com.example.jetfilms.View.Components.Gradient.GradientIcon
@@ -52,7 +50,7 @@ import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.BASE_IMAGE_API_URL
 import com.example.jetfilms.View.Components.Cards.PropertyCard
 import com.example.jetfilms.View.Components.DetailedMediaComponents.DisplayRating
-import com.example.jetfilms.View.Components.TabRow
+import com.example.jetfilms.View.Components.CustomTabRow
 import com.example.jetfilms.View.Components.TabsContent.MovieAboutTab
 import com.example.jetfilms.blueHorizontalGradient
 import com.example.jetfilms.Helpers.encodes.decodeStringWithSpecialCharacter
@@ -90,13 +88,12 @@ fun MovieDetailsScreen(
     val colors = MaterialTheme.colorScheme
 
     val scrollState = rememberScrollState()
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
 
     var imageHeight by rememberSaveable{ mutableStateOf(290) }
     var selectedTrailerKey by rememberSaveable { mutableStateOf<String?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
 
-    val selectedMovieAboutTabIndex = remember { mutableStateOf(0) }
+    val selectedMovieAboutTabIndex = rememberSaveable() { mutableStateOf(0) }
 
     val selectParticipant = { participant: SimplifiedParticipantResponse ->
         scope.launch {
@@ -107,16 +104,9 @@ fun MovieDetailsScreen(
         }
     }
 
-    LaunchedEffect(null) {
+    LaunchedEffect(Unit) {
         isFavorite = isFavoriteUnit(FavoriteMedia.fromDetailedMovieResponse(movieResponse))
-    }
-
-    LaunchedEffect(currentBackStackEntry) {
-        imageHeight = if(currentBackStackEntry?.destination?.route == "movie_details/{movie}"){
-            335
-        } else{
-            290
-        }
+        imageHeight = 335
     }
 
     Box(
@@ -263,7 +253,7 @@ fun MovieDetailsScreen(
                 )
             }
 
-            TabRow(
+            CustomTabRow(
                 tabs = mediaAboutTabs,
                 selectedTabIndex = selectedMovieAboutTabIndex,
                 modifier = Modifier
