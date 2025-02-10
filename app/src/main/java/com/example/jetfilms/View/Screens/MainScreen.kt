@@ -1,7 +1,6 @@
 package com.example.jetfilms.View.Screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,6 +14,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil.ImageLoader
 import com.example.jetfilms.HAZE_STATE_BLUR
 import com.example.jetfilms.Helpers.navigate.navigateToSelectedMovie
 import com.example.jetfilms.View.Components.BottomNavigationBar.BottomNavBar
@@ -65,6 +66,10 @@ import kotlinx.coroutines.launch
 fun MainScreen(
 
 ) {
+    val context = LocalContext.current
+
+//    context.deleteDatabase("Search history")
+
     val screensNavController = rememberNavController()
     var showBottomBar by remember{ mutableStateOf(false) }
     val hazeState = remember { HazeState() }
@@ -90,15 +95,12 @@ fun MainScreen(
         val selectMovie: (movieId: Int) -> Unit = { id ->
             try {
                 scope.launch {
-                    Log.d("movie id",id.toString())
                     navigateToSelectedMovie(
                         screensNavController,
                         sharedMediaViewModel.getMovie(id)
                     )
                 }
-            } catch (e: Exception) {
-                Log.e("failed to select movie",e.message.toString())
-            }
+            } catch (e: Exception)  { }
         }
 
         val selectSeries: (seriesId: Int) -> Unit = { id ->
@@ -221,20 +223,10 @@ fun MainScreen(
                 composable<FavoriteRoute> {
                     showBottomBar = true
 
-                    val searchHistoryViewModel: SearchHistoryViewModel = hiltViewModel()
-
-                    val searchedUnifiedMedia by searchHistoryViewModel.searchedUnifiedMedia.collectAsStateWithLifecycle()
-                    val searchedMediaInDb by searchHistoryViewModel.searchedHistoryMedia.collectAsStateWithLifecycle()
                     val user by userViewModel.user.collectAsStateWithLifecycle()
-
-                    val searchedHistory = searchedUnifiedMedia.sortedByDescending { unifiedMedia ->
-                        searchedMediaInDb.find { mediaFromDb -> unifiedMedia.id == mediaFromDb.mediaId }?.viewedDateMillis
-                    }.take(10)
 
                     user?.let { checkedUser ->
                         FavoriteNavigateScreen(
-                            searchedHistoryFlow = searchedHistory,
-                            searchedHistoryInDb = searchedMediaInDb,
                             user = checkedUser,
                             selectMedia = { unifiedMedia ->
                                 if (unifiedMedia.mediaCategory == MediaCategories.MOVIE) {
@@ -250,7 +242,10 @@ fun MainScreen(
                 accountNavigationHost(
                     navController = screensNavController,
                     showBottomBar = { show -> showBottomBar = show},
-                    logOut = { userViewModel.logOut() }
+                    logOut = {
+                        userViewModel.logOut()
+                        ImageLoader(context).memoryCache?.clear()
+                    }
                 )
 
                 composable<MoreMoviesScreenRoute> { backstackEntry ->
