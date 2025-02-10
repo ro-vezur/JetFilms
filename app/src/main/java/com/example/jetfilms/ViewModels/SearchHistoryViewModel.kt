@@ -1,5 +1,7 @@
 package com.example.jetfilms.ViewModels
 
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
@@ -7,10 +9,12 @@ import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
 import com.example.jetfilms.Models.Repositories.Api.MoviesRepository
 import com.example.jetfilms.Models.Repositories.Api.SeriesRepository
 import com.example.jetfilms.Models.Repositories.Room.SearchedHistoryRepository
+import com.example.jetfilms.Models.Resource
 import com.example.jetfilms.View.Screens.Start.Select_type.MediaCategories
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,71 +25,70 @@ class SearchHistoryViewModel @Inject constructor(
     private val seriesRepository: SeriesRepository,
 ): ViewModel() {
 
-    private val _searchedUnifiedMedia: MutableStateFlow<MutableList<UnifiedMedia>> = MutableStateFlow(
-        mutableListOf()
+    private val _searchedMediaData: MutableStateFlow<Resource<List<UnifiedMedia>>> = MutableStateFlow(
+        Resource.Loading()
     )
-    val searchedUnifiedMedia = _searchedUnifiedMedia.asStateFlow()
+    val searchedMediaData = _searchedMediaData.asStateFlow()
 
-    private val _searchedHistoryMedia: MutableStateFlow<MutableList<SearchedMedia>> = MutableStateFlow(
-        mutableListOf()
+    private val _searchedMediaIds: MutableStateFlow<List<SearchedMedia>> = MutableStateFlow(
+        emptyList()
     )
-    val searchedHistoryMedia = _searchedHistoryMedia.asStateFlow()
+
+    val searchedMediaIds = _searchedMediaIds.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            getAllSearchHistory().forEach { searchedMedia ->
-                if (searchedMedia.mediaType == MediaCategories.MOVIE.format) {
-                    addMovieToFlow(searchedMedia.mediaId)
-                } else {
-                    addSeriesToFlow(searchedMedia.mediaId )
+        setSearchedMediaData()
+    }
+
+    fun setSearchedMediaData() = viewModelScope.launch {
+        searchedHistoryRepository.getAll().collectLatest { result ->
+            when(result) {
+                is Resource.Success -> {
+                    result.data?.let { data ->
+                        val searchedMediaDataList = mutableListOf<UnifiedMedia>()
+                        val searchedMediaIdsList = mutableListOf<SearchedMedia>()
+
+                        data.forEach { searchedMedia ->
+                            when(searchedMedia.mediaType) {
+
+                                MediaCategories.MOVIE.format -> {
+                                    val movie = moviesRepository.getMovie(searchedMedia.mediaId)
+                                    val unifiedMedia = UnifiedMedia.fromDetailedMovieResponse(movie)
+
+                                    searchedMediaIdsList.add(searchedMedia)
+                                    searchedMediaDataList.add(unifiedMedia)
+
+                                    _searchedMediaIds.emit(searchedMediaIdsList)
+                                    _searchedMediaData.emit(Resource.Success(data = searchedMediaDataList))
+                                }
+
+                                MediaCategories.SERIES.format -> {
+                                    val series = seriesRepository.getSerial(searchedMedia.mediaId)
+                                    val unifiedMedia = UnifiedMedia.fromDetailedSeriesResponse(series)
+
+                                    searchedMediaIdsList.add(searchedMedia)
+                                    searchedMediaDataList.add(unifiedMedia)
+
+                                    _searchedMediaIds.emit(searchedMediaIdsList)
+                                    _searchedMediaData.emit(Resource.Success(data = searchedMediaDataList))
+                                }
+                            }
+                        }
+
+                        if(data.isEmpty()) {
+                            _searchedMediaData.emit(Resource.Success(data = emptyList()))
+                        }
+                    }
+                }
+                is Resource.Loading -> {
+                    _searchedMediaIds.emit(emptyList())
+                    _searchedMediaData.emit(Resource.Loading())
+                }
+                is Resource.Error -> {
+                    _searchedMediaIds.emit(emptyList())
+                    _searchedMediaData.emit(Resource.Error(message = result.message.toString()))
                 }
             }
-        }
-    }
-
-    fun addMovieToFlow(id: Int) = viewModelScope.launch {
-        moviesRepository.getMovie(id).let { movie ->
-            val unifiedMedia = UnifiedMedia.fromDetailedMovieResponse(movie)
-            val searchedMedia = SearchedMedia.fromDetailedMovieResponse(movie)
-
-            val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaCategory == unifiedMedia.mediaCategory }
-            val findSearchedMedia = _searchedHistoryMedia.value.find { it.id == searchedMedia.id && it.mediaType == searchedMedia.mediaType }
-
-            if(findUnifiedMedia == null) {
-                _searchedUnifiedMedia.value.add(unifiedMedia)
-
-            } else{
-                _searchedUnifiedMedia.value[_searchedUnifiedMedia.value.indexOf(findUnifiedMedia)] = findUnifiedMedia
-            }
-
-            if(findSearchedMedia == null){
-                _searchedHistoryMedia.value.add(searchedMedia)
-            } else{
-                _searchedHistoryMedia.value[_searchedHistoryMedia.value.indexOf(findSearchedMedia)] = searchedMedia
-            }
-        }
-    }
-
-    fun addSeriesToFlow(id: Int) = viewModelScope.launch {
-        val series = seriesRepository.getSerial(id)
-
-        val unifiedMedia = UnifiedMedia.fromDetailedSeriesResponse(series)
-        val searchedMedia = SearchedMedia.fromDetailedSeriesResponse(series)
-
-        val findUnifiedMedia = _searchedUnifiedMedia.value.find { it.id == unifiedMedia.id && it.mediaCategory == unifiedMedia.mediaCategory }
-        val findSearchedMedia = _searchedHistoryMedia.value.find { it.id == searchedMedia.id && it.mediaType == searchedMedia.mediaType }
-
-        if(findUnifiedMedia == null) {
-            _searchedUnifiedMedia.value.add(unifiedMedia)
-
-        } else{
-            _searchedUnifiedMedia.value[_searchedUnifiedMedia.value.indexOf(findUnifiedMedia)] = findUnifiedMedia
-        }
-
-        if(findSearchedMedia == null){
-            _searchedHistoryMedia.value.add(searchedMedia)
-        } else{
-            _searchedHistoryMedia.value[_searchedHistoryMedia.value.indexOf(findSearchedMedia)] = searchedMedia
         }
     }
 
@@ -93,10 +96,9 @@ class SearchHistoryViewModel @Inject constructor(
 
     suspend fun getSeries(id: Int) = seriesRepository.getSerial(id)
 
-    suspend fun getAllSearchHistory() = searchedHistoryRepository.getAll()
-
-
-    suspend fun insertSearchedMediaToDb(searchedMedia: SearchedMedia) = searchedHistoryRepository.insertSearchedMedia(searchedMedia)
+    fun insertSearchedMediaToDb(searchedMedia: SearchedMedia) = viewModelScope.launch {
+        searchedHistoryRepository.insertSearchedMedia(searchedMedia)
+    }
 
     suspend fun deleteSearchedMedia(searchedMedia: SearchedMedia) = searchedHistoryRepository.deleteSearchedMedia(searchedMedia)
 

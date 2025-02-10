@@ -10,11 +10,8 @@ import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 @Dao
 interface Dao {
 
-    @Query("Select * From searchHistory")
+    @Query("Select * From searchHistory ORDER BY viewedDateMillis DESC")
     suspend fun getAllSearches(): List<SearchedMedia>
-
-    @Query("Select * From searchHistory Where id == :id LIMIT 1")
-    suspend fun getSearch(id: String): SearchedMedia
 
     @Upsert
     suspend fun insertSearchedMedia(searchedMedia: SearchedMedia)
