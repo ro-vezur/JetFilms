@@ -18,18 +18,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@HiltViewModel(assistedFactory = FavoriteMediaViewModel.FavoriteMediaViewModelFactory::class)
-class FavoriteMediaViewModel @AssistedInject constructor(
-    @Assisted val user: User,
+@HiltViewModel
+class FavoriteMediaViewModel @Inject constructor(
     private val moviesRepository: MoviesRepository,
     private val seriesRepository: SeriesRepository,
 ): ViewModel() {
-
-    @AssistedFactory
-    interface FavoriteMediaViewModelFactory {
-        fun create(user: User): FavoriteMediaViewModel
-    }
 
     private val _favoriteMediaList: MutableStateFlow<List<UnifiedMedia>> = MutableStateFlow(listOf())
     val favoriteMediaList: StateFlow<List<UnifiedMedia>> = _favoriteMediaList.asStateFlow()

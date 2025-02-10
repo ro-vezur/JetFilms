@@ -1,5 +1,6 @@
 package com.example.jetfilms.View.Screens.Favorite
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,9 +37,12 @@ import androidx.navigation.NavController
 import com.example.jetfilms.Helpers.DateFormats.DateFormats
 import com.example.jetfilms.Models.DTOs.SearchHistory_RoomDb.SearchedMedia
 import com.example.jetfilms.Models.DTOs.UnifiedDataPackage.UnifiedMedia
+import com.example.jetfilms.Models.Resource
 import com.example.jetfilms.View.Components.Cards.UnifiedCard
-import com.example.jetfilms.extensions.sdp
+import com.example.jetfilms.View.Screens.other.EmptyScreen
+import com.example.jetfilms.View.Screens.other.LoadingScreen
 import com.example.jetfilms.View.states.rememberForeverScrollState
+import com.example.jetfilms.extensions.sdp
 import com.example.jetfilms.ui.theme.primaryColor
 import com.example.jetfilms.ui.theme.typography
 import com.example.jetfilms.ui.theme.whiteColor
@@ -43,8 +50,8 @@ import com.example.jetfilms.ui.theme.whiteColor
 @Composable
 fun FavoriteMainScreen(
     navController: NavController,
-    searchedHistoryFlow: List<UnifiedMedia>,
-    searchedHistoryInDb: List<SearchedMedia>,
+    searchedHistoryMediaDataResult: Resource<List<UnifiedMedia>>,
+    searchedHistoryMediaIds: List<SearchedMedia>,
     selectMedia: (unifiedMedia: UnifiedMedia) -> Unit
 ) {
     val typography = typography()
@@ -103,76 +110,81 @@ fun FavoriteMainScreen(
                 )
             }
 
-            if(searchedHistoryFlow.isNotEmpty()){
-                LazyRow(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.sdp),
-                    modifier = Modifier
-                        .padding(top = 16.sdp)
-                        .fillMaxWidth()
-                ) {
-                    item{ Spacer(modifier = Modifier.width(2.sdp)) }
-
-                    items(searchedHistoryFlow) { unifiedMedia ->
-
-                        val searchedMediaInDb = searchedHistoryInDb.find { it.id == "${unifiedMedia.id}${unifiedMedia.mediaCategory.format}"}
-
-                        searchedMediaInDb?.run {
-                            Column(
-
-                            ) {
-                                UnifiedCard(
-                                    unifiedMedia = unifiedMedia,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(8.sdp))
-                                        .height(155.sdp)
-                                        .width(110.sdp)
-                                        .clickable { selectMedia(unifiedMedia) }
-                                )
-
-                                Text(
-                                    text = "View ${
-                                        DateFormats.getDateFromMillis(searchedMediaInDb.viewedDateMillis)
-                                            .replace("/", ".")
-                                    }",
-                                    style = typography().bodySmall,
-                                    fontWeight = FontWeight.W400,
-                                    color = Color.LightGray.copy(0.85f),
-                                    modifier = Modifier
-                                        .padding(top = 9.sdp)
-                                )
-                            }
+            when(searchedHistoryMediaDataResult) {
+                is Resource.Success -> {
+                    searchedHistoryMediaDataResult.data?.let { data ->
+                        val searchedMediaData by remember(data.size) {
+                            mutableStateOf(data.take(10))
                         }
-                    }
-                    item{ Spacer(modifier = Modifier.width(2.sdp)) }
-                }
-            }else {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .padding(top = 16.sdp)
-                        .fillMaxWidth()
-                        .height(115.sdp)
-                ){
-                    Icon(
-                        imageVector = Icons.Default.History,
-                        contentDescription = "history",
-                        tint = whiteColor,
-                        modifier = Modifier
-                            .size(55.sdp)
-                    )
 
-                    Text(
-                        text = "Your Search History is Empty",
-                        style = typography().bodyMedium,
-                        fontWeight = FontWeight.W400,
-                        color = whiteColor,
+                        Log.d("empty list",data.isEmpty().toString())
+
+                        if(data.isNotEmpty()){
+                            LazyRow(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.sdp),
+                                modifier = Modifier
+                                    .padding(top = 16.sdp)
+                                    .fillMaxWidth()
+                            ) {
+                                item{ Spacer(modifier = Modifier.width(2.sdp)) }
+
+                                items(searchedMediaData) { unifiedMedia ->
+                                    val searchedMediaInDb = searchedHistoryMediaIds.find { it.id == "${unifiedMedia.id}${unifiedMedia.mediaCategory.format}"}
+
+                                    searchedMediaInDb?.run {
+                                        Column() {
+                                            UnifiedCard(
+                                                unifiedMedia = unifiedMedia,
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(8.sdp))
+                                                    .height(155.sdp)
+                                                    .width(110.sdp)
+                                                    .clickable { selectMedia(unifiedMedia) }
+                                            )
+
+                                            Text(
+                                                text = "View ${
+                                                    DateFormats.getDateFromMillis(searchedMediaInDb.viewedDateMillis)
+                                                        .replace("/", ".")
+                                                }",
+                                                style = typography().bodySmall,
+                                                fontWeight = FontWeight.W400,
+                                                color = Color.LightGray.copy(0.85f),
+                                                modifier = Modifier
+                                                    .padding(top = 9.sdp)
+                                            )
+                                        }
+                                    }
+                                }
+
+                                item{ Spacer(modifier = Modifier.width(2.sdp)) }
+                            }
+                        }else {
+                            EmptyScreen(
+                                modifier = Modifier
+                                    .padding(top = 16.sdp)
+                                    .fillMaxWidth()
+                                    .height(115.sdp),
+                                text = "Your Search History is Empty"
+                            )
+                        }
+
+                    }
+                }
+                is Resource.Loading -> {
+                    LoadingScreen(
                         modifier = Modifier
-                            .padding(top = 8.sdp)
+                            .padding(top = 16.sdp)
+                            .fillMaxWidth()
+                            .height(115.sdp)
                     )
+                }
+                is Resource.Error -> {
+
                 }
             }
+
         }
     }
 }
